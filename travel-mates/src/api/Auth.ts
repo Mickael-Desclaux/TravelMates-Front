@@ -1,6 +1,6 @@
 import { Auth } from "../interfaces/Auth";
 
-export default function Signin(body: Auth) {
+export default function HandleSignIn(body: Auth) {
     try {
         console.log(body);
         return body;

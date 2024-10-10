@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import { useState } from "react";
 import { object, string } from "yup";
 import travelmatesLogo from "../../assets/Logo/travelmates.png";
-import Auth from "../../api/Auth";
+import HandleSignIn from "../../api/Auth";
 
 export default function SignIn() {
 
@@ -21,7 +21,7 @@ export default function SignIn() {
         }),
         onSubmit: values => {
             try {
-                Auth(values);
+                HandleSignIn(values);
             } catch (error) {
                 setLoginError(error as string)
             }
@@ -60,7 +60,7 @@ export default function SignIn() {
 
                             {/* Email error message display */}
                             {formik.touched.email && formik.errors.email ? (
-                                <div>{formik.errors.email}</div>
+                                <div className="text-red-900 text-center">{formik.errors.email}</div>
                             ) : null}
 
                             <Typography variant="h6" color="black" className="-mb-3">
@@ -98,7 +98,7 @@ export default function SignIn() {
 
                         {/* Login error message display */}
                         {loginError && (
-                            <div className="text-red-500 text-center mt-2">
+                            <div className="text-red-900 text-center">
                                 {loginError}
                             </div>
                         )}
