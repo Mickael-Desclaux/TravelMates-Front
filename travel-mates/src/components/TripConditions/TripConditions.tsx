@@ -6,26 +6,26 @@ import './TripConditions.css';
 import { useEffect } from "react";
 
 interface AgeRangeValues {
-    ageMin: number;
-    ageMax: number;
+    condition_age_min: number;
+    condition_age_max: number;
 }
 
 export default function TripConditions() {
 
     // Custom error message if ageMin > ageMax or ageMax < ageMin
     const validateAgeRange = (values: AgeRangeValues) => {
-        const ageMin: number = values.ageMin;
-        const ageMax: number = values.ageMax;
+        const condition_age_min: number = values.condition_age_min;
+        const condition_age_max: number = values.condition_age_max;
 
-        if (ageMin > ageMax) {
+        if (condition_age_min > condition_age_max) {
             return {
-                ageMin: "L'âge minimum ne peut pas être supérieur à l'âge maximum",
+                condition_age_min: "L'âge minimum ne peut pas être supérieur à l'âge maximum",
             };
         }
 
-        if (ageMax < ageMin) {
+        if (condition_age_max < condition_age_min) {
             return {
-                ageMax: "L'âge maximum ne peut pas être inférieur à l'âge minimum",
+                condition_age_max: "L'âge maximum ne peut pas être inférieur à l'âge minimum",
             };
         }
 
@@ -35,11 +35,11 @@ export default function TripConditions() {
     // handle form with formik
     const formik = useFormik({
         initialValues: {
-            gender: "",
-            ageMin: 18,
-            ageMax: 99,
-            physicalCondition: "",
-            userLimit: 5,
+            condition_gender: "",
+            condition_age_min: 18,
+            condition_age_max: 99,
+            condition_physical: "",
+            condition_user_limit: 5,
         },
         validate: validateAgeRange,
         validationSchema: object({
@@ -61,9 +61,9 @@ export default function TripConditions() {
     useEffect(() => {
         const slider = document.querySelector('input[type="range"]') as HTMLInputElement;
         if (slider) {
-            updateSliderBackground(formik.values.userLimit, +slider.min, +slider.max, slider);
+            updateSliderBackground(formik.values.condition_user_limit, +slider.min, +slider.max, slider);
         }
-    }, [formik.values.userLimit]);
+    }, [formik.values.condition_user_limit]);
     
     // handle slider dynamic colors
     const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,7 +87,7 @@ export default function TripConditions() {
                                 <Typography variant="paragraph" color="blue-gray" className="font-bold">
                                     Je veux voyager uniquement avec des user.genre
                                 </Typography>
-                                <Checkbox crossOrigin={undefined} value={formik.values.gender} color="green" />
+                                <Checkbox crossOrigin={undefined} value={formik.values.condition_gender} color="green" />
                             </div>
 
                             {/* condition_age_min && condition_age_max */}
@@ -97,8 +97,8 @@ export default function TripConditions() {
                             <div className="flex items-center gap-4">
                                 <div>
                                     <Input
-                                        name="ageMin"
-                                        value={formik.values.ageMin}
+                                        name="condition_age_min"
+                                        value={formik.values.condition_age_min}
                                         onChange={formik.handleChange}
                                         containerProps={{ className: "min-w-[48px]" }}
                                         placeholder="Âge min"
@@ -110,8 +110,8 @@ export default function TripConditions() {
                                 <Typography>et</Typography>
                                 <div>
                                     <Input
-                                        name="ageMax"
-                                        value={formik.values.ageMax}
+                                        name="condition_age_max"
+                                        value={formik.values.condition_age_max}
                                         onChange={formik.handleChange}
                                         containerProps={{ className: "min-w-[48px]" }}
                                         placeholder="Âge max"
@@ -124,14 +124,14 @@ export default function TripConditions() {
                             </div>
 
                             {/* ageMin and ageMax errors display */}
-                            {formik.touched.ageMin && formik.errors.ageMin ? (
+                            {formik.touched.condition_age_min && formik.errors.condition_age_min ? (
 
-                                <div>{formik.errors.ageMin}</div>
+                                <div>{formik.errors.condition_age_min}</div>
 
                             ) : null}
-                            {formik.touched.ageMax && formik.errors.ageMax ? (
+                            {formik.touched.condition_age_max && formik.errors.condition_age_max ? (
 
-                                <div>{formik.errors.ageMax}</div>
+                                <div>{formik.errors.condition_age_max}</div>
 
                             ) : null}
 
@@ -142,20 +142,20 @@ export default function TripConditions() {
                             <div className="flex justify-between space-x-4">
                                 <button
                                     type="button"
-                                    className={`px-4 py-2 border rounded ${formik.values.physicalCondition === 'none' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
-                                    onClick={() => formik.setFieldValue('physicalCondition', 'none')}>
+                                    className={`px-4 py-2 border rounded ${formik.values.condition_physical === 'none' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
+                                    onClick={() => formik.setFieldValue('condition_physical', 'none')}>
                                     Aucune
                                 </button>
                                 <button
                                     type="button"
-                                    className={`px-4 py-2 border rounded ${formik.values.physicalCondition === 'normal' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
-                                    onClick={() => formik.setFieldValue('physicalCondition', 'normal')}>
+                                    className={`px-4 py-2 border rounded ${formik.values.condition_physical === 'normal' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
+                                    onClick={() => formik.setFieldValue('condition_physical', 'normal')}>
                                     Normale
                                 </button>
                                 <button
                                     type="button"
-                                    className={`px-4 py-2 border rounded ${formik.values.physicalCondition === 'excellent' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
-                                    onClick={() => formik.setFieldValue('physicalCondition', 'excellent')}>
+                                    className={`px-4 py-2 border rounded ${formik.values.condition_physical === 'excellent' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
+                                    onClick={() => formik.setFieldValue('condition_physical', 'excellent')}>
                                     Excellente
                                 </button>
                             </div>
@@ -166,7 +166,7 @@ export default function TripConditions() {
                             </Typography>
                             <div className="flex justify-between -mb-3">
                                 <span className="text-start">2</span>
-                                <span className="text-center">{formik.values.userLimit} participants max</span>
+                                <span className="text-center">{formik.values.condition_user_limit} participants max</span>
                                 <span className="text-end">10</span>
                             </div>
                             <input
@@ -174,8 +174,8 @@ export default function TripConditions() {
                                 min={2}
                                 max={10}
                                 step={1}
-                                name="userLimit"
-                                value={formik.values.userLimit}
+                                name="condition_user_limit"
+                                value={formik.values.condition_user_limit}
                                 className="w-full h-2 bg-green-900 rounded-lg appearance-none cursor-pointer"
                                 onChange={handleSliderChange} 
                                 />
