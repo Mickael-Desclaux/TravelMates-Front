@@ -1,12 +1,13 @@
-import './App.css'
+import { Route, Routes } from 'react-router-dom';
+import './App.css';
+import TripListe from './pages/Trip/TripList';
 
 function App() {
-
-  return (
-    <>
-     <h1>Hello</h1>
-    </>
-  )
+	return (
+		<Routes>
+			<Route path="/" element={<TripListe />} />
+		</Routes>
+	);
 }
 
-export default App
+export default App;
