@@ -7,13 +7,6 @@ import { useEffect } from "react";
 
 export default function TripConditions() {
 
-    // Default values for trip conditions
-    const DEFAULT_CONDITION_GENDER = "";
-    const DEFAULT_CONDITION_AGE_MIN = 18;
-    const DEFAULT_CONDITION_AGE_MAX = 99;
-    const DEFAULT_CONDITION_PHYSICAL = "none";
-    const DEFAULT_CONDITION_USER_LIMIT = 5;
-
     interface TripConditions {
         condition_gender: string;
         condition_age_min: number;
@@ -21,6 +14,15 @@ export default function TripConditions() {
         condition_physical: string;
         condition_user_limit: number;
     }
+
+    // Default form values
+    const defaultValues: TripConditions = {
+        condition_gender: "",
+        condition_age_min: 18,
+        condition_age_max: 99,
+        condition_physical: "none",
+        condition_user_limit: 5,
+    };
 
     // Custom error message if ageMin > ageMax or ageMax < ageMin
     const validateAgeRange = (values: TripConditions) => {
@@ -35,13 +37,7 @@ export default function TripConditions() {
 
     // Handle form with formik
     const formik = useFormik({
-        initialValues: {
-            condition_gender: DEFAULT_CONDITION_GENDER,
-            condition_age_min: DEFAULT_CONDITION_AGE_MIN,
-            condition_age_max: DEFAULT_CONDITION_AGE_MAX,
-            condition_physical: DEFAULT_CONDITION_PHYSICAL,
-            condition_user_limit: DEFAULT_CONDITION_USER_LIMIT,
-        },
+        initialValues: defaultValues,
         validate: validateAgeRange,
         validationSchema: object({
             ageMin: number().min(18, "L'âge minimum doit être supérieur à 18 ans").max(99, "L'âge minimum doit être inférieur à 99 ans"),
@@ -80,7 +76,6 @@ export default function TripConditions() {
         const value = calculateSliderValue(slider);
 
         // Slider value and color update
-        formik.handleChange(e);
         updateSliderBackground(value, +slider.min, +slider.max, slider);
     };
 
@@ -148,7 +143,7 @@ export default function TripConditions() {
                             <Typography variant="paragraph" color="blue-gray" className="-mb-3 font-bold">
                                 Condition physique recommandée
                             </Typography>
-                            <div className="flex justify-between space-x-4">
+                            <div className="flex justify-between space-x-2">
                                 <Button
                                     variant="outlined"
                                     type="button"
@@ -189,7 +184,7 @@ export default function TripConditions() {
                                 name="condition_user_limit"
                                 value={formik.values.condition_user_limit}
                                 className="w-full h-2 bg-green-900 rounded-lg appearance-none cursor-pointer"
-                                onChange={handleSliderChange}
+                                onChange={(e) => {handleSliderChange(e); formik.handleChange(e)} }
                             />
                         </div>
                         <div className="flex justify-between gap-12 mt-12">
