@@ -6,7 +6,7 @@ import {
 	Typography,
 } from '@material-tailwind/react';
 import { useNavigate } from 'react-router-dom';
-import { Trip } from '../interfaces/TripProps';
+import { Trip } from '../../interfaces/TripProps/TripProps';
 
 // Importing SVG icons for activities
 import adventureIcon from '../assets/activity/adventure.svg';

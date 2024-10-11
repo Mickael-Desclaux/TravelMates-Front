@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Activity, Trip } from '../interfaces/TripProps';
+import { Activity, Trip } from '../interfaces/TripProps/TripProps';
 
 // Interface for the data returned by jsonplaceholder API
 interface JsonPlaceholderPost {

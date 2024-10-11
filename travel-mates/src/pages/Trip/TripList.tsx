@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import TripCardContainer from '../../components/TripCardContainer';
-import { Trip } from '../../interfaces/TripProps';
+import TripCardContainer from '../../components/TripCardContainer/TripCardContainer';
+import { Trip } from '../../interfaces/TripProps/TripProps';
 import { Typography } from '@material-tailwind/react';
-import { getFakeTrips } from '../../api/tripService';
+import { getFakeTrips } from '../../api/Trips';
 
 /**
  * TripListe Component
