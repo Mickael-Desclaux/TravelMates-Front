@@ -4,16 +4,9 @@ import { number, object } from "yup";
 import addTripConditions from "../../api/Trip";
 import './TripConditions.css';
 import { useEffect } from "react";
+import type { TripConditions } from "../../interfaces/TripConditions";
 
 export default function TripConditions() {
-
-    interface TripConditions {
-        condition_gender: string;
-        condition_age_min: number;
-        condition_age_max: number;
-        condition_physical: string;
-        condition_user_limit: number;
-    }
 
     // Default form values
     const defaultValues: TripConditions = {

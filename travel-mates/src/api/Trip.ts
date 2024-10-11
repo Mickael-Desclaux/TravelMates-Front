@@ -1,4 +1,4 @@
-import { TripConditions } from "../interfaces/TripConditions";
+import type { TripConditions } from "../interfaces/TripConditions";
 
 export default function addTripConditions(body: TripConditions) {
     try {
