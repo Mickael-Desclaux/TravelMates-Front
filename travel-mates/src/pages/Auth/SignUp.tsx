@@ -1,12 +1,12 @@
-import { Typography, Button, Progress } from "@material-tailwind/react";
+import { Typography, Button } from "@material-tailwind/react";
 import { ErrorMessage, Field, Formik } from "formik";
 import * as Yup from "yup";
+import ProgressBar from "../../components/ProgressBar/ProgressBar";
 //import travelMatesLogo from "../../assets/Logo/travelmates.png";
 
 export default function SignUp() {
   const SignupSchema = Yup.object().shape({
     email: Yup.string()
-      .default("red")
       .email("Email invalide")
       .required("L'email est requis"),
     password: Yup.string()
@@ -14,7 +14,7 @@ export default function SignUp() {
       .required("Le mot de passe est requis"),
     confirmedPassword: Yup.string()
       .oneOf(
-        [Yup.ref("password"), null],
+        [Yup.ref("password")],
         "Les mots de passe doivent correspondre"
       )
       .required("La confirmation du mot de passe est requise"),
@@ -38,9 +38,7 @@ export default function SignUp() {
           </Typography>
 
           {/* Progress bar */}
-          <div>
-            <Progress value={33} />
-          </div>
+          <ProgressBar />
 
           {/* Sign up form */}
           <Formik
@@ -50,14 +48,9 @@ export default function SignUp() {
               const errors = {};
 
               // Verified if all fields are empty
-              if (
-                !values.email &&
-                !values.password &&
-                !values.confirmedPassword
-              ) {
+              if (!values.email && !values.password && !values.confirmedPassword) {
                 errors.general = "Tous les champs sont requis";
               }
-
               return errors;
             }}
             onSubmit={(values, { setSubmitting }) => {
@@ -80,7 +73,7 @@ export default function SignUp() {
                 <div className="mb-6">
                   <label htmlFor="email">
                     <Typography
-                      variant="small"
+                      variant="h6"
                       className="mb-2 block font-medium text-gray-900"
                     >
                       Email
@@ -103,7 +96,7 @@ export default function SignUp() {
                 <div className="mb-6">
                   <label htmlFor="password">
                     <Typography
-                      variant="small"
+                      variant="h6"
                       className="mb-2 block font-medium text-gray-900"
                     >
                       Mot de passe
@@ -125,7 +118,7 @@ export default function SignUp() {
                 <div className="mb-6">
                   <label htmlFor="password">
                     <Typography
-                      variant="small"
+                      variant="h6"
                       className="mb-2 block font-medium text-gray-900"
                     >
                       Confirmer votre mot de passe
@@ -147,18 +140,13 @@ export default function SignUp() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  color="gray"
                   size="lg"
-                  className="mt-6"
+                  className="bg-green mt-6"
                   fullWidth
                 >
                   Continuer
                 </Button>
-                <Typography
-                  variant="small"
-                  color="gray"
-                  className="!mt-4 text-center font-normal"
-                >
+                <Typography color="gray" className="text-sm !mt-4 text-center font-normal">
                   Vous avez déjà un compte ?{" "}
                   <a href="/SignIn" className="font-medium text-gray-900 underline">
                     Me connecter
