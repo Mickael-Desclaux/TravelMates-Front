@@ -5,41 +5,42 @@ import addTripConditions from "../../api/Trip";
 import './TripConditions.css';
 import { useEffect } from "react";
 
-interface AgeRangeValues {
-    condition_age_min: number;
-    condition_age_max: number;
-}
-
 export default function TripConditions() {
 
+    // Default values for trip conditions
+    const DEFAULT_CONDITION_GENDER = "";
+    const DEFAULT_CONDITION_AGE_MIN = 18;
+    const DEFAULT_CONDITION_AGE_MAX = 99;
+    const DEFAULT_CONDITION_PHYSICAL = "none";
+    const DEFAULT_CONDITION_USER_LIMIT = 5;
+
+    interface TripConditions {
+        condition_gender: string;
+        condition_age_min: number;
+        condition_age_max: number;
+        condition_physical: string;
+        condition_user_limit: number;
+    }
+
     // Custom error message if ageMin > ageMax or ageMax < ageMin
-    const validateAgeRange = (values: AgeRangeValues) => {
-        const condition_age_min: number = values.condition_age_min;
-        const condition_age_max: number = values.condition_age_max;
-
-        if (condition_age_min > condition_age_max) {
-            return {
-                condition_age_min: "L'âge minimum ne peut pas être supérieur à l'âge maximum",
-            };
+    const validateAgeRange = (values: TripConditions) => {
+        if (values.condition_age_min > values.condition_age_max) {
+            return { condition_age_min: "L'âge minimum ne peut pas être supérieur à l'âge maximum" };
         }
-
-        if (condition_age_max < condition_age_min) {
-            return {
-                condition_age_max: "L'âge maximum ne peut pas être inférieur à l'âge minimum",
-            };
+        if (values.condition_age_max < values.condition_age_min) {
+            return { condition_age_max: "L'âge maximum ne peut pas être inférieur à l'âge minimum" };
         }
-
         return {};
     };
 
-    // handle form with formik
+    // Handle form with formik
     const formik = useFormik({
         initialValues: {
-            condition_gender: "",
-            condition_age_min: 18,
-            condition_age_max: 99,
-            condition_physical: "",
-            condition_user_limit: 5,
+            condition_gender: DEFAULT_CONDITION_GENDER,
+            condition_age_min: DEFAULT_CONDITION_AGE_MIN,
+            condition_age_max: DEFAULT_CONDITION_AGE_MAX,
+            condition_physical: DEFAULT_CONDITION_PHYSICAL,
+            condition_user_limit: DEFAULT_CONDITION_USER_LIMIT,
         },
         validate: validateAgeRange,
         validationSchema: object({
@@ -51,28 +52,36 @@ export default function TripConditions() {
         }
     })
 
-    // slider background color
+    // Update slider background color
     const updateSliderBackground = (value: number, min: number, max: number, slider: HTMLInputElement) => {
         const percentage = ((value - min) / (max - min)) * 100;
         slider.style.background = `linear-gradient(to right, #185C22 ${percentage}%, #ccc ${percentage}%)`;
     };
 
-    // slider design application after page is mounted
+    // Compute slider value in percentage
+    const calculateSliderValue = (slider: HTMLInputElement) => {
+        return ((+slider.value - +slider.min) / (+slider.max - +slider.min)) * 100;
+    };
+
+    // Apply slider design after page is mounted
     useEffect(() => {
         const slider = document.querySelector('input[type="range"]') as HTMLInputElement;
+
         if (slider) {
             updateSliderBackground(formik.values.condition_user_limit, +slider.min, +slider.max, slider);
         }
     }, [formik.values.condition_user_limit]);
-    
-    // handle slider dynamic colors
+
+    // Handle slider value on change
     const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        formik.handleChange(e);
 
+        // Get slider element and it's value
         const slider = e.target as HTMLInputElement;
-        const value = ((+slider.value - +slider.min) / (+slider.max - +slider.min)) * 100;
+        const value = calculateSliderValue(slider);
 
-        slider.style.background = `linear-gradient(to right, #185C22 ${value}%, #ccc ${value}%)`;
+        // Slider value and color update
+        formik.handleChange(e);
+        updateSliderBackground(value, +slider.min, +slider.max, slider);
     };
 
     return (
@@ -107,7 +116,7 @@ export default function TripConditions() {
                                             className: "before:content-none after:content-none",
                                         }} crossOrigin={undefined} />
                                 </div>
-                                <Typography>et</Typography>
+                                <Typography className="ms-4 me-4">et</Typography>
                                 <div>
                                     <Input
                                         name="condition_age_max"
@@ -140,24 +149,27 @@ export default function TripConditions() {
                                 Condition physique recommandée
                             </Typography>
                             <div className="flex justify-between space-x-4">
-                                <button
+                                <Button
+                                    variant="outlined"
                                     type="button"
-                                    className={`px-4 py-2 border rounded ${formik.values.condition_physical === 'none' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
+                                    className={`${formik.values.condition_physical === 'none' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
                                     onClick={() => formik.setFieldValue('condition_physical', 'none')}>
                                     Aucune
-                                </button>
-                                <button
+                                </Button>
+                                <Button
+                                    variant="outlined"
                                     type="button"
-                                    className={`px-4 py-2 border rounded ${formik.values.condition_physical === 'normal' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
+                                    className={`${formik.values.condition_physical === 'normal' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
                                     onClick={() => formik.setFieldValue('condition_physical', 'normal')}>
                                     Normale
-                                </button>
-                                <button
+                                </Button>
+                                <Button
+                                    variant="outlined"
                                     type="button"
-                                    className={`px-4 py-2 border rounded ${formik.values.condition_physical === 'excellent' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
+                                    className={`${formik.values.condition_physical === 'excellent' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
                                     onClick={() => formik.setFieldValue('condition_physical', 'excellent')}>
                                     Excellente
-                                </button>
+                                </Button>
                             </div>
 
                             {/* condition_user_limit */}
@@ -177,8 +189,8 @@ export default function TripConditions() {
                                 name="condition_user_limit"
                                 value={formik.values.condition_user_limit}
                                 className="w-full h-2 bg-green-900 rounded-lg appearance-none cursor-pointer"
-                                onChange={handleSliderChange} 
-                                />
+                                onChange={handleSliderChange}
+                            />
                         </div>
                         <div className="flex justify-between gap-12 mt-12">
                             <Button onClick={() => formik.resetForm()} className="w-1/2" type="button" fullWidth>
