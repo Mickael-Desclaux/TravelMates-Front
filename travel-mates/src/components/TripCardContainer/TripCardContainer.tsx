@@ -9,15 +9,15 @@ import { useNavigate } from 'react-router-dom';
 import { Trip } from '../../interfaces/TripProps/TripProps';
 
 // Importing SVG icons for activities
-import adventureIcon from '../assets/activity/adventure.svg';
-import cultureIcon from '../assets/activity/culture.svg';
-import familyIcon from '../assets/activity/family.svg';
-import gastronomyIcon from '../assets/activity/gastronomy.svg';
-import leisureIcon from '../assets/activity/leisure.svg';
-import natureIcon from '../assets/activity/nature.svg';
-import partyIcon from '../assets/activity/party-and-bar.svg';
-import relaxationIcon from '../assets/activity/relaxation.svg';
-import sportIcon from '../assets/activity/sport.svg';
+import adventureIcon from '../../assets/activity/adventure.svg';
+import cultureIcon from '../../assets/activity/culture.svg';
+import familyIcon from '../../assets/activity/family.svg';
+import gastronomyIcon from '../../assets/activity/gastronomy.svg';
+import leisureIcon from '../../assets/activity/leisure.svg';
+import natureIcon from '../../assets/activity/nature.svg';
+import partyIcon from '../../assets/activity/party-and-bar.svg';
+import relaxationIcon from '../../assets/activity/relaxation.svg';
+import sportIcon from '../../assets/activity/sport.svg';
 
 const TripCardContainer: React.FC<Trip> = ({
 	title,
