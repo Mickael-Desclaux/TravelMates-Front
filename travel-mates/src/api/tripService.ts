@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Activity, Trip } from '../interfaces/TripProps';
 
-// Type pour les données retournées par jsonplaceholder
+// Interface for the data returned by jsonplaceholder API
 interface JsonPlaceholderPost {
 	userId: number;
 	id: number;
@@ -9,7 +9,7 @@ interface JsonPlaceholderPost {
 	body: string;
 }
 
-// Liste des activités possibles avec des types explicites
+// List of possible activities with explicit types
 const allActivities: Activity[] = [
 	{ id: 1, type: 'adventure', icon: '/assets/activity/adventure.svg' },
 	{ id: 2, type: 'culture', icon: '/assets/activity/culture.svg' },
@@ -22,7 +22,7 @@ const allActivities: Activity[] = [
 	{ id: 9, type: 'sport', icon: '/assets/activity/sport.svg' },
 ];
 
-// Fonction pour mélanger les éléments d'un tableau avec un typage explicite
+// Function to shuffle the elements of an array with explicit typing
 const shuffleArray = <T>(array: T[]): T[] => {
 	for (let i = array.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
@@ -31,41 +31,43 @@ const shuffleArray = <T>(array: T[]): T[] => {
 	return array;
 };
 
-// Configurer l'instance Axios
+// Configure Axios instance for API requests
 const api = axios.create({
-	baseURL: 'https://jsonplaceholder.typicode.com',
+	baseURL: 'https://jsonplaceholder.typicode.com', // Base URL for the API
 	headers: {
 		'Content-Type': 'application/json',
 	},
 });
 
-// Fonction pour récupérer des voyages factices avec des activités random
+// Function to fetch fake trips and generate random activities
 export const getFakeTrips = async (): Promise<Trip[]> => {
 	try {
+		// Fetch posts from the jsonplaceholder API
 		const response = await api.get<JsonPlaceholderPost[]>('/posts');
 
+		// Map the response data to our Trip format and add random activities
 		return response.data.slice(0, 10).map((post: JsonPlaceholderPost): Trip => {
-			// Mélanger les activités et sélectionner un nombre aléatoire jusqu'à 6
+			// Shuffle the list of activities and select a random number (up to 6)
 			const randomActivities: Activity[] = shuffleArray(allActivities).slice(
 				0,
-				Math.floor(Math.random() * 6) + 1,
+				Math.floor(Math.random() * 6) + 1, // Select 1 to 6 activities
 			);
 
 			return {
-				id: post.id,
-				title: post.title,
-				destination: `Destination ${post.id}`,
-				dateFrom: '2024-10-01',
-				dateTo: '2024-10-10',
-				description: post.body,
-				budgetMin: Math.floor(Math.random() * 500) + 100,
-				budgetMax: Math.floor(Math.random() * 1500) + 600,
-				media: `https://via.placeholder.com/600/${post.id}`,
-				activities: randomActivities,
+				id: post.id, // Use the post's id as the trip's id
+				title: post.title, // Use the post's title for the trip title
+				destination: `Destination ${post.id}`, // Generate a fake destination
+				dateFrom: '2024-10-01', // Fixed date for the trip start
+				dateTo: '2024-10-10', // Fixed date for the trip end
+				description: post.body, // Use the post's body as the trip description
+				budgetMin: Math.floor(Math.random() * 500) + 100, // Generate a random minimum budget
+				budgetMax: Math.floor(Math.random() * 1500) + 600, // Generate a random maximum budget
+				media: `https://via.placeholder.com/600/${post.id}`, // Use a placeholder image
+				activities: randomActivities, // Assign the randomly selected activities
 			};
 		});
 	} catch (error) {
-		console.error('Error fetching trips:', error);
-		throw error;
+		console.error('Error fetching trips:', error); // Handle any errors
+		throw error; // Re-throw the error for further handling
 	}
 };
