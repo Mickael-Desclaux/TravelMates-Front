@@ -8,7 +8,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { Trip } from '../interfaces/TripProps';
 
-// Importing SVG icons
+// Importing SVG icons for activities
 import adventureIcon from '../assets/activity/adventure.svg';
 import cultureIcon from '../assets/activity/culture.svg';
 import familyIcon from '../assets/activity/family.svg';
@@ -32,7 +32,7 @@ const TripCardContainer: React.FC<Trip> = ({
 }) => {
 	const navigate = useNavigate();
 
-	// Mapping activity types to SVG icons
+	// Mapping activity types to their corresponding SVG icons
 	const activityIcons: { [key: string]: string } = {
 		adventure: adventureIcon,
 		culture: cultureIcon,
@@ -45,7 +45,7 @@ const TripCardContainer: React.FC<Trip> = ({
 		sport: sportIcon,
 	};
 
-	// Limite de caractères pour tronquer le texte à 150 caractères
+	// Description is limited to 150 characters for display
 	const maxDescriptionLength = 150;
 	const truncatedDescription =
 		description.length > maxDescriptionLength
@@ -57,32 +57,34 @@ const TripCardContainer: React.FC<Trip> = ({
 					.join(' ') + '...'
 			: description;
 
-	// Fonction pour rediriger vers la page de détails
+	// Function to navigate to the trip details page
 	const handleReadMore = () => {
 		navigate(`/trip/${title}`);
 	};
 
-	// Diviser les activités pour gérer l'affichage en lignes
-	const firstRowActivities = activities.slice(0, 3); // Les 3 premières activités
-	const secondRowActivities = activities.slice(3); // Les 3 activités suivantes
+	// Divide activities into two rows for display
+	const firstRowActivities = activities.slice(0, 3); // First 3 activities in the top row
+	const secondRowActivities = activities.slice(3); // Remaining activities in the bottom row
 
 	return (
 		<Card
 			className="w-full max-w-[30rem] shadow-lg rounded-lg flex flex-col justify-between"
-			style={{ marginTop: '13px', minHeight: '128px' }}
+			style={{ marginTop: '13px', minHeight: '128px' }} // Minimum card height is set
 		>
+			{/* Card header containing the trip image */}
 			<CardHeader floated={false} className="relative h-60 -mt-8 mx-4">
 				<img
 					src={media}
 					alt="Trip Image"
-					onError={e =>
-						(e.currentTarget.src = 'https://via.placeholder.com/150')
+					onError={
+						e => (e.currentTarget.src = 'https://via.placeholder.com/150') // Fallback image in case of an error
 					}
-					className="w-full h-full object-cover rounded-lg"
+					className="w-full h-full object-cover rounded-lg" // Ensures image is fully displayed with rounded corners
 				/>
 				<span className="absolute top-2 left-2 bg-black text-white text-xs px-3 py-1 rounded-md">
 					Recommended
 				</span>
+				{/* Avatar image in the bottom right */}
 				<img
 					src="https://randomuser.me/api/portraits/women/44.jpg"
 					alt="Avatar"
@@ -90,8 +92,10 @@ const TripCardContainer: React.FC<Trip> = ({
 				/>
 			</CardHeader>
 
+			{/* Card body containing trip details and activities */}
 			<CardBody className="p-4 flex-grow">
 				<div className="flex items-start justify-between">
+					{/* Title and destination section */}
 					<div className="w-[70%]">
 						<Typography
 							variant="h5"
@@ -99,7 +103,7 @@ const TripCardContainer: React.FC<Trip> = ({
 							className="mb-1 text-2xl"
 						>
 							{title.length > 45 ? title.slice(0, 45) : title}{' '}
-							{/* Limitation à 45 caractères */}
+							{/* Title is limited to 45 characters */}
 						</Typography>
 						<Typography color="gray" className="text-base">
 							{destination}{' '}
@@ -110,8 +114,9 @@ const TripCardContainer: React.FC<Trip> = ({
 						</Typography>
 					</div>
 
-					{/* Activity icons layout */}
+					{/* Activity icons section with two rows if necessary */}
 					<div className="w-[30%]">
+						{/* First row of activity icons */}
 						<div className="flex justify-end gap-1">
 							{firstRowActivities.map(activity => (
 								<img
@@ -122,6 +127,7 @@ const TripCardContainer: React.FC<Trip> = ({
 								/>
 							))}
 						</div>
+						{/* Second row of activity icons */}
 						<div className="flex justify-end gap-1 mt-1">
 							{secondRowActivities.map(activity => (
 								<img
@@ -135,6 +141,7 @@ const TripCardContainer: React.FC<Trip> = ({
 					</div>
 				</div>
 
+				{/* Trip description with the "voir plus" link if necessary */}
 				<Typography color="gray" className="text-sm leading-relaxed mt-4">
 					{truncatedDescription}
 					{description.length > maxDescriptionLength && (
@@ -148,6 +155,7 @@ const TripCardContainer: React.FC<Trip> = ({
 				</Typography>
 			</CardBody>
 
+			{/* Card footer displaying budget range */}
 			<CardFooter className="flex justify-end items-center p-4 mt-auto">
 				<div className="border border-[#185C22] text-[#185C22] px-3 py-1 rounded-md font-bold">
 					{budgetMin} - {budgetMax} €
