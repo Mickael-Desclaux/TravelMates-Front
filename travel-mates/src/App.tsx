@@ -3,6 +3,7 @@ import './App.css';
 import TripListe from './pages/Trip/TripList';
 import SignIn from './pages/Auth/SignIn'
 import SignUp from './pages/Auth/SignUp'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 function App() {
 
@@ -14,6 +15,8 @@ function App() {
         <Route path="/sign-up" element={<SignUp />} />
         
       </Routes>
+
+      <ReactQueryDevtools/>
     </>
   )
 }

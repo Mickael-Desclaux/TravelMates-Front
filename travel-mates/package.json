@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@material-tailwind/react": "^2.1.10",
+    "@tanstack/react-query": "^5.59.14",
+    "@tanstack/react-query-devtools": "^5.59.14",
     "axios": "^1.7.7",
     "formik": "^2.4.6",
     "react": "^18.3.1",
@@ -20,6 +22,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
+    "@tanstack/eslint-plugin-query": "^5.59.7",
+    "@types/node": "^22.7.5",
     "@types/react": "18.2.42",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.2",
