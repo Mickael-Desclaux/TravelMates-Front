@@ -6,7 +6,7 @@ import travelMatesLogo from "../../assets/Logo/travelmates.png";
 import { useState } from "react";
 import StepOne from "../../components/SignUpMultiStepForm/SignUpStepOne";
 import StepTwo from "../../components/SignUpMultiStepForm/SignUpStepTwo";
-//import StepThree from "../../components/SignUpMultiStepForm/SignUpStepThree";
+import StepThree from "../../components/SignUpMultiStepForm/SignUpStepThree";
 
 export default function SignUpMultiStepForm() {
   // Step of the form
@@ -26,6 +26,9 @@ export default function SignUpMultiStepForm() {
       gender: Yup.string().required("Le genre est requis"),
       address: Yup.string().required("L'adresse est requise"),
       profilePicture: Yup.mixed().required("La photo de profil est requise")
+    }),
+    Yup.object().shape({
+      activities: Yup.array().min(3, "Veuillez choisir au moins trois activités ").required("Veuillez choisir au moins trois activités")
     })
   ];
 
@@ -42,10 +45,6 @@ export default function SignUpMultiStepForm() {
             <img src={travelMatesLogo} alt="Logo TravelMates" className="w-40" />
           </div>
 
-          <Typography variant="h1" className="mb-4 text-2xl font-title">
-            Créer un compte
-          </Typography>
-
           {/* Progress bar */}
           <ProgressBar />
 
@@ -60,27 +59,32 @@ export default function SignUpMultiStepForm() {
               birthDate: "",
               gender: "",
               address: "",
-              profilePicture: null
+              profilePicture: null,
+              activities: []
             }}
 
             validationSchema={validationSchemas[step - 1]}
 
-            // On submit of the form it will go to the next step 
-            onSubmit={(values) => {
-              console.log('Form values at step:', step, values);
-              if (step === 2) {
-                alert(JSON.stringify(values, null, 1));
-              } else {
-                handleNext();
-              }
-            }}
+              onSubmit={(values, { setSubmitting }) => {
+                try {
+                  console.log('Form values at step:', step, values);
+                  if (step === 2) {
+                    alert("All fields validated successfully for step 2.");
+                  }
+                  handleNext();
+                } catch (error) {
+                  console.error("Error during submission", error);
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
           >
 
             {({ isSubmitting }) => (
               <Form>
                 {step === 1 && <StepOne />}
                 {step === 2 && <StepTwo />}
-                {/* {step === 3 && <StepThree />} */}
+                {step === 3 && <StepThree />}
 
                 <div className="flex justify-between text-left mt-2">
                   {/* Button previous to go back to the previous step */}

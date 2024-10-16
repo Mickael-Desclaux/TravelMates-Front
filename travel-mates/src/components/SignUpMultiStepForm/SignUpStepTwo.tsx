@@ -1,13 +1,25 @@
 import { Typography } from '@material-tailwind/react';
-import { Field, ErrorMessage } from 'formik';
+import { Field, ErrorMessage, useFormikContext } from 'formik';
 import uploadIcon from '../../assets/icons/up-loading.png';
 import CustomSelect from '../CustomSelect/CustomSelect';
  
 export default function SignUpStepTwo() { 
 
+  const { setFieldValue } = useFormikContext();
+  
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const selectedFile = e.target.files?.[0];
+    setFieldValue('profilePicture', selectedFile);
+    e.preventDefault();
+    console.log(selectedFile);
+  };
+
   return (
     <>
       <div className="mx-auto mt-8 max-w-[24rem] text-left">
+        <Typography variant="h1" className="mb-4 text-center text-2xl font-title">
+            Vos informations
+        </Typography>
         <div className="mb-6">
           <label htmlFor="firstName">
             <Typography
@@ -98,12 +110,13 @@ export default function SignUpStepTwo() {
             </Typography>
           </label>
           <div className="relative">
-            <Field
-              id="profilePicture"
-              name="profilePicture"
-              type="file"
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-            />
+          <input
+            id="profilePicture"
+            name="profilePicture"
+            type="file"
+            onChange={ handleFileChange }
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+          />
             {/* Upload icon */}
             <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
               <img src={uploadIcon} alt="upload" className="w-4 h-4" />

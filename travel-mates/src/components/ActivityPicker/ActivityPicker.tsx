@@ -8,8 +8,7 @@ import natureIcon from '../../assets/activity/nature.svg';
 import partyIcon from '../../assets/activity/party-and-bar.svg';
 import relaxationIcon from '../../assets/activity/relaxation.svg';
 import sportIcon from '../../assets/activity/sport.svg';
-import { useFormikContext } from "formik";
-
+import { ErrorMessage, useFormikContext } from "formik";
 
 export default function ActivityPicker() {
 
@@ -31,7 +30,6 @@ export default function ActivityPicker() {
 
     // Use formik context
     const { values, setFieldValue } = useFormikContext<FormValues>();
-
     
     /**
      * Handles the toggle of an activity selection in the activity picker.
@@ -49,22 +47,24 @@ export default function ActivityPicker() {
     };
 
     return (
-        <div className="flex justify-center">
-            <div className="grid gap-4 grid-cols-3 grid-rows-3 w-full md:w-[40%]">
-                {activities.map((activity) => (
-                    <Activity
-                        key={activity.id}
-                        id={activity.id}
-                        name={activity.name}
-                        iconPath={activity.icon}
-                        onToggle={() => handleToggle(activity.id)}
-                        isSelected={values.activities.includes(activity.id)}
-                    />
-                ))}
+        <>
+            <div className="flex justify-center">
+                <div className="grid gap-4 grid-cols-3 grid-rows-3 w-full md:w-[40%]">
+                    {activities.map((activity) => (
+                        <Activity
+                            key={activity.id}
+                            id={activity.id}
+                            name={activity.name}
+                            iconPath={activity.icon}
+                            onToggle={() => handleToggle(activity.id)}
+                            isSelected={values.activities.includes(activity.id)}
+                        />
+                    ))}
+                </div>
             </div>
-        </div>
+            <div className="mb-2 mt-4">
+                <ErrorMessage name="activities" component="div" className="text-red-500 text-sm mt-1 w-full" />
+            </div>
+        </>
     );
 }
-
-
-
