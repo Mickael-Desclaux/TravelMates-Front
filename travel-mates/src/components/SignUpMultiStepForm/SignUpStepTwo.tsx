@@ -1,5 +1,7 @@
 import { Typography } from '@material-tailwind/react';
 import { Field, ErrorMessage } from 'formik';
+import uploadIcon from '../../assets/icons/up-loading.png';
+import CustomSelect from '../CustomSelect/CustomSelect';
  
 export default function SignUpStepTwo() { 
 
@@ -66,17 +68,7 @@ export default function SignUpStepTwo() {
               Genre
             </Typography>
           </label>
-          <Field
-            id="gender"
-            name="gender"
-            as="select"
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-          >
-            <option value="">Sélectionner</option>
-            <option value="female">Femme</option>
-            <option value="male">Homme</option>
-            <option value="other">Autre</option>
-          </Field>
+          <Field name="gender" component={CustomSelect} />
           <ErrorMessage name="gender" component="div" className="text-red-500 text-sm mt-1" />
         </div>
         <div className="mb-6">
@@ -105,12 +97,18 @@ export default function SignUpStepTwo() {
               Ajouter une photo de profile
             </Typography>
           </label>
-          <Field
-            id="profilePicture"
-            name="profilePicture"
-            type="file"
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm relative"
-          />
+          <div className="relative">
+            <Field
+              id="profilePicture"
+              name="profilePicture"
+              type="file"
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+            />
+            {/* Upload icon */}
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <img src={uploadIcon} alt="upload" className="w-4 h-4" />
+            </div>
+          </div>
           <ErrorMessage name="profilePicture" component="div" className="text-red-500 text-sm mt-1" />
         </div>
       </div>
