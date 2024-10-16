@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import StepOne from './StepOne';
+import StepOne from './StepOneAddTrip';
 
 const MultiStepForm = () => {
 	const [step, setStep] = useState(1);
