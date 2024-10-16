@@ -10,36 +10,29 @@ import CalendarIcon from '../../assets/Icons/datepicker.svg';
 import PlaneIcon from '../../assets/Icons/plane.svg';
 
 const StepOne = ({ next }: { next: () => void }) => {
-	// Access form data and setFormData function from the context
 	const { formData, setFormData } = useContext(FormContext)!;
-
-	// States for selected date range and calendar toggle
 	const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(
 		undefined,
 	);
 	const [showCalendar, setShowCalendar] = useState(false);
 
-	// Define initial values for the form fields
 	const initialValues = {
 		destination: formData.destination || '',
 		departureCity: formData.departureCity || '',
 		dates: formData.dates || '',
 	};
 
-	// Define validation schema using Yup
 	const validationSchema = Yup.object({
 		destination: Yup.string().required('La destination est obligatoire'),
 		departureCity: Yup.string().required('La ville de départ est obligatoire'),
 		dates: Yup.string().required('Les dates de voyage sont obligatoires'),
 	});
 
-	// Handle form submission
 	const handleSubmit = (values: typeof initialValues) => {
-		setFormData(values); // Store form data in the context
-		next(); // Move to the next step
+		setFormData(values);
+		next();
 	};
 
-	// Handle date selection and form field update
 	const handleDateSelect = (
 		range: DateRange | undefined,
 		setFieldValue: (
@@ -47,11 +40,10 @@ const StepOne = ({ next }: { next: () => void }) => {
 			value: string,
 			shouldValidate?: boolean,
 		) => void,
-		validateField: (field: string) => void, // Validate field after selection
+		validateField: (field: string) => void,
 	) => {
 		setSelectedRange(range);
 
-		// If no dates are selected, reset the input and validation
 		if (!range?.from || !range?.to) {
 			setFieldValue('dates', '');
 			setFormData({ ...formData, dates: '' });
@@ -63,7 +55,6 @@ const StepOne = ({ next }: { next: () => void }) => {
 		}
 	};
 
-	// Handle clearing selected dates
 	const handleClearDates = (
 		setFieldValue: (
 			field: string,
@@ -83,12 +74,11 @@ const StepOne = ({ next }: { next: () => void }) => {
 			initialValues={initialValues}
 			validationSchema={validationSchema}
 			onSubmit={handleSubmit}
-			validateOnChange={false} // Validate only on submit
+			validateOnChange={false}
 			validateOnBlur={false}
 		>
 			{({ setFieldValue, errors, touched, validateField }) => (
 				<Form>
-					{/* Destination Input */}
 					<div className="mb-4">
 						<label
 							htmlFor="destination"
@@ -118,7 +108,6 @@ const StepOne = ({ next }: { next: () => void }) => {
 						)}
 					</div>
 
-					{/* Departure City Input */}
 					<div className="mb-4">
 						<label
 							htmlFor="departureCity"
@@ -148,7 +137,6 @@ const StepOne = ({ next }: { next: () => void }) => {
 						)}
 					</div>
 
-					{/* Date Selection */}
 					<div className="mb-4 relative">
 						<label htmlFor="dates" className="block text-black font-bold mb-1">
 							Dates
@@ -171,7 +159,7 @@ const StepOne = ({ next }: { next: () => void }) => {
 								className={`border border-gray-300 p-2 rounded w-full pl-10 cursor-pointer ${
 									touched.dates && errors.dates ? 'border-red-500' : ''
 								}`}
-								onClick={() => setShowCalendar(!showCalendar)} // Toggle to show/hide calendar
+								onClick={() => setShowCalendar(!showCalendar)} // Toggle calendar
 								readOnly
 							/>
 						</div>
@@ -179,22 +167,24 @@ const StepOne = ({ next }: { next: () => void }) => {
 							<div className="text-red-500 text-sm">{errors.dates}</div>
 						)}
 
-						{/* DatePicker Component */}
+						{/* DatePicker */}
 						{showCalendar && (
-							<DatePicker
-								selectedRange={selectedRange}
-								onDateSelect={range =>
-									handleDateSelect(range, setFieldValue, validateField)
-								}
-								onClearDates={() =>
-									handleClearDates(setFieldValue, validateField)
-								}
-							/>
+							<div className="mb-4">
+								<DatePicker
+									selectedRange={selectedRange}
+									onDateSelect={range =>
+										handleDateSelect(range, setFieldValue, validateField)
+									}
+									onClearDates={() =>
+										handleClearDates(setFieldValue, validateField)
+									}
+								/>
+							</div>
 						)}
 					</div>
 
-					{/* Continue Button */}
-					<div className={`mt-${showCalendar ? '[24.5rem]' : '6'}`}>
+					{/* Button Wrapper */}
+					<div className={`mt-6 ${showCalendar ? 'mt-[24rem]' : 'mt-6'}`}>
 						<button
 							type="submit"
 							className="bg-green text-white py-2 px-4 rounded w-full"
