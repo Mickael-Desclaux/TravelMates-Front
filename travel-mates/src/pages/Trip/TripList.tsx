@@ -3,6 +3,7 @@ import TripCardContainer from '../../components/TripCardContainer/TripCardContai
 import { Trip } from '../../interfaces/TripProps/TripProps';
 import { Typography } from '@material-tailwind/react';
 import { getFakeTrips } from '../../api/Trips';
+import TripSearch from '../../components/TripSearch/TripSearch';
 
 /**
  * TripListe Component
@@ -38,32 +39,37 @@ const TripListe = () => {
 	if (loading) return <div>Loading trips...</div>;
 
 	return (
-		<section className="container mx-auto p-4">
-			{/* Page title */}
-			<Typography variant="h4" className="mb-8">
-				Trip List
-			</Typography>
+		<>
+			<header>
+				<TripSearch/>
+			</header>
+			<section className="container mx-auto p-4">
+				{/* Page title */}
+				<Typography variant="h4" className="mb-8 font-title">
+					Trip List
+				</Typography>
 
-			{/* Grid layout to display the trips */}
-			<div className="grid gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-				{/* Map over trips and render a TripCardContainer for each */}
-				{trips.map(trip => (
-					<TripCardContainer
-						key={trip.id} // Use trip id as a unique key
-						id={trip.id} // Pass trip id to the card component
-						title={trip.title} // Pass trip title
-						destination={trip.destination} // Pass destination
-						dateFrom={trip.dateFrom} // Pass start date
-						dateTo={trip.dateTo} // Pass end date
-						description={trip.description} // Pass trip description
-						budgetMin={trip.budgetMin} // Pass minimum budget
-						budgetMax={trip.budgetMax} // Pass maximum budget
-						media={trip.media} // Pass media (image) URL
-						activities={trip.activities} // Pass activities related to the trip
-					/>
-				))}
-			</div>
-		</section>
+				{/* Grid layout to display the trips */}
+				<div className="grid gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+					{/* Map over trips and render a TripCardContainer for each */}
+					{trips.map(trip => (
+						<TripCardContainer
+							key={trip.id} // Use trip id as a unique key
+							id={trip.id} // Pass trip id to the card component
+							title={trip.title} // Pass trip title
+							destination={trip.destination} // Pass destination
+							dateFrom={trip.dateFrom} // Pass start date
+							dateTo={trip.dateTo} // Pass end date
+							description={trip.description} // Pass trip description
+							budgetMin={trip.budgetMin} // Pass minimum budget
+							budgetMax={trip.budgetMax} // Pass maximum budget
+							media={trip.media} // Pass media (image) URL
+							activities={trip.activities} // Pass activities related to the trip
+						/>
+					))}
+				</div>
+			</section>
+		</>
 	);
 };
 
