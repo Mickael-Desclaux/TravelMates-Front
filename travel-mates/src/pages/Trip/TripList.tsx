@@ -16,6 +16,9 @@ const TripListe = () => {
 	// State to hold the list of trips
 	const [trips, setTrips] = useState<Trip[]>([]);
 
+	// State to display filtered trips
+	const [filteredTrips, setFilteredTrips] = useState<Trip[]>(trips);
+
 	// Loading state to manage loading status
 	const [loading, setLoading] = useState(true);
 
@@ -24,6 +27,7 @@ const TripListe = () => {
 		const fetchTrips = async () => {
 			try {
 				const tripsData = await getFakeTrips(); // Fetch trips from the mock API
+				setFilteredTrips(tripsData);
 				setTrips(tripsData); // Set the trips state with fetched data
 			} catch (error) {
 				console.error('Error fetching trips:', error); // Log any errors during fetch
@@ -35,13 +39,20 @@ const TripListe = () => {
 		fetchTrips();
 	}, []); // Empty dependency array ensures this runs only once when the component mounts
 
+	const handleFilter = (destination: string) => {
+        const filtered = trips.filter(trip =>
+            trip.destination.toLowerCase().includes(destination.toLowerCase())
+        );
+        setFilteredTrips(filtered);
+    };
+
 	// Display a loading message while fetching data
 	if (loading) return <div>Loading trips...</div>;
 
 	return (
 		<>
 			<header>
-				<TripSearch/>
+				<TripSearch onFilter={handleFilter}/>
 			</header>
 			<section className="container mx-auto p-4">
 				{/* Page title */}
@@ -52,7 +63,7 @@ const TripListe = () => {
 				{/* Grid layout to display the trips */}
 				<div className="grid gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
 					{/* Map over trips and render a TripCardContainer for each */}
-					{trips.map(trip => (
+					{filteredTrips.map(trip => (
 						<TripCardContainer
 							key={trip.id} // Use trip id as a unique key
 							id={trip.id} // Pass trip id to the card component
