@@ -7,6 +7,7 @@ import { useState } from "react";
 import StepOne from "../../components/SignUpMultiStepForm/SignUpStepOne";
 import StepTwo from "../../components/SignUpMultiStepForm/SignUpStepTwo";
 import StepThree from "../../components/SignUpMultiStepForm/SignUpStepThree";
+import SignUpStepFour from "../../components/SignUpMultiStepForm/SignUpStepFour";
 
 export default function SignUpMultiStepForm() {
   // Step of the form
@@ -46,7 +47,9 @@ export default function SignUpMultiStepForm() {
           </div>
 
           {/* Progress bar */}
-          <ProgressBar currentStep={step} totalSteps={3} />
+          { step < 4 && (
+            <ProgressBar currentStep={step} totalSteps={3} />
+          )}
 
           {/* Sign up form */}
           <Formik
@@ -68,9 +71,6 @@ export default function SignUpMultiStepForm() {
               onSubmit={(values, { setSubmitting }) => {
                 try {
                   console.log('Form values at step:', step, values);
-                  if (step === 2) {
-                    alert("All fields validated successfully for step 2.");
-                  }
                   handleNext();
                 } catch (error) {
                   console.error("Error during submission", error);
@@ -80,24 +80,27 @@ export default function SignUpMultiStepForm() {
               }}
           >
 
-            {({ isSubmitting }) => (
+            {({ values, isSubmitting }) => (
               <Form>
                 {step === 1 && <StepOne />}
                 {step === 2 && <StepTwo />}
                 {step === 3 && <StepThree />}
+                {step === 4 && <SignUpStepFour email={values.email} />}
 
                 <div className="flex justify-between text-left gap-x-8 mt-2 mb-8">
                   {/* Button previous to go back to the previous step */}
-                  {step > 1 && (
+                  {step > 1 && step < 4 && (
                     <Button type="button" onClick={handleBack} className="bg-gray-900 mt-6 w-full" >
                       Précédent
                     </Button>
                   )}
 
                   {/* Button next to go to the next step */}
-                  <Button type="submit" disabled={isSubmitting} className="bg-green mt-6 w-full" >
-                    {step === 3 ? "Valider" : "Continuer"}
-                  </Button>
+                  {step < 4  && (
+                    <Button type="submit" disabled={isSubmitting} className="bg-green mt-6 w-full" >
+                      {step === 3 ? "Valider" : "Continuer"}
+                    </Button>
+                  )}
                 </div>
 
                 {/* Link for the sign in page for an user who have already an account */}
