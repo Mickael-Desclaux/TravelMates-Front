@@ -46,7 +46,7 @@ export default function SignUpMultiStepForm() {
           </div>
 
           {/* Progress bar */}
-          <ProgressBar />
+          <ProgressBar currentStep={step} totalSteps={3} />
 
           {/* Sign up form */}
           <Formik
@@ -86,7 +86,7 @@ export default function SignUpMultiStepForm() {
                 {step === 2 && <StepTwo />}
                 {step === 3 && <StepThree />}
 
-                <div className="flex justify-between text-left mt-2">
+                <div className="flex justify-between text-left gap-x-8 mt-2 mb-8">
                   {/* Button previous to go back to the previous step */}
                   {step > 1 && (
                     <Button type="button" onClick={handleBack} className="bg-gray-900 mt-6 w-full" >
@@ -101,12 +101,14 @@ export default function SignUpMultiStepForm() {
                 </div>
 
                 {/* Link for the sign in page for an user who have already an account */}
-                <Typography color="black" className="text-sm !mt-4 mb-8 text-center font-normal">
-                  Vous avez déjà un compte ?{" "}
-                  <a href="/SignIn" className="font-medium text-black-900 text-sm underline">
-                    Me connecter
-                  </a>
-                </Typography>
+                {step === 1 && (
+                  <Typography color="black" className="text-sm !mt-4 mb-8 text-center font-normal">
+                    Vous avez déjà un compte ?{" "}
+                    <a href="/SignIn" className="font-medium text-black-900 text-sm underline">
+                      Me connecter
+                    </a>
+                  </Typography>
+                )}
               </Form>
             )}
           </Formik>
