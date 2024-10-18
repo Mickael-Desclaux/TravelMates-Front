@@ -39,12 +39,26 @@ const TripListe = () => {
 		fetchTrips();
 	}, []); // Empty dependency array ensures this runs only once when the component mounts
 
-	const handleFilter = (destination: string) => {
-        const filtered = trips.filter(trip =>
-            trip.destination.toLowerCase().includes(destination.toLowerCase())
-        );
-        setFilteredTrips(filtered);
-    };
+	const handleFilter = (destination: string, dates: string) => {
+		let startDate: Date | null = null;
+		let endDate: Date | null = null;
+
+		if (dates) {
+			const tripDates = dates.split(" - ");
+			const startDateParts = tripDates[0].split("/");
+			const endDateParts = tripDates[1].split("/");
+
+			startDate = new Date(+startDateParts[2], +startDateParts[1] - 1, +startDateParts[0]);
+			endDate = new Date(+endDateParts[2], +endDateParts[1] - 1, +endDateParts[0]);
+		}
+
+		const filtered = trips.filter(trip =>
+			(destination ? trip.destination.toLowerCase().includes(destination.toLowerCase()) : true) &&
+			(startDate ? trip.dateFrom.getTime() >= startDate.getTime() : true) &&
+			(endDate ? trip.dateTo.getTime() <= endDate.getTime() : true)
+		);
+		setFilteredTrips(filtered);
+	};
 
 	// Display a loading message while fetching data
 	if (loading) return <div>Loading trips...</div>;
