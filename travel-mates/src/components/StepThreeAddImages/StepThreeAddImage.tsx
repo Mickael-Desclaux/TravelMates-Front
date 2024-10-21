@@ -20,12 +20,11 @@ interface ImageType {
 }
 
 export default function AddImage() {
-    const query: string = "Paris city";
-    const orientation: string = "landscape";
+    const query: string = "Paris";
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ["images", query, orientation],
-        queryFn: () => getDestinationImages(query, orientation),
+        queryKey: ["images", query],
+        queryFn: () => getDestinationImages(query),
         enabled: true,
     });
 
