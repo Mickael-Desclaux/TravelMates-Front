@@ -43,7 +43,7 @@ export default function TripSearch({ onFilter }: TripSearchProps) {
     };
 
     return (
-        <form className="flex justify-center items-center mb-4 mt-8 gap-1 ms-4" onSubmit={formik.handleSubmit}>
+        <form className="flex justify-center items-center mt-8 gap-3" onSubmit={formik.handleSubmit}>
             <div className="flex-1">
                 <Input
                     label="Destination"
@@ -51,8 +51,8 @@ export default function TripSearch({ onFilter }: TripSearchProps) {
                     value={formik.values.destination}
                     onChange={handleInputChange}
                     size="md"
-                    className="block w-full"
-                    containerProps={{ className: "min-w-[180px]" }}
+                    className="block w-full w-[150px]"
+                    containerProps={{ className: "min-w-[150px]" }}
                     crossOrigin={undefined}
                 />
                 {filteredSuggestions.length > 0 && (
@@ -75,7 +75,7 @@ export default function TripSearch({ onFilter }: TripSearchProps) {
                     name="dates"
                     value={formik.values.dates}
                     onChange={formik.handleChange}
-                    containerProps={{ className: "min-w-[128px]" }}
+                    containerProps={{ className: "w-[100px] min-w-[100px]" }}
                     size="md"
                     className="block w-full"
                     crossOrigin={undefined}
