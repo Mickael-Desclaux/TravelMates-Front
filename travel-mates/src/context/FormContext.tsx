@@ -2,7 +2,7 @@ import React, { createContext, useState } from 'react';
 
 interface FormData {
 	destination: string;
-	departureCity: string;
+	// departureCity: string;
 	dates: string;
 }
 
@@ -18,7 +18,7 @@ export const FormProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
 	const [formData, setFormData] = useState<FormData>({
 		destination: '',
-		departureCity: '',
+		// departureCity: '',
 		dates: '',
 	});
 

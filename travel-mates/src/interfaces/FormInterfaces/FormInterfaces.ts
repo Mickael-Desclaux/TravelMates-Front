@@ -2,7 +2,7 @@
 
 export interface FormValues {
 	destination: string;
-	departureCity: string;
+	// departureCity: string;
 	dates: string;
 }
 

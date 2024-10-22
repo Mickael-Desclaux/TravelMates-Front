@@ -21,7 +21,7 @@ const StepOne = ({ next }: { next: () => void }) => {
 
 	const initialValues: FormValues = {
 		destination: '',
-		departureCity: '',
+		// departureCity: '',
 		dates: '',
 	};
 
