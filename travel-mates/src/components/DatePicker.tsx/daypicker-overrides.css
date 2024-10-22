@@ -1,0 +1,76 @@
+/* Center the month label and adjust the navigation arrows */
+.rdp-caption,
+.rdp-month_caption,
+.rdp-caption_label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #041010;
+  /* Color for month */
+  text-align: center;
+  margin: 0 auto;
+}
+
+.rdp-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.rdp-nav_button_previous {
+  position: absolute;
+  left: 0;
+}
+
+.rdp-nav_button_next {
+  position: absolute;
+  right: 0;
+}
+
+/* Chevron (arrow) styling */
+.rdp-chevron {
+  fill: #185C22 !important;
+  /* Green chevrons */
+}
+
+/* Selected days and date range styling */
+.rdp-range_start .rdp-day_button,
+.rdp-range_end .rdp-day_button {
+  background-color: #041010 !important;
+  /* Dark background for range start/end */
+  color: var(--rdp-range_start-color);
+}
+
+.rdp-range_middle {
+  background-color: #0410101e !important;
+  /* Light gray for middle range */
+  color: black !important;
+}
+
+/* Gradient effects for range start/end */
+.rdp-range_start {
+  background: linear-gradient(to right, transparent 50%, #0410101e 50%) !important;
+}
+
+.rdp-range_end {
+  background: linear-gradient(to left, transparent 50%, #0410101e 50%) !important;
+}
+
+/* Reset range background when start and end are identical */
+.rdp-range_start.rdp-range_end {
+  background: revert !important;
+}
+
+/* Highlight for today's date */
+.rdp-today:not(.rdp-outside) {
+  color: #185C22 !important;
+  /* Green for today's date */
+}
+
+/* Styling for selected day borders */
+.rdp-selected .rdp-day_button {
+  border: #041010 !important;
+  /* Dark border for selected days */
+}
