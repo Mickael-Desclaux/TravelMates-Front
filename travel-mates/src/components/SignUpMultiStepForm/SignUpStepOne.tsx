@@ -5,6 +5,9 @@ export default function SignUpStepOne() {
     return (
         <>
             <div className="mx-auto mt-8 max-w-[24rem] text-left">
+                <Typography variant="h1" className="mb-4 text-center text-2xl font-title">
+                    Créer un compte
+                </Typography>
                 <div className="mb-6">
                     <label htmlFor="email">
                         <Typography
