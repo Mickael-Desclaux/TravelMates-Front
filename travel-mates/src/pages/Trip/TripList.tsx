@@ -3,6 +3,7 @@ import TripCardContainer from '../../components/TripCardContainer/TripCardContai
 import { Trip } from '../../interfaces/TripProps/TripProps';
 import { Typography } from '@material-tailwind/react';
 import { getFakeTrips } from '../../api/Trips';
+import TripSearch from '../../components/TripSearch/TripSearch';
 
 /**
  * TripListe Component
@@ -15,6 +16,9 @@ const TripListe = () => {
 	// State to hold the list of trips
 	const [trips, setTrips] = useState<Trip[]>([]);
 
+	// State to display filtered trips
+	const [filteredTrips, setFilteredTrips] = useState<Trip[]>(trips);
+
 	// Loading state to manage loading status
 	const [loading, setLoading] = useState(true);
 
@@ -23,6 +27,7 @@ const TripListe = () => {
 		const fetchTrips = async () => {
 			try {
 				const tripsData = await getFakeTrips(); // Fetch trips from the mock API
+				setFilteredTrips(tripsData);
 				setTrips(tripsData); // Set the trips state with fetched data
 			} catch (error) {
 				console.error('Error fetching trips:', error); // Log any errors during fetch
@@ -34,36 +39,48 @@ const TripListe = () => {
 		fetchTrips();
 	}, []); // Empty dependency array ensures this runs only once when the component mounts
 
+	const handleFilter = (destination: string) => {
+        const filtered = trips.filter(trip =>
+            trip.destination.toLowerCase().includes(destination.toLowerCase())
+        );
+        setFilteredTrips(filtered);
+    };
+
 	// Display a loading message while fetching data
 	if (loading) return <div>Loading trips...</div>;
 
 	return (
-		<section className="container mx-auto p-4">
-			{/* Page title */}
-			<Typography variant="h4" className="mb-8">
-				Trip List
-			</Typography>
+		<>
+			<header>
+				<TripSearch onFilter={handleFilter}/>
+			</header>
+			<section className="container mx-auto p-4">
+				{/* Page title */}
+				<Typography variant="h4" className="mb-8 font-title">
+					Trip List
+				</Typography>
 
-			{/* Grid layout to display the trips */}
-			<div className="grid gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-				{/* Map over trips and render a TripCardContainer for each */}
-				{trips.map(trip => (
-					<TripCardContainer
-						key={trip.id} // Use trip id as a unique key
-						id={trip.id} // Pass trip id to the card component
-						title={trip.title} // Pass trip title
-						destination={trip.destination} // Pass destination
-						dateFrom={trip.dateFrom} // Pass start date
-						dateTo={trip.dateTo} // Pass end date
-						description={trip.description} // Pass trip description
-						budgetMin={trip.budgetMin} // Pass minimum budget
-						budgetMax={trip.budgetMax} // Pass maximum budget
-						media={trip.media} // Pass media (image) URL
-						activities={trip.activities} // Pass activities related to the trip
-					/>
-				))}
-			</div>
-		</section>
+				{/* Grid layout to display the trips */}
+				<div className="grid gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+					{/* Map over trips and render a TripCardContainer for each */}
+					{filteredTrips.map(trip => (
+						<TripCardContainer
+							key={trip.id} // Use trip id as a unique key
+							id={trip.id} // Pass trip id to the card component
+							title={trip.title} // Pass trip title
+							destination={trip.destination} // Pass destination
+							dateFrom={trip.dateFrom} // Pass start date
+							dateTo={trip.dateTo} // Pass end date
+							description={trip.description} // Pass trip description
+							budgetMin={trip.budgetMin} // Pass minimum budget
+							budgetMax={trip.budgetMax} // Pass maximum budget
+							media={trip.media} // Pass media (image) URL
+							activities={trip.activities} // Pass activities related to the trip
+						/>
+					))}
+				</div>
+			</section>
+		</>
 	);
 };
 

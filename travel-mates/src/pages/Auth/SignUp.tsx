@@ -1,162 +1,119 @@
 import { Typography, Button } from "@material-tailwind/react";
-import { ErrorMessage, Field, Formik } from "formik";
+import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import ProgressBar from "../../components/ProgressBar/ProgressBar";
-//import travelMatesLogo from "../../assets/Logo/travelmates.png";
+import travelMatesLogo from "../../assets/Logo/travelmates.png";
+import { useState } from "react";
+import StepOne from "../../components/SignUpMultiStepForm/SignUpStepOne";
+import StepTwo from "../../components/SignUpMultiStepForm/SignUpStepTwo";
+import StepThree from "../../components/SignUpMultiStepForm/SignUpStepThree";
 
-export default function SignUp() {
-  const SignupSchema = Yup.object().shape({
-    email: Yup.string()
-      .email("Email invalide")
-      .required("L'email est requis"),
-    password: Yup.string()
-      .min(8, "Le mot de passe doit contenir au moins 8 caractères")
-      .required("Le mot de passe est requis"),
-    confirmedPassword: Yup.string()
-      .oneOf(
-        [Yup.ref("password")],
-        "Les mots de passe doivent correspondre"
-      )
-      .required("La confirmation du mot de passe est requise"),
-  });
+export default function SignUpMultiStepForm() {
+  // Step of the form
+  const [step, setStep] = useState(1);
+
+  // Validation of the form
+  const validationSchemas = [
+    Yup.object().shape({
+      email: Yup.string().email("Email invalide").required("L'email est requis"),
+      password: Yup.string().min(8, "Le mot de passe doit contenir au moins 8 caractères").required("Le mot de passe est requis"),
+      confirmedPassword: Yup.string().oneOf([Yup.ref("password")], "Les mots de passe doivent correspondre").required("La confirmation du mot de passe est requise")
+    }),
+    Yup.object().shape({
+      firstName: Yup.string().required("Le prénom est requis"),
+      lastName: Yup.string().required("Le nom est requis"),
+      birthDate: Yup.date().required("La date de naissance est requise"),
+      gender: Yup.string().required("Le genre est requis"),
+      address: Yup.string().required("L'adresse est requise"),
+      profilePicture: Yup.mixed().required("La photo de profil est requise")
+    }),
+    Yup.object().shape({
+      activities: Yup.array().min(3, "Veuillez choisir au moins trois activités ").required("Veuillez choisir au moins trois activités")
+    })
+  ];
+
+  // Display the next or previous step
+  const handleNext = () => setStep(step + 1);
+  const handleBack = () => setStep(step - 1);
 
   return (
     <>
       <section className="grid text-center h-screen items-center p-8">
         <div>
-          {/* TravelMates logo 
+          {/* TravelMates logo */} 
           <div className="flex justify-center mb-8">
-            <img
-              src={travelMatesLogo}
-              alt="Logo TravelMates"
-              className="w-40"
-            />
-          </div> */}
-
-          <Typography variant="h3" color="blue-gray" className="mb-4">
-            Créer un compte
-          </Typography>
+            <img src={travelMatesLogo} alt="Logo TravelMates" className="w-40" />
+          </div>
 
           {/* Progress bar */}
-          <ProgressBar />
+          <ProgressBar currentStep={step} totalSteps={3} />
 
           {/* Sign up form */}
           <Formik
-            initialValues={{ email: "", password: "", confirmedPassword: "" }}
-            validationSchema={SignupSchema}
-            validate={(values) => {
-              const errors = {};
+            initialValues={{
+              email: "",
+              password: "",
+              confirmedPassword: "",
+              firstName: "",
+              lastName: "",
+              birthDate: "",
+              gender: "",
+              address: "",
+              profilePicture: null,
+              activities: []
+            }}
 
-              // Verified if all fields are empty
-              if (!values.email && !values.password && !values.confirmedPassword) {
-                errors.general = "Tous les champs sont requis";
-              }
-              return errors;
-            }}
-            onSubmit={(values, { setSubmitting }) => {
-              setTimeout(() => {
-                alert(JSON.stringify(values, null, 2));
-                setSubmitting(false);
-              }, 400);
-            }}
+            validationSchema={validationSchemas[step - 1]}
+
+              onSubmit={(values, { setSubmitting }) => {
+                try {
+                  console.log('Form values at step:', step, values);
+                  if (step === 2) {
+                    alert("All fields validated successfully for step 2.");
+                  }
+                  handleNext();
+                } catch (error) {
+                  console.error("Error during submission", error);
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
           >
-            {({ errors, isSubmitting }) => (
-              <form
-                action="#"
-                className="mx-auto mt-16 max-w-[24rem] text-left"
-              >
-                {/* Display of general errors */}
-                {errors.general && (
-                  <div className="text-red-500 mb-4">{errors.general}</div>
-                )}
 
-                <div className="mb-6">
-                  <label htmlFor="email">
-                    <Typography
-                      variant="h6"
-                      className="mb-2 block font-medium text-gray-900"
-                    >
-                      Email
-                    </Typography>
-                  </label>
-                  <Field
-                    id="email"
-                    color="gray"
-                    type="email"
-                    name="email"
-                    placeholder="Votre email"
-                    className="w-full mb-2 bg-transparent placeholder:text-slate-400 text-gray-900 text-sm border border-gray-400 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300"
-                  />
-                  <ErrorMessage
-                    name="email"
-                    component="div"
-                    className="text-red-500"
-                  />
+            {({ isSubmitting }) => (
+              <Form>
+                {step === 1 && <StepOne />}
+                {step === 2 && <StepTwo />}
+                {step === 3 && <StepThree />}
+
+                <div className="flex justify-between text-left gap-x-8 mt-2 mb-8">
+                  {/* Button previous to go back to the previous step */}
+                  {step > 1 && (
+                    <Button type="button" onClick={handleBack} className="bg-gray-900 mt-6 w-full" >
+                      Précédent
+                    </Button>
+                  )}
+
+                  {/* Button next to go to the next step */}
+                  <Button type="submit" disabled={isSubmitting} className="bg-green mt-6 w-full" >
+                    {step === 3 ? "Valider" : "Continuer"}
+                  </Button>
                 </div>
-                <div className="mb-6">
-                  <label htmlFor="password">
-                    <Typography
-                      variant="h6"
-                      className="mb-2 block font-medium text-gray-900"
-                    >
-                      Mot de passe
-                    </Typography>
-                  </label>
-                  <Field
-                    id="password"
-                    type="password"
-                    name="password"
-                    placeholder="Choisir un mot de passe"
-                    className="w-full mb-2 bg-transparent placeholder:text-slate-400 text-gray-900 text-sm border border-gray-400 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300"
-                  />
-                  <ErrorMessage
-                    name="password"
-                    component="div"
-                    className="text-red-500"
-                  />
-                </div>
-                <div className="mb-6">
-                  <label htmlFor="password">
-                    <Typography
-                      variant="h6"
-                      className="mb-2 block font-medium text-gray-900"
-                    >
-                      Confirmer votre mot de passe
-                    </Typography>
-                  </label>
-                  <Field
-                    id="confirmedPassword"
-                    type="password"
-                    name="confirmedPassword"
-                    placeholder="Confirmer votre mot de passe"
-                    className="w-full mb-2 bg-transparent placeholder:text-slate-400 text-gray-900 text-sm border border-gray-400 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300"
-                  />
-                  <ErrorMessage
-                    name="confirmedPassword"
-                    component="div"
-                    className="text-red-500"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  size="lg"
-                  className="bg-green mt-6"
-                  fullWidth
-                >
-                  Continuer
-                </Button>
-                <Typography color="gray" className="text-sm !mt-4 text-center font-normal">
-                  Vous avez déjà un compte ?{" "}
-                  <a href="/SignIn" className="font-medium text-gray-900 underline">
-                    Me connecter
-                  </a>
-                </Typography>
-              </form>
+
+                {/* Link for the sign in page for an user who have already an account */}
+                {step === 1 && (
+                  <Typography color="black" className="text-sm !mt-4 mb-8 text-center font-normal">
+                    Vous avez déjà un compte ?{" "}
+                    <a href="/SignIn" className="font-medium text-black-900 text-sm underline">
+                      Me connecter
+                    </a>
+                  </Typography>
+                )}
+              </Form>
             )}
           </Formik>
         </div>
       </section>
     </>
   );
-}
+};
