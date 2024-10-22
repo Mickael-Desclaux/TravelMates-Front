@@ -1,72 +1,75 @@
 import { useContext, useState } from 'react';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import { FormContext } from '../../context/FormContext';
-import { DateRange } from 'react-day-picker';
-import DatePicker from '../DatePicker.tsx/DatePicker';
+import DatePickerComponent from '../DatePicker.tsx/DatePicker';
 
 import SearchIcon from '../../assets/Icons/search.svg';
 import CalendarIcon from '../../assets/Icons/datepicker.svg';
-import PlaneIcon from '../../assets/Icons/plane.svg';
+// import PlaneIcon from '../../assets/Icons/plane.svg'; // Commentaire sur l'importation de PlaneIcon
+
+import {
+	FormValues,
+	// Suggestion,
+} from '../../interfaces/FormInterfaces/FormInterfaces';
+import { FormContext } from '../../context/FormContext';
+// import { fetchSuggestions } from '../../api/Mapbox';
 
 const StepOne = ({ next }: { next: () => void }) => {
-	const { formData, setFormData } = useContext(FormContext)!;
-	const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(
-		undefined,
-	);
 	const [showCalendar, setShowCalendar] = useState(false);
+	const { formData, setFormData } = useContext(FormContext)!;
+	// const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
 
-	const initialValues = {
-		destination: formData.destination || '',
-		departureCity: formData.departureCity || '',
-		dates: formData.dates || '',
+	const initialValues: FormValues = {
+		destination: '',
+		departureCity: '',
+		dates: '',
 	};
 
 	const validationSchema = Yup.object({
 		destination: Yup.string().required('La destination est obligatoire'),
-		departureCity: Yup.string().required('La ville de départ est obligatoire'),
+		// departureCity: Yup.string().required('La ville de départ est obligatoire'), // Commentaire sur la validation de departureCity
 		dates: Yup.string().required('Les dates de voyage sont obligatoires'),
 	});
 
-	const handleSubmit = (values: typeof initialValues) => {
+	const handleSubmit = (values: FormValues) => {
 		setFormData(values);
+		console.log(values);
 		next();
 	};
 
-	const handleDateSelect = (
-		range: DateRange | undefined,
-		setFieldValue: (
-			field: string,
-			value: string,
-			shouldValidate?: boolean,
-		) => void,
-		validateField: (field: string) => void,
+	const handleClearDates = (
+		setFieldValue: FormikHelpers<FormValues>['setFieldValue'],
 	) => {
-		setSelectedRange(range);
-
-		if (!range?.from || !range?.to) {
-			setFieldValue('dates', '');
-			setFormData({ ...formData, dates: '' });
-			validateField('dates');
-		} else {
-			const formattedDates = `${range.from.toLocaleDateString()} - ${range.to.toLocaleDateString()}`;
-			setFieldValue('dates', formattedDates);
-			setFormData({ ...formData, dates: formattedDates });
-		}
+		setFieldValue('dates', ''); // Effacer les dates dans Formik
+		setFormData({ ...formData, dates: '' });
 	};
 
-	const handleClearDates = (
-		setFieldValue: (
-			field: string,
-			value: string,
-			shouldValidate?: boolean,
-		) => void,
-		validateField: (field: string) => void,
+	// const fetchSuggestionsFromAPI = async (query: string) => {
+	// 	try {
+	// 		const suggestions = await fetchSuggestions(query.toUpperCase());
+	// 		const formattedSuggestions = suggestions.map(
+	// 			(suggestion: Suggestion) => ({
+	// 				name: suggestion.name,
+	// 				context: suggestion.context,
+	// 				country: suggestion.context.country,
+	// 				country_name: suggestion.context.country.name,
+	// 			}),
+	// 		);
+	// 		setSuggestions(formattedSuggestions);
+	// 	} catch (error) {
+	// 		console.error('Error fetching suggestions from Mapbox API:', error);
+	// 	}
+	// };
+
+	const handleDestinationChange = (
+		value: string,
+		setFieldValue: FormikHelpers<FormValues>['setFieldValue'],
 	) => {
-		setSelectedRange(undefined);
-		setFieldValue('dates', '');
-		setFormData({ ...formData, dates: '' });
-		validateField('dates');
+		// Appel de la fonction Mapbox pour les suggestions
+		// fetchSuggestionsFromAPI(value);
+
+		// Met à jour la valeur dans Formik
+		setFieldValue('destination', value);
 	};
 
 	return (
@@ -77,7 +80,7 @@ const StepOne = ({ next }: { next: () => void }) => {
 			validateOnChange={false}
 			validateOnBlur={false}
 		>
-			{({ setFieldValue, errors, touched, validateField }) => (
+			{({ setFieldValue, errors, touched }) => (
 				<Form>
 					<div className="mb-4">
 						<label
@@ -101,14 +104,40 @@ const StepOne = ({ next }: { next: () => void }) => {
 										? 'border-red-500'
 										: ''
 								}`}
+								onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+									handleDestinationChange(e.target.value, setFieldValue)
+								}
 							/>
+							{/* {suggestions.length > 0 && (
+								<ul className="absolute z-10 bg-white border border-gray-200 mt-1 w-full max-h-40 overflow-y-auto">
+									{suggestions.map((suggestion: Suggestion, index: number) => (
+										<li
+											key={index}
+											className="p-2 hover:bg-gray-200 cursor-pointer"
+											onClick={() => {
+												setFieldValue(
+													'destination',
+													suggestion.name +
+														', ' +
+														suggestion.context.country.name,
+												);
+												setSuggestions([]);
+											}}
+										>
+											{suggestion.name ? suggestion.name : 'Unknown'},{' '}
+											{suggestion.context && suggestion.context.country
+												? suggestion.context.country.name
+												: 'Unknown'}
+										</li>
+									))}
+								</ul>
+							)} */}
 						</div>
 						{touched.destination && errors.destination && (
 							<div className="text-red-500 text-sm">{errors.destination}</div>
 						)}
 					</div>
-
-					<div className="mb-4">
+					{/* <div className="mb-4">
 						<label
 							htmlFor="departureCity"
 							className="block text-black font-bold mb-1"
@@ -135,8 +164,8 @@ const StepOne = ({ next }: { next: () => void }) => {
 						{touched.departureCity && errors.departureCity && (
 							<div className="text-red-500 text-sm">{errors.departureCity}</div>
 						)}
-					</div>
-
+					</div> */}{' '}
+					{/* Commentaire sur la section Ville de départ */}
 					<div className="mb-4 relative">
 						<label htmlFor="dates" className="block text-black font-bold mb-1">
 							Dates
@@ -151,15 +180,10 @@ const StepOne = ({ next }: { next: () => void }) => {
 								id="dates"
 								name="dates"
 								placeholder="Ajouter des dates"
-								value={
-									selectedRange?.from && selectedRange?.to
-										? `${selectedRange.from.toLocaleDateString()} - ${selectedRange.to.toLocaleDateString()}`
-										: ''
-								}
 								className={`border border-gray-300 p-2 rounded w-full pl-10 cursor-pointer ${
 									touched.dates && errors.dates ? 'border-red-500' : ''
 								}`}
-								onClick={() => setShowCalendar(!showCalendar)} // Toggle calendar
+								onClick={() => setShowCalendar(!showCalendar)}
 								readOnly
 							/>
 						</div>
@@ -167,31 +191,21 @@ const StepOne = ({ next }: { next: () => void }) => {
 							<div className="text-red-500 text-sm">{errors.dates}</div>
 						)}
 
-						{/* DatePicker */}
 						{showCalendar && (
 							<div className="mb-4">
-								<DatePicker
-									selectedRange={selectedRange}
-									onDateSelect={range =>
-										handleDateSelect(range, setFieldValue, validateField)
-									}
-									onClearDates={() =>
-										handleClearDates(setFieldValue, validateField)
-									}
+								<DatePickerComponent
+									onDateSelect={dates => setFieldValue('dates', dates)}
+									onClearDates={() => handleClearDates(setFieldValue)}
 								/>
 							</div>
 						)}
 					</div>
-
-					{/* Button Wrapper */}
-					<div className={`mt-6 ${showCalendar ? 'mt-[24rem]' : 'mt-6'}`}>
-						<button
-							type="submit"
-							className="bg-green text-white py-2 px-4 rounded w-full"
-						>
-							Continuer
-						</button>
-					</div>
+					<button
+						type="submit"
+						className="bg-green text-white py-2 px-4 rounded w-full"
+					>
+						Continuer
+					</button>
 				</Form>
 			)}
 		</Formik>
