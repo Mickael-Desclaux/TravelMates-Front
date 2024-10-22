@@ -10,8 +10,10 @@ import partyIcon from '../../assets/activity/party-and-bar.svg';
 import pinMarker from '../../assets/icons/pin-marker.svg';
 import { renderToString } from 'react-dom/server';
 import { Button, Typography } from '@material-tailwind/react';
+import { useNavigate } from 'react-router-dom';
 
 interface Pin {
+    id: number;
     title: string;
     activities: Activity[];
     latitude: number;
@@ -24,9 +26,10 @@ export default function Map() {
     // Fake data
     const data: Pin[] = [
         {
+            id: 1,
             title: 'Tour Eiffel',
             activities: [
-                { id: 1, type: 'Museum', icon: cultureIcon }, 
+                { id: 1, type: 'Museum', icon: cultureIcon },
                 { id: 2, type: 'Adventure', icon: adventureIcon },
                 { id: 3, type: 'Détente', icon: relaxationIcon },
                 { id: 5, type: 'Fête', icon: partyIcon },
@@ -37,6 +40,7 @@ export default function Map() {
             rating: 4
         },
         {
+            id: 2,
             title: 'Musée du Louvre',
             activities: [{ id: 1, type: 'Museum', icon: cultureIcon }, { id: 2, type: 'Adventure', icon: adventureIcon }],
             latitude: 48.8606,
@@ -44,6 +48,7 @@ export default function Map() {
             rating: 4
         },
         {
+            id: 3,
             title: 'Cathédrale Notre-Dame',
             activities: [{ id: 1, type: 'Museum', icon: cultureIcon }, { id: 2, type: 'Adventure', icon: adventureIcon }],
             latitude: 48.8529,
@@ -51,6 +56,7 @@ export default function Map() {
             rating: 4
         },
         {
+            id: 4,
             title: 'Arc de Triomphe',
             activities: [{ id: 1, type: 'Museum', icon: cultureIcon }, { id: 2, type: 'Adventure', icon: adventureIcon }],
             latitude: 48.8738,
@@ -58,6 +64,7 @@ export default function Map() {
             rating: 4
         },
         {
+            id: 5,
             title: 'Basilique du Sacré-Cœur',
             activities: [{ id: 1, type: 'Museum', icon: cultureIcon }, { id: 2, type: 'Adventure', icon: adventureIcon }],
             latitude: 48.8867,
@@ -66,21 +73,25 @@ export default function Map() {
         }
     ];
 
+    const navigate = useNavigate()
+
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_API_KEY;
 
     useEffect(() => {
+
         const map = new mapboxgl.Map({
-            container: 'map', // ID de la div
-            center: [2.023056, 46.615102], // Position initiale
-            zoom: 3.92, // Niveau de zoom initial
-            projection: 'equirectangular', // Projection carte
+            container: 'map', // root id for the map
+            center: [2.023056, 46.615102], // initial position
+            zoom: 3.92, // initial zoom
+            projection: 'equirectangular', // map style
         });
 
+        // Hide Mapbox POI (Points of interests)
         map.on('load', () => {
             map.setConfigProperty('basemap', 'showPointOfInterestLabels', false)
         })
 
-        // Ajoute des contrôles de navigation
+        // Navigation controls
         map.addControl(new mapboxgl.NavigationControl());
 
         const markers: mapboxgl.Marker[] = [];
@@ -88,41 +99,54 @@ export default function Map() {
         data.forEach(function (markerData) {
             const el = document.createElement('div');
             el.innerHTML = `<img src="${pinMarker}" width="36" height="72">`;
-
-            const popup = new mapboxgl.Popup()
-                .setHTML(renderToString(
-                    <div>
-                        <Typography variant='h2' className='text-lg mt-2 mb-4'>{markerData.title}</Typography>
-                        <div className='flex felx-row gap-2 mb-6'>
-                            {markerData.activities.map(activity => (
-                                <img
-                                    key={activity.id}
-                                    src={activity.icon}
-                                    alt={activity.type}
-                                    className="h-9 w-9"
-                                />
-                            ))}
-                        </div>
-                        <div className='flex justify-center'>
-                            <Button size='sm' className='bg-black'>Voir plus</Button>
-                        </div>
+        
+            // Popup triggered when pin is clicked
+            const popupContent = renderToString(
+                <div>
+                    <Typography variant='h2' className='text-lg mt-2 mb-4'>{markerData.title}</Typography>
+                    <div className='flex felx-row gap-2 mb-6'>
+                        {markerData.activities.map(activity => (
+                            <img
+                                key={activity.id}
+                                src={activity.icon}
+                                alt={activity.type}
+                                className="h-9 w-9"
+                            />
+                        ))}
                     </div>
-                ));
-
+                    <div className='flex justify-center'>
+                        <Button size='sm' className='bg-black' id={`btn-${markerData.id}`} type='button'>Voir plus</Button>
+                    </div>
+                </div>
+            );
+        
+            // Redirection to pin detail page
+            const popup = new mapboxgl.Popup()
+                .setHTML(popupContent)
+                .on('open', () => {
+                    const button = document.getElementById(`btn-${markerData.id}`);
+                    if (button) {
+                        button.addEventListener('click', () => {
+                            navigate(`/pin/${markerData.id}`);
+                        });
+                    }
+                });
+        
             const marker = new mapboxgl.Marker(el, { anchor: 'center' })
                 .setLngLat([markerData.longitude, markerData.latitude])
                 .setPopup(popup);
             markers.push(marker);
         })
 
-        map.on('zoomend', function() {
+        // Show/hide pins depending on zoom level
+        map.on('zoomend', function () {
 
             const zoom = map.getZoom();
-    
-            markers.forEach(function(marker) {
+
+            markers.forEach(function (marker) {
                 if (zoom >= 4) {
                     marker.addTo(map);
-                } 
+                }
                 else {
                     marker.remove();
                 }
