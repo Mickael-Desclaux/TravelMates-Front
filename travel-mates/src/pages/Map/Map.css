@@ -1,15 +1,3 @@
-.marker {
-    width: 24px;
-    height: 24px;
-    background-color: #185C22;
-    border-radius: 50%;
-    border: 2px solid white;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    /* Centrer le marqueur en X et Y */
-    transform: translate(-50%, -50%);
-}
-
 .mapboxgl-popup-close-button {
     margin-right: 5px;
     font-size: 20px;

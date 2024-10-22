@@ -23,61 +23,60 @@ interface Pin {
 
 export default function Map() {
 
-    // Fake data
-    const data: Pin[] = [
-        {
-            id: 1,
-            title: 'Tour Eiffel',
-            activities: [
-                { id: 1, type: 'Museum', icon: cultureIcon },
-                { id: 2, type: 'Adventure', icon: adventureIcon },
-                { id: 3, type: 'Détente', icon: relaxationIcon },
-                { id: 5, type: 'Fête', icon: partyIcon },
-                { id: 4, type: 'Sport', icon: sportIcon }],
-
-            latitude: 48.8584,
-            longitude: 2.2945,
-            rating: 4
-        },
-        {
-            id: 2,
-            title: 'Musée du Louvre',
-            activities: [{ id: 1, type: 'Museum', icon: cultureIcon }, { id: 2, type: 'Adventure', icon: adventureIcon }],
-            latitude: 48.8606,
-            longitude: 2.3376,
-            rating: 4
-        },
-        {
-            id: 3,
-            title: 'Cathédrale Notre-Dame',
-            activities: [{ id: 1, type: 'Museum', icon: cultureIcon }, { id: 2, type: 'Adventure', icon: adventureIcon }],
-            latitude: 48.8529,
-            longitude: 2.3500,
-            rating: 4
-        },
-        {
-            id: 4,
-            title: 'Arc de Triomphe',
-            activities: [{ id: 1, type: 'Museum', icon: cultureIcon }, { id: 2, type: 'Adventure', icon: adventureIcon }],
-            latitude: 48.8738,
-            longitude: 2.2950,
-            rating: 4
-        },
-        {
-            id: 5,
-            title: 'Basilique du Sacré-Cœur',
-            activities: [{ id: 1, type: 'Museum', icon: cultureIcon }, { id: 2, type: 'Adventure', icon: adventureIcon }],
-            latitude: 48.8867,
-            longitude: 2.3431,
-            rating: 4
-        }
-    ];
-
     const navigate = useNavigate()
 
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_API_KEY;
 
     useEffect(() => {
+        // Fake data
+        const data: Pin[] = [
+            {
+                id: 1,
+                title: 'Tour Eiffel',
+                activities: [
+                    { id: 1, type: 'Museum', icon: cultureIcon },
+                    { id: 2, type: 'Adventure', icon: adventureIcon },
+                    { id: 3, type: 'Détente', icon: relaxationIcon },
+                    { id: 5, type: 'Fête', icon: partyIcon },
+                    { id: 4, type: 'Sport', icon: sportIcon }],
+    
+                latitude: 48.8584,
+                longitude: 2.2945,
+                rating: 4
+            },
+            {
+                id: 2,
+                title: 'Musée du Louvre',
+                activities: [{ id: 1, type: 'Museum', icon: cultureIcon }, { id: 2, type: 'Adventure', icon: adventureIcon }],
+                latitude: 48.8606,
+                longitude: 2.3376,
+                rating: 4
+            },
+            {
+                id: 3,
+                title: 'Cathédrale Notre-Dame',
+                activities: [{ id: 1, type: 'Museum', icon: cultureIcon }, { id: 2, type: 'Adventure', icon: adventureIcon }],
+                latitude: 48.8529,
+                longitude: 2.3500,
+                rating: 4
+            },
+            {
+                id: 4,
+                title: 'Arc de Triomphe',
+                activities: [{ id: 1, type: 'Museum', icon: cultureIcon }, { id: 2, type: 'Adventure', icon: adventureIcon }],
+                latitude: 48.8738,
+                longitude: 2.2950,
+                rating: 4
+            },
+            {
+                id: 5,
+                title: 'Basilique du Sacré-Cœur',
+                activities: [{ id: 1, type: 'Museum', icon: cultureIcon }, { id: 2, type: 'Adventure', icon: adventureIcon }],
+                latitude: 48.8867,
+                longitude: 2.3431,
+                rating: 4
+            }
+        ];
 
         const map = new mapboxgl.Map({
             container: 'map', // root id for the map
@@ -154,7 +153,7 @@ export default function Map() {
         });
 
         return () => map.remove();
-    }, []);
+    }, [navigate]);
 
     return (
         <>
