@@ -3,6 +3,7 @@ import './App.css';
 import TripListe from './pages/Trip/TripList';
 import SignIn from './pages/Auth/SignIn';
 import SignUpMultiStepForm from './pages/Auth/SignUp';
+import Map from './pages/Map/Map';
 import TripCreate from './pages/Trip/TripCreate';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
@@ -14,6 +15,7 @@ function App() {
 				<Route path="/sign-in" element={<SignIn />} />
 				<Route path="/sign-up" element={<SignUpMultiStepForm />} />
 				<Route path="/trip-create" element={<TripCreate />} />
+        <Route path="/map" element={<Map />} />
 			</Routes>
 
 			<ReactQueryDevtools />
