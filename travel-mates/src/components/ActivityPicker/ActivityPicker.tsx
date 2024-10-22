@@ -49,7 +49,7 @@ export default function ActivityPicker() {
     return (
         <>
             <div className="flex justify-center">
-                <div className="grid gap-3 grid-cols-3 grid-rows-3 w-full md:w-[40%]">
+                <div className="grid gap-3 grid-cols-3 grid-rows-3">
                     {activities.map((activity) => (
                         <Activity
                             key={activity.id}

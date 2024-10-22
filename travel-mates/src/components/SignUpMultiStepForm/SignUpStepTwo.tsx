@@ -7,18 +7,40 @@ export default function SignUpStepTwo() {
 
   const { setFieldValue } = useFormikContext();
   
+  // Handle the file input change event to store the selected profile picture in Formik's form state
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const selectedFile = e.target.files?.[0];
     setFieldValue('profilePicture', selectedFile);
     e.preventDefault();
-    console.log(selectedFile);
   };
+
+  // List of gender options for the custom select dropdown
+  const listOptionsGender = [
+    'Femme',
+    'Homme',
+    'Autres'];
+
+  // List of language options for the custom select dropdown (multi select)
+  const listOptionsLanguage = [
+    'Allemand',
+    'Anglais',
+    'Arabe',
+    'Espagnol',
+    'Français',
+    'Grec',
+    'Italien',
+    'Mandarin',
+    'Néerlandais',
+    'Polonais',
+    'Portugais',
+    'Russe',
+  ];
 
   return (
     <>
       <div className="mx-auto mt-8 max-w-[24rem] text-left">
         <Typography variant="h1" className="mb-4 text-center text-2xl font-title">
-            Vos informations
+          Vos informations
         </Typography>
         <div className="mb-6">
           <label htmlFor="firstName">
@@ -26,7 +48,7 @@ export default function SignUpStepTwo() {
               variant="h6"
               className="mb-2 block font-large text-black-900"
             >
-              Prénom
+              Prénom*
             </Typography>
           </label>
           <Field
@@ -34,7 +56,7 @@ export default function SignUpStepTwo() {
             name="firstName"
             type="text"
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-            />
+          />
           <ErrorMessage name="firstName" component="div" className="text-red-500 text-sm mt-1" />
         </div>
         <div className="mb-6">
@@ -43,7 +65,7 @@ export default function SignUpStepTwo() {
               variant="h6"
               className="mb-2 block font-large text-black-900"
             >
-              Nom
+              Nom*
             </Typography>
           </label>
           <Field
@@ -60,7 +82,7 @@ export default function SignUpStepTwo() {
               variant="h6"
               className="mb-2 block font-large text-black-900"
             >
-              Date de naissance
+              Date de naissance*
             </Typography>
           </label>
           <Field
@@ -77,10 +99,14 @@ export default function SignUpStepTwo() {
               variant="h6"
               className="mb-2 block font-large text-black-900"
             >
-              Genre
+              Genre*
             </Typography>
           </label>
-          <Field name="gender" component={CustomSelect} />
+          <Field 
+            name="gender"
+            component={CustomSelect}
+            options={listOptionsGender} 
+          />
           <ErrorMessage name="gender" component="div" className="text-red-500 text-sm mt-1" />
         </div>
         <div className="mb-6">
@@ -89,7 +115,7 @@ export default function SignUpStepTwo() {
               variant="h6"
               className="mb-2 block font-large text-black-900"
             >
-              Adresse
+              Adresse*
             </Typography>
           </label>
           <Field
@@ -100,23 +126,40 @@ export default function SignUpStepTwo() {
           />
           <ErrorMessage name="address" component="div" className="text-red-500 text-sm mt-1" />
         </div>
+        <div className="mb-6">
+          <label htmlFor="language">
+            <Typography
+              variant="h6"
+              className="mb-2 block font-large text-black-900"
+            >
+              Langue*
+            </Typography>
+          </label>
+          <Field 
+            name="language"
+            component={CustomSelect}
+            options={listOptionsLanguage}
+            multiple={true}
+          />
+          <ErrorMessage name="language" component="div" className="text-red-500 text-sm mt-1" />
+        </div>
         <div className="mb-2">
           <label htmlFor="profilePicture">
             <Typography
               variant="h6"
               className="mb-2 block font-large text-black-900"
             >
-              Ajouter une photo de profile
+              Ajouter une photo de profile*
             </Typography>
           </label>
           <div className="relative">
-          <input
-            id="profilePicture"
-            name="profilePicture"
-            type="file"
-            onChange={ handleFileChange }
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
-          />
+            <input
+              id="profilePicture"
+              name="profilePicture"
+              type="file"
+              onChange={handleFileChange}
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+            />
             {/* Upload icon */}
             <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
               <img src={uploadIcon} alt="upload" className="w-4 h-4" />
