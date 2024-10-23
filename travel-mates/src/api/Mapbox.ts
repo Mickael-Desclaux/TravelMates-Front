@@ -26,3 +26,23 @@ export const fetchSuggestions = async (q: string) => {
 		throw error;
 	}
 };
+
+export default async function getPoiSuggestions (q: string, proximity: string) {
+	try {
+		const response = await axios.get(MAPBOX_API_BASE_URL, {
+			params: {
+				q,
+				types: 'poi',
+				limit: limitParam,
+				poi_category_exclusions: 'bus_stop',
+				proximity: proximity,
+				access_token: VITE_MAPBOX_API_KEY,
+				session_token: VITE_MAPBOX_SESSION_TOKEN,
+			},
+		});
+		return response.data.suggestions;
+	} catch (error) {
+		console.error('Erreur lors du chargement des suggestions Mapbox', error);
+		throw error;
+	}
+};

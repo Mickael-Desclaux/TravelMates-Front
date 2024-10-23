@@ -3,8 +3,43 @@ import ActivityPicker from "../../components/ActivityPicker/ActivityPicker";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Pin } from "../../interfaces/Pin";
 import * as Yup from "yup";
+import { useEffect, useState } from "react";
+import getPoiSuggestions from "../../api/Mapbox";
+
+interface PoiSuggestion {
+    name: string;
+    address: string;
+}
 
 export default function PinCreate() {
+
+    const [latitude, setLatitude] = useState<number | null>(null);
+    const [longitude, setLongitude] = useState<number | null>(null);
+    const [suggestions, setSuggestions] = useState<PoiSuggestion[]>([]);
+    const proximity: string = `${longitude},${latitude}`;
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                setLatitude(position.coords.latitude);
+                setLongitude(position.coords.longitude);
+            });
+        }
+    }, [latitude, longitude]);
+
+    async function getSuggestions(query: string, proximity: string) {
+        try {
+            const suggestions = await getPoiSuggestions(query, proximity);
+            setSuggestions(suggestions);
+        } catch (error) {
+            console.error(error);
+        };
+    };
+
+    function handleTitleChange(value: string, setFieldValue: (field: string, value: string) => void) {
+        getSuggestions(value, proximity);
+        setFieldValue('title', value);
+    }
 
     const defaultValues: Pin = {
         title: "",
@@ -43,6 +78,7 @@ export default function PinCreate() {
 
     return (
         <>
+            <Button type="button" onClick={() => console.log(proximity)}>test</Button>
             <Typography variant="h1" color="black" className="text-center mt-8 text-2xl font-title">
                 Créer un marqueur
             </Typography>
@@ -64,12 +100,29 @@ export default function PinCreate() {
                                         name="title"
                                         id="title"
                                         value={values.title}
-                                        onChange={handleChange}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTitleChange(e.target.value, setFieldValue)}
                                         type="text"
                                         size="lg"
                                         placeholder="Tour Eiffel, Kilimandjaro, etc..."
                                         className="!border-t-blue-gray-200 focus:!border-t-gray-900" />
-                                        <ErrorMessage name="title" component="div" className="text-red-500" />
+                                    <ErrorMessage name="title" component="div" className="text-red-500" />
+                                    {suggestions.length > 0 && (
+                                        <ul className="absolute z-10 bg-white border border-gray-200 mt-1 w-full max-h-40 overflow-y-auto">
+                                            {suggestions.map((suggestion: PoiSuggestion, index: number) => (
+                                                <li
+                                                    key={index}
+                                                    className="p-2 hover:bg-gray-200 cursor-pointer"
+                                                    onClick={() => {
+                                                        setFieldValue('destination',suggestion.name + ', ' + suggestion.address,);
+                                                        setSuggestions([]);
+                                                    }}
+                                                >
+                                                    {suggestion.name ? suggestion.name : 'Unknown'},{' '}
+                                                    {suggestion.address ? suggestion.address : 'Unknown'}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
                                     <Typography variant="h6" className="-mb-3">
                                         Description
                                     </Typography>
