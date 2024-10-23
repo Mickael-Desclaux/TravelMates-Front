@@ -115,7 +115,7 @@ export default function SignUpMultiStepForm() {
                 {step === 1 && (
                   <Typography color="black" className="text-sm !mt-4 mb-8 text-center font-normal">
                     Vous avez déjà un compte ?{" "}
-                    <a href="/SignIn" className="font-medium text-black-900 text-sm underline">
+                    <a href="/sign-in" className="font-medium text-black-900 text-sm underline">
                       Me connecter
                     </a>
                   </Typography>
