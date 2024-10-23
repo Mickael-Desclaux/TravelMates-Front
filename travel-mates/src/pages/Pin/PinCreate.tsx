@@ -1,7 +1,8 @@
 import { Button, Input, Typography, Textarea } from "@material-tailwind/react";
 import ActivityPicker from "../../components/ActivityPicker/ActivityPicker";
-import { Field, Form, Formik } from "formik";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Pin } from "../../interfaces/Pin";
+import * as Yup from "yup";
 
 export default function PinCreate() {
 
@@ -11,6 +12,30 @@ export default function PinCreate() {
         medias: [] as File[],
         activities: []
     }
+
+    const mediaType = ['image/jpg', 'image/jpeg', 'image/png'];
+    const mediaMaxSize: number = 10485760; // media max size = 10Mb
+    const maxImages: number = 3;
+
+    const validationSchema = Yup.object().shape({
+        title: Yup.string().required("Veuillez renseigner le titre du marqueur"),
+        description: Yup.string(),
+        medias: Yup.array()
+            .of(
+                Yup.mixed()
+                    .test("fileType", "Seuls les formats jpg, jpeg et png sont autorisés", (value) => {
+                        if (!value) return true;
+                        return mediaType.includes((value as File).type);
+                    })
+                    .test("fileSize", "La taille de l'image doit être inférieure à 10Mo", (value) => {
+                        if (!value) return true;
+                        return (value as File).size <= mediaMaxSize;
+                    })
+            )
+            .max(maxImages, `Vous ne pouvez pas ajouter plus de ${maxImages} images`)
+            .required("Veuillez ajouter au moins une image"),
+        activities: Yup.array().min(1, "Veuillez sélectionner au moins une activité").max(6, "Veuillez sélectionner moins de 6 activités")
+        })
 
     function onSubmit(values: Pin) {
         console.log(values)
@@ -23,6 +48,7 @@ export default function PinCreate() {
             </Typography>
             <Formik
                 initialValues={defaultValues}
+                validationSchema={validationSchema}
                 onSubmit={onSubmit}
             >
                 {({ isSubmitting, handleChange, setFieldValue, values }) => (
@@ -43,6 +69,7 @@ export default function PinCreate() {
                                         size="lg"
                                         placeholder="Tour Eiffel, Kilimandjaro, etc..."
                                         className="!border-t-blue-gray-200 focus:!border-t-gray-900" />
+                                        <ErrorMessage name="title" component="div" className="text-red-500" />
                                     <Typography variant="h6" className="-mb-3">
                                         Description
                                     </Typography>
@@ -59,6 +86,7 @@ export default function PinCreate() {
                                         labelProps={{
                                             className: "before:content-none after:content-none",
                                         }} />
+                                        <ErrorMessage name="description" component="div" className="text-red-500" />
                                     <Typography variant="h6" className="-mb-3">
                                         Images
                                     </Typography>
@@ -75,6 +103,7 @@ export default function PinCreate() {
                                         }}
                                         className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
                                     />
+                                    <ErrorMessage name="medias" component="div" className="text-red-500" />
                                     {values.medias && values.medias.length > 0 && (
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                                             {values.medias.map((file, index) => (
@@ -90,7 +119,7 @@ export default function PinCreate() {
                                                         className="!bg-red-800 !text-white !p-2 !absolute !top-2 !right-2"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            const updatedMedias = values.medias.filter((f, i) => i !== index);
+                                                            const updatedMedias = values.medias.filter((_f, i) => i !== index);
                                                             setFieldValue("medias", updatedMedias);
                                                         }}
                                                     >
@@ -105,6 +134,7 @@ export default function PinCreate() {
                                         Activités
                                     </Typography>
                                     <ActivityPicker />
+                                    <ErrorMessage name="activities" component="div" className="text-red-500" />
                                 </div>
                             </div>
                         </div>
