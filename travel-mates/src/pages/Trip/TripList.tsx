@@ -4,6 +4,7 @@ import { Trip } from '../../interfaces/TripProps/TripProps';
 import { Typography } from '@material-tailwind/react';
 import { getFakeTrips } from '../../api/Trips';
 import TripSearch from '../../components/TripSearch/TripSearch';
+import NavbarComponent from '../../components/Navbar/Navbar';
 
 /**
  * TripListe Component
@@ -104,6 +105,8 @@ const TripListe = () => {
 					))}
 				</div>
 			</section>
+			
+			<NavbarComponent />
 		</>
 	);
 };
