@@ -8,7 +8,7 @@ export default function PinCreate() {
     const defaultValues: Pin = {
         title: "",
         description: "",
-        medias: [],
+        medias: [] as File[],
         activities: []
     }
 
@@ -42,7 +42,7 @@ export default function PinCreate() {
                                         type="text"
                                         size="lg"
                                         placeholder="Tour Eiffel, Kilimandjaro, etc..."
-                                        className="!border-t-blue-gray-200 focus:!border-t-gray-900"/>
+                                        className="!border-t-blue-gray-200 focus:!border-t-gray-900" />
                                     <Typography variant="h6" className="-mb-3">
                                         Description
                                     </Typography>
@@ -58,26 +58,49 @@ export default function PinCreate() {
                                         className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
                                         labelProps={{
                                             className: "before:content-none after:content-none",
-                                        }}/>
+                                        }} />
                                     <Typography variant="h6" className="-mb-3">
                                         Images
                                     </Typography>
                                     <Field
                                         component={Input}
-                                        value={values.medias}
                                         id="medias"
                                         type="file"
                                         size="lg"
                                         multiple
                                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                            const files = event.currentTarget.files;
-                                            const fileArray = Array.from(files || []);
-                                            setFieldValue("medias", fileArray);
+                                            const newFiles = Array.from(event.currentTarget.files || []);
+                                            const updatedMedias = [...values.medias, ...newFiles];
+                                            setFieldValue("medias", updatedMedias);
                                         }}
                                         className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                                        labelProps={{
-                                            className: "before:content-none after:content-none",
-                                        }} crossOrigin={undefined} />
+                                    />
+                                    {values.medias && values.medias.length > 0 && (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                                            {values.medias.map((file, index) => (
+                                                <div key={index} className="relative">
+                                                    <img
+                                                        src={URL.createObjectURL(file)}
+                                                        alt="Image"
+                                                        className="w-full h-auto object-cover rounded-lg"
+                                                    />
+                                                    <Button
+                                                        type="button"
+                                                        size="sm"
+                                                        className="!bg-red-800 !text-white !p-2 !absolute !top-2 !right-2"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const updatedMedias = values.medias.filter((f, i) => i !== index);
+                                                            setFieldValue("medias", updatedMedias);
+                                                        }}
+                                                    >
+                                                        &#10005;
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
                                     <Typography variant="h6" className="-mb-3">
                                         Activités
                                     </Typography>
