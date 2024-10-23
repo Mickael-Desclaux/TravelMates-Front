@@ -107,7 +107,7 @@ export default function PinCreate() {
                                         className="!border-t-blue-gray-200 focus:!border-t-gray-900" />
                                     <ErrorMessage name="title" component="div" className="text-red-500" />
                                     {suggestions.length > 0 && (
-                                        <ul className="absolute z-10 bg-white border border-gray-200 mt-1 w-full max-h-40 overflow-y-auto">
+                                        <ul className="absolute left-0 right-0 border border-gray-300 bg-white rounded shadow-lg z-10 max-h-40 overflow-auto">
                                             {suggestions.map((suggestion: PoiSuggestion, index: number) => (
                                                 <li
                                                     key={index}
