@@ -21,7 +21,6 @@ const TripListe = () => {
 
 	const [title, setTitle] = useState<string>('Trips list');
 
-	// Loading state to manage loading status
 	const [loading, setLoading] = useState(true);
 
 	// useEffect hook to fetch trips on component mount
@@ -65,7 +64,7 @@ const TripListe = () => {
 
 	const updateTitle = (destination: string, dateFrom?: Date, dateTo?: Date) => {
 		const formattedDates = dateFrom && dateTo
-			? `${dateFrom.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })} au ${dateTo.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}`
+			? `${dateFrom.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' })} au ${dateTo.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' })}`
 			: '';
 
 		setTitle(`Trips ${destination ? `à ${destination}` : ''} ${formattedDates ? ` du ${formattedDates}` : ''}`);

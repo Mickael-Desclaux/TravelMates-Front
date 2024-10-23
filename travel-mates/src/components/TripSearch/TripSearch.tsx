@@ -1,6 +1,7 @@
 import { IconButton, Input } from "@material-tailwind/react";
 import { useFormik } from "formik";
 import { useState } from "react";
+import DatePicker from "../DatePicker.tsx/DatePicker";
 
 interface TripSearchProps {
     onFilter: (destination: string, dates: string) => void;
@@ -11,7 +12,8 @@ export default function TripSearch({ onFilter }: TripSearchProps) {
     // Fake data to test predictive suggestions
     const suggestions: string[] = ["Oslo", "San-Paris", "San-Amsterdam", "San-Andreas", "San Jose", "San Francisco", "San Sebastian"];
 
-    // Predictive suggestions
+    const [showCalendar, setShowCalendar] = useState(false);
+
     const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
 
     const formik = useFormik({
@@ -37,24 +39,40 @@ export default function TripSearch({ onFilter }: TripSearchProps) {
         }
     };
 
+    // Close suggestions panel after a suggestion is selected
     const handleSuggestionClick = (suggestion: string) => {
         formik.setFieldValue("destination", suggestion);
         setFilteredSuggestions([]);
     };
 
     return (
-        <form className="flex justify-center items-center mt-8 gap-3" onSubmit={formik.handleSubmit}>
-            <div className="flex-1">
+        <form className="flex items-center ms-4 me-4 mt-8 gap-3" onSubmit={formik.handleSubmit}>
+            <div className="flex-1 md:w-full">
                 <Input
                     label="Destination"
                     name="destination"
                     value={formik.values.destination}
                     onChange={handleInputChange}
-                    size="md"
-                    className="block w-full w-[150px]"
-                    containerProps={{ className: "min-w-[150px]" }}
+                    size="lg"
+                    className="block min-w-[150px] md:w-full"
+                    containerProps={{ className: "min-w-full" }}
                     crossOrigin={undefined}
                 />
+                {showCalendar && (
+                    <div className="relative">
+                        <div className="absolute top-full left-0">
+                            <DatePicker
+                                onDateSelect={(dates) => {
+                                    formik.setFieldValue("dates", dates);
+                                    const [startDate, endDate] = dates.split(" - ");
+                                    if (startDate !== endDate) {
+                                        setShowCalendar(false);
+                                    }
+                                }}
+                                onClearDates={() => formik.setFieldValue("dates", "")}
+                            />
+                        </div>
+                    </div>)}
                 {filteredSuggestions.length > 0 && (
                     <ul className="absolute left-0 right-0 border border-gray-300 bg-white rounded shadow-lg z-10 max-h-40 overflow-auto">
                         {filteredSuggestions.map((suggestion, index) => (
@@ -75,13 +93,15 @@ export default function TripSearch({ onFilter }: TripSearchProps) {
                     name="dates"
                     value={formik.values.dates}
                     onChange={formik.handleChange}
-                    containerProps={{ className: "w-[100px] min-w-[100px]" }}
-                    size="md"
-                    className="block w-full"
+                    containerProps={{ className: "min-w-full" }}
+                    size="lg"
+                    className="block min-w-[150px] md:w-full"
                     crossOrigin={undefined}
+                    onClick={() => setShowCalendar(!showCalendar)}
+                    readOnly
                 />
             </div>
-            <div className="flex-1">
+            <div className="">
                 <IconButton className="bg-green" type="submit">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                         <path fillRule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clipRule="evenodd" />

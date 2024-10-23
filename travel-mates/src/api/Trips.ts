@@ -53,8 +53,8 @@ export const getFakeTrips = async (): Promise<Trip[]> => {
 				Math.floor(Math.random() * 6) + 1, // Select 1 to 6 activities
 			);
 
-			const dateFrom = new Date(2024, 8, Math.floor(Math.random() * 30) + 1);
-			const dateTo = new Date(2024, 9, Math.floor(Math.random() * 31) + 1);
+			const dateFrom = new Date(2024, 10, Math.floor(Math.random() * 30) + 1);
+			const dateTo = new Date(2024, 11, Math.floor(Math.random() * 31) + 1);
 
 			return {
 				id: post.id, // Use the post's id as the trip's id
