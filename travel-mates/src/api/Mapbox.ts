@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const MAPBOX_API_BASE_URL =
-	'https://api.mapbox.com/search/searchbox/v1/suggest';
+const MAPBOX_SUGGEST_BASE_URL = 'https://api.mapbox.com/search/searchbox/v1/suggest';
+const MAPBOX_RETRIEVE_BASE_URL = "https://api.mapbox.com/search/searchbox/v1/retrieve";
 const VITE_MAPBOX_API_KEY = import.meta.env.VITE_MAPBOX_API_KEY;
 const VITE_MAPBOX_SESSION_TOKEN = import.meta.env.VITE_MAPBOX_SESSION_TOKEN;
 
@@ -11,7 +11,7 @@ const limitParam: number = 5;
 
 export const fetchSuggestions = async (q: string) => {
 	try {
-		const response = await axios.get(MAPBOX_API_BASE_URL, {
+		const response = await axios.get(MAPBOX_SUGGEST_BASE_URL, {
 			params: {
 				q,
 				types: typesParam,
@@ -27,9 +27,9 @@ export const fetchSuggestions = async (q: string) => {
 	}
 };
 
-export default async function getPoiSuggestions (q: string, proximity: string, bbox: string) {
+export async function getPoiSuggestions (q: string, proximity: string, bbox: string) {
 	try {
-		const response = await axios.get(MAPBOX_API_BASE_URL, {
+		const response = await axios.get(MAPBOX_SUGGEST_BASE_URL, {
 			params: {
 				q,
 				types: 'poi',
@@ -47,3 +47,19 @@ export default async function getPoiSuggestions (q: string, proximity: string, b
 		throw error;
 	}
 };
+
+export async function retrieveSuggestion(id: string) {
+	try {
+		const response = await axios.get(`${MAPBOX_RETRIEVE_BASE_URL}/${id}`, {
+			params: {
+				access_token: VITE_MAPBOX_API_KEY,
+				session_token: VITE_MAPBOX_SESSION_TOKEN,
+			},
+		});
+		const feature = response.data.features[0];  
+        return feature;
+	} catch (error) {
+		console.error('Erreur lors du chargement des suggestions Mapbox', error);
+		throw error;
+	}
+}

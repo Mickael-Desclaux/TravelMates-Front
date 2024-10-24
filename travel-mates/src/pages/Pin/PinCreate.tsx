@@ -4,12 +4,13 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Pin } from "../../interfaces/Pin";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
-import getPoiSuggestions from "../../api/Mapbox";
+import { getPoiSuggestions, retrieveSuggestion } from "../../api/Mapbox";
 import getUserAddressCoordinates from "../../api/User";
 
 interface PoiSuggestion {
     name: string;
     address: string;
+    mapbox_id: string;
 }
 
 export default function PinCreate() {
@@ -22,7 +23,7 @@ export default function PinCreate() {
     const proximity: string = `${longitude},${latitude}`;
 
     // Coordinates box to display only suggestions that are 50km or less than current position
-    const distanceKm = 50;
+    const distanceKm = 100;
     const earthRadiusKm = 6371; // Average Earth radius in km
 
     useEffect(() => {
@@ -164,9 +165,21 @@ export default function PinCreate() {
                                                         key={index}
                                                         className="p-2 hover:bg-gray-200 cursor-pointer"
                                                         onClick={() => {
-                                                            setFieldValue('destination', suggestion.name + ', ' + suggestion.address);
+                                                            const mapboxId = suggestion.mapbox_id;
+                                                            retrieveSuggestion(mapboxId).then((response) => {
+                                                                setFieldValue('title', suggestion.name);
+                                                                if (response) {
+                                                                    const coordinates = response.geometry.coordinates;
+                                                                    setFieldValue('longitude', coordinates[0]);
+                                                                    setFieldValue('latitude', coordinates[1]);
+                                                                    console.log(values.longitude + ' ' + values.latitude);
+                                                                }
+                                                            }).catch((error) => {
+                                                                console.error('Erreur lors de la récupération:', error);
+                                                            });
                                                             setSuggestions([]);
                                                         }}
+                                                        
                                                     >
                                                         {suggestion.name ? suggestion.name : 'Unknown'},{' '}
                                                         {suggestion.address ? suggestion.address : 'Unknown'}
