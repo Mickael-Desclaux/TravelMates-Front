@@ -5,6 +5,7 @@ import { Pin } from "../../interfaces/Pin";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import getPoiSuggestions from "../../api/Mapbox";
+import getUserAddressCoordinates from "../../api/User";
 
 interface PoiSuggestion {
     name: string;
@@ -16,37 +17,87 @@ export default function PinCreate() {
     const [latitude, setLatitude] = useState<number | null>(null);
     const [longitude, setLongitude] = useState<number | null>(null);
     const [suggestions, setSuggestions] = useState<PoiSuggestion[]>([]);
+    const [bbox, setBbox] = useState<string>('');
+
     const proximity: string = `${longitude},${latitude}`;
+
+    // Coordinates box to display only suggestions that are 50km or less than current position
+    const distanceKm = 50;
+    const earthRadiusKm = 6371; // Average Earth radius in km
 
     useEffect(() => {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                setLatitude(position.coords.latitude);
-                setLongitude(position.coords.longitude);
-            });
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setLatitude(position.coords.latitude);
+                    setLongitude(position.coords.longitude);
+                },
+                (error) => {
+                    console.error("Geolocation error:", error);
+                    // Si la géolocalisation échoue, utiliser les coordonnées par défaut
+                    const coordinates = getUserAddressCoordinates();
+                    const [defaultLongitude, defaultLatitude] = coordinates.split(',').map(Number);
+                    setLatitude(defaultLatitude);
+                    setLongitude(defaultLongitude);
+                }
+            );
+        } else {
+            // Si la géolocalisation n'est pas supportée
+            const coordinates = getUserAddressCoordinates();
+            const [defaultLongitude, defaultLatitude] = coordinates.split(',').map(Number);
+            setLatitude(defaultLatitude);
+            setLongitude(defaultLongitude);
+        }
+    }, []);
+    
+    useEffect(() => {
+        if (latitude !== null && longitude !== null) {
+            const latOffset = distanceKm / earthRadiusKm * (180 / Math.PI);
+            const lonOffset = distanceKm / (earthRadiusKm * Math.cos(latitude * Math.PI / 180)) * (180 / Math.PI);
+            const minLat = latitude - latOffset;
+            const maxLat = latitude + latOffset;
+            const minLon = longitude - lonOffset;
+            const maxLon = longitude + lonOffset;
+    
+            setBbox(`${minLon},${minLat},${maxLon},${maxLat}`);
         }
     }, [latitude, longitude]);
+    
 
-    async function getSuggestions(query: string, proximity: string) {
+    async function getSuggestions(query: string, proximity: string, bbox: string) {
         try {
-            const suggestions = await getPoiSuggestions(query, proximity);
-            setSuggestions(suggestions);
+            if (bbox) {
+                const suggestions = await getPoiSuggestions(query, proximity, bbox);
+                setSuggestions(suggestions);
+            } else {
+                console.log('bbox is undefined');
+            }
         } catch (error) {
             console.error(error);
-        };
-    };
+        }
+    }
 
     function handleTitleChange(value: string, setFieldValue: (field: string, value: string) => void) {
-        getSuggestions(value, proximity);
         setFieldValue('title', value);
+
+        if (value.trim() === '') {
+            setSuggestions([]);
+            return;
+        }
+
+        getSuggestions(value, proximity, bbox);
     }
 
     const defaultValues: Pin = {
         title: "",
         description: "",
+        longitude: null,
+        latitude: null,
         medias: [] as File[],
         activities: []
     }
+
+    // Form validation
 
     const mediaType = ['image/jpg', 'image/jpeg', 'image/png'];
     const mediaMaxSize: number = 10485760; // media max size = 10Mb
@@ -54,7 +105,7 @@ export default function PinCreate() {
 
     const validationSchema = Yup.object().shape({
         title: Yup.string().required("Veuillez renseigner le titre du marqueur"),
-        description: Yup.string(),
+        description: Yup.string().required("Veuillez renseigner une description du marqueur"),
         medias: Yup.array()
             .of(
                 Yup.mixed()
@@ -70,7 +121,7 @@ export default function PinCreate() {
             .max(maxImages, `Vous ne pouvez pas ajouter plus de ${maxImages} images`)
             .required("Veuillez ajouter au moins une image"),
         activities: Yup.array().min(1, "Veuillez sélectionner au moins une activité").max(6, "Veuillez sélectionner moins de 6 activités")
-        })
+    })
 
     function onSubmit(values: Pin) {
         console.log(values)
@@ -78,7 +129,7 @@ export default function PinCreate() {
 
     return (
         <>
-            <Button type="button" onClick={() => console.log(proximity)}>test</Button>
+            <Button type="button" onClick={() => console.log(proximity, "coord box: " + bbox + ' ' + getUserAddressCoordinates())}>test</Button>
             <Typography variant="h1" color="black" className="text-center mt-8 text-2xl font-title">
                 Créer un marqueur
             </Typography>
@@ -95,34 +146,35 @@ export default function PinCreate() {
                                     <Typography variant="h6" className="-mb-3">
                                         Titre
                                     </Typography>
-                                    <Field
-                                        component={Input}
-                                        name="title"
-                                        id="title"
-                                        value={values.title}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTitleChange(e.target.value, setFieldValue)}
-                                        type="text"
-                                        size="lg"
-                                        placeholder="Tour Eiffel, Kilimandjaro, etc..."
-                                        className="!border-t-blue-gray-200 focus:!border-t-gray-900" />
-                                    <ErrorMessage name="title" component="div" className="text-red-500" />
-                                    {suggestions.length > 0 && (
-                                        <ul className="absolute left-0 right-0 border border-gray-300 bg-white rounded shadow-lg z-10 max-h-40 overflow-auto">
-                                            {suggestions.map((suggestion: PoiSuggestion, index: number) => (
-                                                <li
-                                                    key={index}
-                                                    className="p-2 hover:bg-gray-200 cursor-pointer"
-                                                    onClick={() => {
-                                                        setFieldValue('destination',suggestion.name + ', ' + suggestion.address,);
-                                                        setSuggestions([]);
-                                                    }}
-                                                >
-                                                    {suggestion.name ? suggestion.name : 'Unknown'},{' '}
-                                                    {suggestion.address ? suggestion.address : 'Unknown'}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
+                                    <div className="relative">
+                                        <Field
+                                            component={Input}
+                                            name="title"
+                                            id="title"
+                                            value={values.title}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTitleChange(e.target.value, setFieldValue)}
+                                            type="text"
+                                            size="lg"
+                                            placeholder="Tour Eiffel, Kilimandjaro, etc..."
+                                            className="!border-t-blue-gray-200 focus:!border-t-gray-900" />
+                                        {suggestions.length > 0 && values.title.length > 1 && (
+                                            <ul className="absolute left-0 right-0 border border-gray-300 bg-white rounded shadow-lg z-10 max-h-40 overflow-auto top-full">
+                                                {suggestions.map((suggestion: PoiSuggestion, index: number) => (
+                                                    <li
+                                                        key={index}
+                                                        className="p-2 hover:bg-gray-200 cursor-pointer"
+                                                        onClick={() => {
+                                                            setFieldValue('destination', suggestion.name + ', ' + suggestion.address);
+                                                            setSuggestions([]);
+                                                        }}
+                                                    >
+                                                        {suggestion.name ? suggestion.name : 'Unknown'},{' '}
+                                                        {suggestion.address ? suggestion.address : 'Unknown'}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
                                     <Typography variant="h6" className="-mb-3">
                                         Description
                                     </Typography>
@@ -139,7 +191,7 @@ export default function PinCreate() {
                                         labelProps={{
                                             className: "before:content-none after:content-none",
                                         }} />
-                                        <ErrorMessage name="description" component="div" className="text-red-500" />
+                                    <ErrorMessage name="description" component="div" className="text-red-500" />
                                     <Typography variant="h6" className="-mb-3">
                                         Images
                                     </Typography>

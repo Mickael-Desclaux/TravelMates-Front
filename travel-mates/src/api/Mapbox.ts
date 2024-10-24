@@ -27,15 +27,16 @@ export const fetchSuggestions = async (q: string) => {
 	}
 };
 
-export default async function getPoiSuggestions (q: string, proximity: string) {
+export default async function getPoiSuggestions (q: string, proximity: string, bbox: string) {
 	try {
 		const response = await axios.get(MAPBOX_API_BASE_URL, {
 			params: {
 				q,
 				types: 'poi',
 				limit: limitParam,
-				poi_category_exclusions: 'bus_stop',
+				poi_category_exclusions: 'bus_stop,grocery,supermarket,sports_shop,it,office,services,gas_station,parking,hotel,food_and_drink,liquor_store,school,transportation,hospital,car_dealership,pet_store,optical,government,shopping',
 				proximity: proximity,
+				bbox: bbox,
 				access_token: VITE_MAPBOX_API_KEY,
 				session_token: VITE_MAPBOX_SESSION_TOKEN,
 			},
