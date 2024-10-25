@@ -7,6 +7,7 @@ import Map from './pages/Map/Map';
 import TripCreate from './pages/Trip/TripCreate';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import PinCreate from './pages/Pin/PinCreate';
+import PinDetail from './pages/Pin/PinDetail';
 
 function App() {
 	return (
@@ -16,8 +17,9 @@ function App() {
 				<Route path="/sign-in" element={<SignIn />} />
 				<Route path="/sign-up" element={<SignUpMultiStepForm />} />
 				<Route path="/trip-create" element={<TripCreate />} />
-        		<Route path="/map" element={<Map />} />
-        		<Route path="/pin-create" element={<PinCreate />} />
+				<Route path="/map" element={<Map />} />
+				<Route path="/pin-create" element={<PinCreate />} />
+				<Route path="/pin" element={<PinDetail />} />
 			</Routes>
 
 			<ReactQueryDevtools />
