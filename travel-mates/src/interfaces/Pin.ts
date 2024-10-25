@@ -1,8 +1,9 @@
-export interface Pin {
+export interface AddPin {
     title: string;
     description: string;
     longitude: number | null;
     latitude: number | null;
     medias: File[];
-    activities: string[]
+    activities: string[];
+    selectedSuggestion: boolean;
 }
