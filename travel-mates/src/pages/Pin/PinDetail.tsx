@@ -1,10 +1,13 @@
-import { Avatar, Carousel, Rating, Tab, TabPanel, Tabs, TabsBody, TabsHeader, ThemeProvider, Typography } from "@material-tailwind/react";
+import { Avatar, Button, Carousel, Rating, Tab, TabPanel, Tabs, TabsBody, TabsHeader, ThemeProvider, Typography } from "@material-tailwind/react";
 import { Activity } from "../../interfaces/TripProps/TripProps";
 import adventureIcon from '../../assets/activity/adventure.svg';
 import cultureIcon from '../../assets/activity/culture.svg';
 import relaxationIcon from '../../assets/activity/relaxation.svg';
 import sportIcon from '../../assets/activity/sport.svg';
 import partyIcon from '../../assets/activity/party-and-bar.svg';
+import { useEffect, useMemo, useState } from "react";
+import './PinDetail.css';
+import { NavLink } from "react-router-dom";
 
 interface PinInfos {
     title: string;
@@ -13,7 +16,7 @@ interface PinInfos {
     owner_firstname: string;
     owner_lastname: string;
     owner_profile_picture: string;
-    pin_image: string;
+    pin_image: string[];
 }
 
 interface PinReview {
@@ -22,7 +25,7 @@ interface PinReview {
     user_profile_picture: string;
     rating: number;
     comment: string;
-    pin_image: string;
+    pin_image?: string[];
 }
 
 const carouselTheme = {
@@ -35,13 +38,8 @@ const carouselTheme = {
 
 export default function PinDetail() {
 
-    const images = [
-        "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80",
-        "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
-    ];
-
     // Fake Pin infos data
-    const pinInfoData: PinInfos = {
+    const pinInfoData: PinInfos = useMemo(() => ({
         title: "Tour Eiffel",
         description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas fringilla dui eu maximus. 
         Curabitur non nulla tellus. Nulla facilisi. Aenean suscipit odio elit, et rutrum nisi rutrum et. Nullam nec convallis justo. 
@@ -56,32 +54,57 @@ export default function PinDetail() {
         owner_firstname: "Émilie",
         owner_lastname: "Deparis",
         owner_profile_picture: "https://docs.material-tailwind.com/img/face-2.jpg",
-        pin_image: "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80",
-    }
+        pin_image: ["https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80"],
+    }), []);
 
-    function computeAverageRating(): number {
-        const averageRating = pinReviews.length > 0 ? pinReviews.reduce((sum, review) => sum + review.rating, 0) / pinReviews.length : 0;
-        return averageRating;
-    }
-
-    const pinReviews: PinReview[] = [
+    const pinReviews: PinReview[] = useMemo(() => [
         {
             user_firstname: "Michel",
             user_lastname: "Dupoitou",
             user_profile_picture: "https://docs.material-tailwind.com/img/face-1.jpg",
-            rating: 4,
+            rating: 5,
             comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas fringilla dui eu maximus. Curabitur non nulla tellus.",
-            pin_image: "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80",
+            pin_image: ["https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
+                "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
+            ],
+        },
+        {
+            user_firstname: "Patrick",
+            user_lastname: "Decharente",
+            user_profile_picture: "https://docs.material-tailwind.com/img/face-4.jpg",
+            rating: 2,
+            comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas fringilla dui eu maximus. Curabitur non nulla tellus.",
+            pin_image: ["https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
+                "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
+            ],
         },
         {
             user_firstname: "Éloïse",
             user_lastname: "Debordeaux",
             user_profile_picture: "https://docs.material-tailwind.com/img/face-3.jpg",
-            rating: 2,
+            rating: 1,
             comment: "",
-            pin_image: "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
+            pin_image: [],
         },
-    ]
+    ], []);
+
+    const [ images, setImages ] = useState<string[]>([]);
+    const [ activeTab, setActiveTab ] = useState<string>("detail");
+    const [ averageRating, setAverageRating ] = useState<number>(0)
+    const [ averageExactRating, setAverageExactRating ] = useState<number>(0.0)
+
+    useEffect(() => {
+        const images = [
+            ...pinInfoData.pin_image,
+            ...pinReviews.flatMap(review => review.pin_image ?? []),
+        ].filter(image => image !== undefined);
+        setImages(images);
+    }, [pinInfoData, pinReviews]);
+
+    useEffect(() => {
+        setAverageRating(pinReviews.length > 0 ? Math.floor(pinReviews.reduce((sum, review) => sum + review.rating, 0) / pinReviews.length) : 0);
+        setAverageExactRating(pinReviews.length > 0 ? (pinReviews.reduce((sum, review) => sum + review.rating, 0) / pinReviews.length) : 0)
+    }, [pinReviews])
 
     const data = [
         {
@@ -93,8 +116,8 @@ export default function PinDetail() {
                         <Typography variant="h2" className="font-title text-2xl text-black">{pinInfoData.title}</Typography>
                         <div>
                             {
-                                pinInfoData.activities.map((activity) => (
-                                    <Avatar src={activity.icon} alt={activity.type} size="sm" className="ms-1"></Avatar>
+                                pinInfoData.activities.map((activity: Activity, index: number) => (
+                                    <Avatar src={activity.icon} key={index} alt={activity.type} size="sm" className="ms-1"></Avatar>
                                 ))
                             }
                         </div>
@@ -115,16 +138,22 @@ export default function PinDetail() {
                 <>
                     <div className="flex flex-row items-center justify-between mt-2">
                         <Typography variant="h2" className="font-title text-2xl text-black">{pinInfoData.title}</Typography>
-                        <Rating value={computeAverageRating()} ratedColor="green" />
+                        <div className="flex flex-row items-center">
+                            <p className="me-2">{parseFloat(averageExactRating.toFixed(2))}</p>
+                            <Rating key={averageRating} value={averageRating} className="custom-rating" readonly />
+                        </div>
                     </div>
+                    <NavLink className="flex justify-end mt-2" to={"/pin/:id/add-review/"}>
+                        <Button type="button" className="bg-green">Ajouter un avis</Button>
+                    </NavLink>
                     {
-                        pinReviews ? pinReviews.map((review) => (
-                            <div className="mt-6">
+                        pinReviews ? pinReviews.map((review: PinReview, index: number) => (
+                            <div key={index} className="mt-6">
                                 <div className="flex flex-row items-start">
                                     <Avatar src={review.user_profile_picture} alt={review.user_firstname + ' ' + review.user_lastname} />
                                     <div className="ml-3">
                                         <Typography className="text-black">{review.user_firstname + ' ' + review.user_lastname}</Typography>
-                                        <Rating value={review.rating} />
+                                        <Rating value={review.rating} readonly className="custom-rating"/>
                                     </div>
                                 </div>
                                 <div>
@@ -140,22 +169,18 @@ export default function PinDetail() {
     return (
         <>
             <ThemeProvider value={carouselTheme}>
-                <Carousel>
-                    {images.map((src, index) => (
-                        <img
-                            key={index}
-                            src={src}
-                            alt={`image ${index + 1}`}
-                            className="h-full w-full object-cover"
-                        />
+                <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
+                    {images.map((image: string, index: number) => (
+                        <img key={index} src={image} alt="Image" className="max-h-[400px] mx-auto" />
                     ))}
                 </Carousel>
             </ThemeProvider>
-            <Tabs>
-                <TabsHeader>
+            <Tabs value="detail">
+                <TabsHeader className="bg-gray-100">
                     {data.map(({ label, value }) => (
-                        <Tab key={value} value={value}>
-                            <div className="flex items-center gap-2">
+                        <Tab key={value} value={value} onClick={() => setActiveTab(value)}
+                            className={`${activeTab === value ? "underline" : ""}`}>
+                            <div className="flex items-center gap-2 text-green font-title font-bold">
                                 {label}
                             </div>
                         </Tab>
