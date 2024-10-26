@@ -1,12 +1,13 @@
-import Navbar from "../../components/Navbar/Navbar";
+import NavbarComponent from "../../components/Navbar/Navbar";
 import ProfileHeader from "../../components/Profile/ProfileHeader";
 import { ProfileData } from "../../interfaces/ProfileInterface";
+import ProfilePicture from "../../assets/profile/profil1.jpg";
 
 export default function Profile() {
 
   const profile: ProfileData = {
       id: 1,
-      profilePicture: '',
+      profilePicture: ProfilePicture,
       firstName: 'Éloïse',
       lastName: 'DeBordeaux',
       age: 25,
@@ -18,11 +19,11 @@ export default function Profile() {
 
   return (
     <>
-      <div className="xl:max-w-7xl mt-32">
+      <div>
           <ProfileHeader values={profile} />
       </div>
 
-      <Navbar />
+      <NavbarComponent />
     </>
   )
 }
