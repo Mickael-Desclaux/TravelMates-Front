@@ -88,10 +88,10 @@ export default function PinDetail() {
         },
     ], []);
 
-    const [ images, setImages ] = useState<string[]>([]);
-    const [ activeTab, setActiveTab ] = useState<string>("detail");
-    const [ averageRating, setAverageRating ] = useState<number>(0)
-    const [ averageExactRating, setAverageExactRating ] = useState<number>(0.0)
+    const [images, setImages] = useState<string[]>([]);
+    const [activeTab, setActiveTab] = useState<string>("detail");
+    const [averageRating, setAverageRating] = useState<number>(0)
+    const [averageExactRating, setAverageExactRating] = useState<number>(0.0)
 
     useEffect(() => {
         const images = [
@@ -153,7 +153,7 @@ export default function PinDetail() {
                                     <Avatar src={review.user_profile_picture} alt={review.user_firstname + ' ' + review.user_lastname} />
                                     <div className="ml-3">
                                         <Typography className="text-black">{review.user_firstname + ' ' + review.user_lastname}</Typography>
-                                        <Rating value={review.rating} readonly className="custom-rating"/>
+                                        <Rating value={review.rating} readonly className="custom-rating" />
                                     </div>
                                 </div>
                                 <div>
@@ -168,32 +168,36 @@ export default function PinDetail() {
 
     return (
         <>
-            <ThemeProvider value={carouselTheme}>
-                <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
-                    {images.map((image: string, index: number) => (
-                        <img key={index} src={image} alt="Image" className="max-h-[400px] mx-auto" />
-                    ))}
-                </Carousel>
-            </ThemeProvider>
-            <Tabs value="detail">
-                <TabsHeader className="bg-gray-100">
-                    {data.map(({ label, value }) => (
-                        <Tab key={value} value={value} onClick={() => setActiveTab(value)}
-                            className={`${activeTab === value ? "underline" : ""}`}>
-                            <div className="flex items-center gap-2 text-green font-title font-bold">
-                                {label}
-                            </div>
-                        </Tab>
-                    ))}
-                </TabsHeader>
-                <TabsBody>
-                    {data.map(({ value, desc }) => (
-                        <TabPanel key={value} value={value}>
-                            {desc}
-                        </TabPanel>
-                    ))}
-                </TabsBody>
-            </Tabs>
+            <div className="md:grid md:place-content-center">
+                <div className="md:w-[60vw]">
+                    <ThemeProvider value={carouselTheme}>
+                        <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
+                            {images.map((image: string, index: number) => (
+                                <img key={index} src={image} alt="Image" className="max-h-[400px] mx-auto" />
+                            ))}
+                        </Carousel>
+                    </ThemeProvider>
+                    <Tabs value="detail">
+                        <TabsHeader className="bg-gray-100">
+                            {data.map(({ label, value }) => (
+                                <Tab key={value} value={value} onClick={() => setActiveTab(value)}
+                                    className={`${activeTab === value ? "underline" : ""}`}>
+                                    <div className="flex items-center gap-2 text-green font-title font-bold">
+                                        {label}
+                                    </div>
+                                </Tab>
+                            ))}
+                        </TabsHeader>
+                        <TabsBody>
+                            {data.map(({ value, desc }) => (
+                                <TabPanel key={value} value={value}>
+                                    {desc}
+                                </TabPanel>
+                            ))}
+                        </TabsBody>
+                    </Tabs>
+                </div>
+            </div>
         </>
     );
 }
