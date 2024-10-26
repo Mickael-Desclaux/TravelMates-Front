@@ -1,0 +1,12 @@
+.underline {
+    text-decoration: underline #185C22;
+}
+
+.custom-rating svg {
+    color: #185C22; /* Remplacez par la couleur de votre choix */
+}
+
+.custom-carousel svg,
+.custom-carousel svg {
+    color: lightgray;
+}
