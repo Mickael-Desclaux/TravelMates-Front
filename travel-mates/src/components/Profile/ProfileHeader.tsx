@@ -5,6 +5,7 @@ import relaxationIcon from '../../assets/activity/relaxation.svg';
 import sportIcon from '../../assets/activity/sport.svg';
 import SettingsButton from "../SettingsButton/SettingsButton";
 import AddFriendButton from "../AddFriendButton/AddFriendButton";
+import { Typography } from "@material-tailwind/react";
 
 interface ProfilePageProps {
     values: ProfileData;
@@ -32,53 +33,75 @@ export default function ProfileHeader({ values }: ProfilePageProps) {
         values.activities.includes(activity.id)
     );
 
+    // Generate a random number of friends, pins, and trips
+    const friendsCount = Math.floor(Math.random() * 600);
+    const pinsCount = Math.floor(Math.random() * 30);
+    const tripsCount = Math.floor(Math.random() * 150);
+
     return (
         <>
-            <div className="flex justify-center border-b-0 border-gray-80">
-                <div className="flex bg-white shadow-md p-4 w-full max-w-3xl mt-2 md:mt-16 lg:mt-32">
+            <div className="container mx-auto">
 
-                    {/* Section profile picture */}
-                    <div className="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden bg-gray-300 mr-6 flex-shrink-0">
-                        {values.profilePicture ? (
-                            <img src={values.profilePicture} alt="Profile" className="object-cover w-full h-full" />
-                        ) : (
-                            <span className="text-gray-500">Photo</span>
-                        )}
-                    </div>
+                {/* Section profile header */}
+                <div className="flex justify-center border-b-0 border-gray-80">
+                    <div className="flex flex-col bg-white shadow-md p-4 w-full max-w-3xl mt-2 md:mt-16 lg:mt-32">
+                        <div className="flex items-start">
+                            <div className="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden bg-gray-300 mr-6 flex-shrink-0">
+                                {values.profilePicture ? (
+                                    <img src={values.profilePicture} alt="Profile" className="object-cover w-full h-full" />
+                                ) : (
+                                    <span className="text-gray-500">Photo</span>
+                                )}
+                            </div>
 
-                    {/* Section profile informations */}
-                    <div className="text-left space-y-2 w-full">
-                        <h1 className="text-xl font-bold font-title mb-2">{`${values.firstName} ${values.lastName}`}</h1>
-                        <div className="text-md font-normal">
-                            {values.age}, {values.gender}
-                        </div>
-                        <div className="flex flex-wrap">
-                            {values.language.map((lang, index) => (
-                                <div key={index} className="flex items-center mr-2">
-                                    {languageCodes[lang] ? (
-                                        <span className={`fi fi-${languageCodes[lang]} w-8 h-8 mr-1`} />
-                                    ) : (
-                                        <span>{lang}</span>
-                                    )}
+                            {/* Section profile informations */}
+                            <div className="text-left space-y-2 w-full">
+                                <h1 className="text-xl font-bold font-title mb-2">{`${values.firstName} ${values.lastName}`}</h1>
+                                <div className="text-md font-normal">
+                                    {values.age}, {values.gender}
                                 </div>
-                            ))}
-                        </div>
-                        <div className="flex">
-                            {selectedActivities.map((activity, index) => (
-                                <div key={index} className="flex items-center mr-2">
-                                    <img src={activity.icon} alt={activity.name} className="w-8 h-8 mr-1" />
+                                <div className="flex flex-wrap">
+                                    {values.language.map((lang, index) => (
+                                        <div key={index} className="flex items-center mr-2">
+                                            {languageCodes[lang] ? (
+                                                <span className={`fi fi-${languageCodes[lang]} w-8 h-8 mr-1`} />
+                                            ) : (
+                                                <span>{lang}</span>
+                                            )}
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                        <div>
-                            {values.address}
-                        </div>
-                    </div>
+                                <div className="flex">
+                                    {selectedActivities.map((activity, index) => (
+                                        <div key={index} className="flex items-center mr-2">
+                                            <img src={activity.icon} alt={activity.name} className="w-8 h-8 mr-1" />
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="w-full">
+                                    {values.address}
+                                </div>
+                            </div>
 
-                    <div className="flex flex-col space-y-10 items-end">
-                        <SettingsButton />
-                        <AddFriendButton />
+                            <div className="flex flex-col space-y-10 items-end">
+                                <SettingsButton />
+                                <AddFriendButton />
+                            </div>
+                        </div>
+
+                        {/* Section profile stats */}
+                        <div className="mt-6 w-full px-4 flex justify-between text-center text-sm font-bold">
+                            <p>{friendsCount} amis</p>
+                            <p>{pinsCount} marqueurs</p>
+                            <p> {tripsCount} voyages</p>
+                        </div>
                     </div>
+                </div>
+
+                {/* Section profile biography */}
+                <div className="p-6 bg-white w-full max-w-3xl mx-auto">
+                    <Typography className="text-2xl font-title font-bold pb-4">Bio</Typography>
+                    {values.description}
                 </div>
             </div>
         </>

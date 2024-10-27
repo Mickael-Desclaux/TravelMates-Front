@@ -8,4 +8,5 @@ export interface ProfileData {
     language: string[]
     address: string
     activities: number[]
+    description: string
 }
