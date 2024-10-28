@@ -149,7 +149,7 @@ export default function SignUpStepTwo() {
               variant="h6"
               className="mb-2 block font-large text-black-900"
             >
-              Ajouter une photo de profile*
+              Ajouter une photo de profil*
             </Typography>
           </label>
           <div className="relative">

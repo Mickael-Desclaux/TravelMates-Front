@@ -43,36 +43,37 @@ export default function SignUpMultiStepForm() {
 
   return (
     <>
-      <section className="grid text-center items-center">
-        <div className="mt-8 mb-2 w-96 max-w-screen-lg sm:w-96 mx-auto">
-          {/* TravelMates logo */} 
-          <div className="flex justify-center mb-8">
-            <img src={travelMatesLogo} alt="Logo TravelMates" className="w-40" />
-          </div>
+      <div className="md:mt-32">
+        <section className="grid text-center items-center">
+          <div className="mt-8 mb-2 w-96 max-w-screen-lg sm:w-96 mx-auto">
+            {/* TravelMates logo */}
+            <div className="flex justify-center mb-8">
+              <img src={travelMatesLogo} alt="Logo TravelMates" className="w-40" />
+            </div>
 
-          {/* Progress bar */}
-          { step < 4 && (
-            <ProgressBar currentStep={step} totalSteps={3} />
-          )}
+            {/* Progress bar */}
+            {step < 4 && (
+              <ProgressBar currentStep={step} totalSteps={3} />
+            )}
 
-          {/* Formik form for handling form state, validation, and submission */}
-          <Formik
-            initialValues={{
-              email: "",
-              password: "",
-              confirmedPassword: "",
-              firstName: "",
-              lastName: "",
-              birthDate: "",
-              gender: "",
-              address: "",
-              language: "",
-              profilePicture: null,
-              activities: []
-            }}
+            {/* Formik form for handling form state, validation, and submission */}
+            <Formik
+              initialValues={{
+                email: "",
+                password: "",
+                confirmedPassword: "",
+                firstName: "",
+                lastName: "",
+                birthDate: "",
+                gender: "",
+                address: "",
+                language: "",
+                profilePicture: null,
+                activities: []
+              }}
 
-            // Load the validation schema based on the current step
-            validationSchema={validationSchemas[step - 1]}
+              // Load the validation schema based on the current step
+              validationSchema={validationSchemas[step - 1]}
 
               // Handle form submission
               onSubmit={(values, { setSubmitting }) => {
@@ -85,46 +86,47 @@ export default function SignUpMultiStepForm() {
                   setSubmitting(false);
                 }
               }}
-          >
+            >
 
-            {({ values, isSubmitting }) => (
-              <Form>
-                {/* Render the appropriate step component based on the current step */}
-                {step === 1 && <StepOne />}
-                {step === 2 && <StepTwo />}
-                {step === 3 && <StepThree />}
-                {step === 4 && <SignUpStepFour email={values.email} />}
+              {({ values, isSubmitting }) => (
+                <Form>
+                  {/* Render the appropriate step component based on the current step */}
+                  {step === 1 && <StepOne />}
+                  {step === 2 && <StepTwo />}
+                  {step === 3 && <StepThree />}
+                  {step === 4 && <SignUpStepFour email={values.email} />}
 
-                <div className="flex justify-between text-left gap-x-8 mt-2 mb-8">
-                  {/* Button previous to go back to the previous step */}
-                  {step > 1 && step < 4 && (
-                    <Button type="button" onClick={handleBack} className="bg-gray-900 mt-6 w-full" >
-                      Précédent
-                    </Button>
+                  <div className="flex justify-between text-left gap-x-8 mt-2 mb-8">
+                    {/* Button previous to go back to the previous step */}
+                    {step > 1 && step < 4 && (
+                      <Button type="button" onClick={handleBack} className="bg-gray-900 mt-6 w-full" >
+                        Précédent
+                      </Button>
+                    )}
+
+                    {/* Button next to go to the next step */}
+                    {step < 4 && (
+                      <Button type="submit" disabled={isSubmitting} className="bg-green mt-6 w-full" >
+                        {step === 3 ? "Valider" : "Continuer"}
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Link for the sign in page for an user who have already an account */}
+                  {step === 1 && (
+                    <Typography color="black" className="text-sm !mt-4 mb-8 text-center font-normal">
+                      Vous avez déjà un compte ?{" "}
+                      <a href="/sign-in" className="font-medium text-black-900 text-sm underline">
+                        Me connecter
+                      </a>
+                    </Typography>
                   )}
-
-                  {/* Button next to go to the next step */}
-                  {step < 4  && (
-                    <Button type="submit" disabled={isSubmitting} className="bg-green mt-6 w-full" >
-                      {step === 3 ? "Valider" : "Continuer"}
-                    </Button>
-                  )}
-                </div>
-
-                {/* Link for the sign in page for an user who have already an account */}
-                {step === 1 && (
-                  <Typography color="black" className="text-sm !mt-4 mb-8 text-center font-normal">
-                    Vous avez déjà un compte ?{" "}
-                    <a href="/sign-in" className="font-medium text-black-900 text-sm underline">
-                      Me connecter
-                    </a>
-                  </Typography>
-                )}
-              </Form>
-            )}
-          </Formik>
-        </div>
-      </section>
+                </Form>
+              )}
+            </Formik>
+          </div>
+        </section>
+      </div>
     </>
   );
 };

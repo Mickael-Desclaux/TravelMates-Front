@@ -4,7 +4,6 @@ import { Trip } from '../../interfaces/TripProps/TripProps';
 import { Typography } from '@material-tailwind/react';
 import { getFakeTrips } from '../../api/Trips';
 import TripSearch from '../../components/TripSearch/TripSearch';
-import NavbarComponent from '../../components/Navbar/Navbar';
 
 /**
  * TripListe Component
@@ -76,37 +75,37 @@ const TripListe = () => {
 
 	return (
 		<>
-			<header className='flex justify-center'>
-				<TripSearch onFilter={handleFilter}/>
-			</header>
-			<section className="container mx-auto ps-4 pe-4">
-				{/* Page title */}
-				<Typography variant="h1" className="font-title text-lg mt-4">
-					{title}
-				</Typography>
+			<div className='md:mt-24'>
+				<header className='flex justify-center'>
+					<TripSearch onFilter={handleFilter} />
+				</header>
+				<section className="container mx-auto ps-4 pe-4">
+					{/* Page title */}
+					<Typography variant="h1" className="font-title text-2xl mt-4">
+						{title}
+					</Typography>
 
-				{/* Grid layout to display the trips */}
-				<div className="grid gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10">
-					{/* Map over trips and render a TripCardContainer for each */}
-					{filteredTrips.map(trip => (
-						<TripCardContainer
-							key={trip.id} // Use trip id as a unique key
-							id={trip.id} // Pass trip id to the card component
-							title={trip.title} // Pass trip title
-							destination={trip.destination} // Pass destination
-							dateFrom={trip.dateFrom} // Pass start date
-							dateTo={trip.dateTo} // Pass end date
-							description={trip.description} // Pass trip description
-							budgetMin={trip.budgetMin} // Pass minimum budget
-							budgetMax={trip.budgetMax} // Pass maximum budget
-							media={trip.media} // Pass media (image) URL
-							activities={trip.activities} // Pass activities related to the trip
-						/>
-					))}
-				</div>
-			</section>
-			
-			<NavbarComponent />
+					{/* Grid layout to display the trips */}
+					<div className="grid gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10">
+						{/* Map over trips and render a TripCardContainer for each */}
+						{filteredTrips.map(trip => (
+							<TripCardContainer
+								key={trip.id} // Use trip id as a unique key
+								id={trip.id} // Pass trip id to the card component
+								title={trip.title} // Pass trip title
+								destination={trip.destination} // Pass destination
+								dateFrom={trip.dateFrom} // Pass start date
+								dateTo={trip.dateTo} // Pass end date
+								description={trip.description} // Pass trip description
+								budgetMin={trip.budgetMin} // Pass minimum budget
+								budgetMax={trip.budgetMax} // Pass maximum budget
+								media={trip.media} // Pass media (image) URL
+								activities={trip.activities} // Pass activities related to the trip
+							/>
+						))}
+					</div>
+				</section>
+			</div>
 		</>
 	);
 };

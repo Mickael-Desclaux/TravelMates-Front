@@ -5,6 +5,7 @@ import messageIcon from "../../assets/icons/message.svg";
 import logInIcon from "../../assets/icons/login.svg";
 import logoTravelMates from "../../assets/Logo/travelmates.png";
 import { Button } from "@material-tailwind/react";
+import { NavLink } from "react-router-dom";
 
 export default function NavbarComponent() {
   return (
@@ -16,91 +17,91 @@ export default function NavbarComponent() {
           <div className="py-6 sm:bottom-auto sm:top-0 sm:w-auto">
             <ul className="flex text-sm justify-around">
               <li>
-                <a
-                  href="#"
+                <NavLink
+                  to={"/"}
                   className="flex flex-col items-center text-gray-900 dark:text-white"
                   aria-current="page"
                 >
                   <img src={homeIcon} alt="Accueil icône" className="w-10 h-10" />
                   Accueil
-                </a>
+                </NavLink>
               </li>
               <li>
-                <a
-                  href="/map"
+                <NavLink
+                  to={"/map"}
                   className="flex flex-col items-center text-gray-900 dark:text-white"
                 >
                   <img src={mapIcon} alt="Carte icône" className="w-10 h-10" />
                   Carte
-                </a>
+                </NavLink>
               </li>
               <li>
-                <a
-                  href="/trip-create"
+                <NavLink
+                  to={"/trip-create"}
                   className="flex flex-col items-center text-gray-900 dark:text-white"
                 >
                   <img src={newIcon} alt="Ajouter un nouvel événement icône" className="w-10 h-10" />
                   Ajouter
-                </a>
+                </NavLink>
               </li>
               <li>
-                <a
-                  href="#"
+                <NavLink
+                  to={"/message"}
                   className="flex flex-col items-center text-gray-900 dark:text-white"
                 >
                   <img src={messageIcon} alt="Message icône" className="w-10 h-10" />
                   Message
-                </a>
+                </NavLink>
               </li>
               <li>
-                <a
-                  href="/sign-in"
+                <NavLink
+                  to={"/sign-in"}
                   className="flex flex-col items-center text-gray-900 dark:text-white"
                 >
                   <img src={logInIcon} alt="Connexion icône" className="w-10 h-10" />
                   Connexion
-                </a>
+                </NavLink>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Navbar desktop version */}
-        <div className="hidden md:flex justify-between items-center w-full p-4 bg-white shadow-md fixed top-0 left-0">
+        <div className="hidden md:flex justify-between items-center w-full p-4 bg-white shadow-md fixed z-20 top-0 left-0">
           {/* TravelMates logo */}
           <div className="text-lg font-bold">
-            <a href="/">
+            <NavLink to={"/"}>
                 <img src={logoTravelMates} alt="Logo Travel Mates" className="w-20" />
-            </a>
+            </NavLink>
           </div>
 
           {/* Menu items for desktop */}
           <ul className="flex space-x-8">
             <li className="hover:text-green font-bold cursor-pointer">
-              <a href="/">Accueil</a>
+              <NavLink to={"/"}>Accueil</NavLink>
             </li>
             <li className="hover:text-green font-bold cursor-pointer">
-              <a href="#">Message</a>
+              <NavLink to={"/message"}>Message</NavLink>
             </li>
             <li className="hover:text-green font-bold cursor-pointer">
-              <a href="/map">Carte</a>
+              <NavLink to={"/map"}>Carte</NavLink>
             </li>
             <li className="hover:text-green font-bold cursor-pointer">
-              <a href="/trip-create">Ajouter un événement</a>
+              <NavLink to={"/trip-create"}>Ajouter un Trip</NavLink>
             </li>
           </ul>
 
           {/* Action buttons (sign-up and sign-in) */}
           <div className="flex gap-4 items-center">
-            <a
-              href="/sign-up"
+            <NavLink
+              to={"/sign-up"}
               className="text-md no-underline hover:text-green font-bold cursor-pointer whitespace-nowrap"
             >
               Créer un compte
-            </a>
+            </NavLink>
 
             <Button size="sm" className="bg-green items-center justify-center h-10">
-              <a href="/sign-in">Connexion</a>
+              <NavLink to={"/sign-in"}>Connexion</NavLink>
             </Button>
           </div>
         </div>

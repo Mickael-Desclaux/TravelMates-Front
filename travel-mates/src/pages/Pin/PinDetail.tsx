@@ -168,7 +168,7 @@ export default function PinDetail() {
 
     return (
         <>
-            <div className="md:grid md:place-content-center">
+            <div className="md:mt-32 md:grid md:place-content-center">
                 <div className="md:w-[60vw]">
                     <ThemeProvider value={carouselTheme}>
                         <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">

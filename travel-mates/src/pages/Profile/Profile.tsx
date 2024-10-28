@@ -1,4 +1,3 @@
-import NavbarComponent from "../../components/Navbar/Navbar";
 import ProfileHeader from "../../components/Profile/ProfileHeader";
 import { ProfileData } from "../../interfaces/ProfileInterface";
 import ProfilePicture from "../../assets/profile/profil1.jpg";
@@ -29,8 +28,6 @@ export default function Profile() {
       <div>
           <ProfileHeader values={profile} />
       </div>
-
-      <NavbarComponent />
     </>
   )
 }
