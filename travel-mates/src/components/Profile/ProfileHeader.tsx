@@ -58,7 +58,7 @@ export default function ProfileHeader({ values }: ProfilePageProps) {
                             <div className="text-left space-y-2 w-full">
                                 <h1 className="text-xl font-bold font-title mb-2">{`${values.firstName} ${values.lastName}`}</h1>
                                 <div className="text-md font-normal">
-                                    {values.age}, {values.gender}
+                                    {values.age} ans, {values.gender}
                                 </div>
                                 <div className="flex flex-wrap">
                                     {values.language.map((lang, index) => (
