@@ -1,41 +1,32 @@
 import { Input } from "@material-tailwind/react";
 import { useFormik } from "formik";
 import { useState } from "react";
-
-interface PinSearch {
-    title: string;
-    longitude: number;
-    latitude: number;
-}
+import { MapPin } from "../../interfaces/Pin";
 
 interface PinSearchProps {
-    onSearch: (longitude: number, latitude: number) => void;
+    suggestions: MapPin[];
+    onSearch: (title: string) => void;
 }
 
-export default function PinSearch({onSearch}: PinSearchProps) {
+export default function PinSearch({suggestions, onSearch}: PinSearchProps) {
 
-    const suggestions: PinSearch[] = [
-        {title: "Tour Eiffel", longitude: 2.2945, latitude: 48.8584}, 
-        {title: "Musée du Louvre", longitude: 2.3376, latitude: 48.8606}, 
-        {title: "Cathédrale Notre-Dame", longitude: 2.3500, latitude: 48.8529}, 
-        {title: "Arc de Triomphe", longitude: 2.2950, latitude: 48.8738}, 
-        {title: "Basilique du Sacré-Cœur", longitude: 2.3431, latitude: 48.8867}];
-
-    const [filteredSuggestions, setFilteredSuggestions] = useState<PinSearch[]>([]);
+    const [filteredSuggestions, setFilteredSuggestions] = useState<MapPin[]>([]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         formik.handleChange(e);
-        const inputValue = e.target.value;
+        const inputValue = e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         if (inputValue.length > 1) {
             const filtered = suggestions.filter(suggestion =>
-                suggestion.title.toLowerCase().startsWith(inputValue.toLowerCase())).slice(0, 5);
+                suggestion.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").startsWith(inputValue)
+            ).slice(0, 5);
             setFilteredSuggestions(filtered);
         } else {
             setFilteredSuggestions([]);
         }
     };
 
-    const handleSuggestionClick = (suggestion: PinSearch) => {
+
+    const handleSuggestionClick = (suggestion: MapPin) => {
         formik.setFieldValue("title", suggestion.title);
         formik.setFieldValue("longitude", suggestion.longitude);
         formik.setFieldValue("latitude", suggestion.latitude);
@@ -50,7 +41,8 @@ export default function PinSearch({onSearch}: PinSearchProps) {
             latitude: 0,
         },
         onSubmit: values => {
-            onSearch(values.longitude, values.latitude)
+            onSearch(values.title);
+            setFilteredSuggestions([]);
         }
     })
 
@@ -67,9 +59,9 @@ export default function PinSearch({onSearch}: PinSearchProps) {
                 />
                 {filteredSuggestions.length > 0 && (
                     <ul className="absolute left-0 right-0 border border-gray-300 bg-white rounded shadow-lg z-10 max-h-40 overflow-auto top-full">
-                        {filteredSuggestions.map((suggestion, index) => (
+                        {filteredSuggestions.map((suggestion) => (
                             <li
-                                key={index}
+                                key={suggestion.id}
                                 onClick={() => handleSuggestionClick(suggestion)}
                                 className="cursor-pointer hover:bg-gray-200 p-2 text-sm"
                             >

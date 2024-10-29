@@ -1,7 +1,6 @@
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl'
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './Map.css';
-import { Activity } from '../../interfaces/TripProps/TripProps';
 import adventureIcon from '../../assets/activity/adventure.svg';
 import cultureIcon from '../../assets/activity/culture.svg';
 import relaxationIcon from '../../assets/activity/relaxation.svg';
@@ -12,35 +11,44 @@ import { renderToString } from 'react-dom/server';
 import { Button, Typography } from '@material-tailwind/react';
 import { useNavigate } from 'react-router-dom';
 import PinSearch from '../../components/PinSearch/PinSearch';
-
-interface Pin {
-    id: number;
-    title: string;
-    activities: Activity[];
-    latitude: number;
-    longitude: number;
-    rating: number
-}
+import { MapPin } from '../../interfaces/Pin';
 
 export default function Map() {
 
     const navigate = useNavigate()
+
+    // Used to pass map const to handleSearch function
     const mapRef = useRef<mapboxgl.Map | null>(null);
+
+    // Pin data storage
+    const [ pins, setPins ] = useState<MapPin[]>([])
 
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_API_KEY;
 
-    function handleSearch(longitude: number, latitude: number) {
+    // Search for a marker by its title, regardless of case or accents
+    function handleSearch(title: string) {
         if (mapRef.current) {
-            mapRef.current.flyTo({
-                center: [longitude, latitude],
-                zoom: 15,
-            })
-        };
+            const normalizedTitle = title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            const pin = pins.find((pin) => {
+                const normalizedPinTitle = pin.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                return normalizedPinTitle.includes(normalizedTitle);
+            });
+
+            if (pin) {
+                mapRef.current.flyTo({
+                    center: [pin.longitude, pin.latitude],
+                    zoom: 15,
+                });
+            } else {
+                console.log("Titre non trouvé");
+            }
+        }
     }
 
     useEffect(() => {
         // Fake data
-        const data: Pin[] = [
+        const data: MapPin[] = [
             {
                 id: 1,
                 title: 'Tour Eiffel',
@@ -88,6 +96,8 @@ export default function Map() {
                 rating: 4
             }
         ];
+
+        setPins(data);
 
         const map = new mapboxgl.Map({
             container: 'map', // root id for the map
@@ -173,7 +183,7 @@ export default function Map() {
             <div className="flex justify-center md:mt-32 m-4 relative">
                 <div id='map' style={{ width: '90vw', height: '90vh' }}>
                     <div className='absolute top-4 md:left-1/2 left-1/3 ms-4 z-10 transform -translate-x-1/2'>
-                        <PinSearch onSearch={(longitude, latitude) => handleSearch(longitude, latitude)} />
+                        <PinSearch onSearch={(title) => handleSearch(title)} suggestions={pins} />
                     </div>
                     <button className='absolute bottom-12 right-4 z-10 bg-green w-12 h-12 flex justify-center items-center border rounded-lg'
                         onClick={() => navigate('/pin')}>
