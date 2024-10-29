@@ -1,6 +1,7 @@
 import ProfileHeader from "../../components/Profile/ProfileHeader";
 import { ProfileData } from "../../interfaces/ProfileInterface";
 import ProfilePicture from "../../assets/profile/profil1.jpg";
+import ProfilePins from "../../components/Profile/ProfilePins";
 
 export default function Profile() {
 
@@ -27,6 +28,7 @@ export default function Profile() {
     <>
       <div>
           <ProfileHeader values={profile} />
+          <ProfilePins />
       </div>
     </>
   )
