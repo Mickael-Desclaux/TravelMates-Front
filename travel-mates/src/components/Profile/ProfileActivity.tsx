@@ -1,6 +1,7 @@
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel, Typography } from "@material-tailwind/react";
 import pinMarkerIcon from '../../assets/icons/pin-marker.svg';
 import { useState } from "react";
+import planeIcon from '../../assets/icons/plane.svg';
 
 // Fake data for pins
 const pinsData = [
@@ -9,8 +10,16 @@ const pinsData = [
     { id: 3, title: "Dōtonbori", country: "Japon", dateAdded: "2023-10-15" },
     { id: 4, title: "Lac de Côme", country: "Italie", dateAdded: "2023-09-10" },
     { id: 5, title: "Tour de Pise", country: "Italie", dateAdded: "2023-08-05" },
-    { id: 6, title: "Piccola Cucina Estiatorio", country: "New York", dateAdded: "2023-07-22" },
+    { id: 6, title: "Piccola Cucina Estiatorio", country: "New York", dateAdded: "2023-07-22" }
   ];
+
+  // Fake data for trips
+const tripsData = [
+    { id: 1, destination: "New York", startDate: `15/06/2024`, endDate: `25/06/2024` },
+    { id: 2, destination: "Milan", startDate: `05/01/2024`, endDate: `17/01/2024` },
+    { id: 3, destination: "Paris", startDate: `09/12/2023`, endDate: `20/12/2023` },
+    { id: 4, destination: "Japon", startDate: `05/10/2023`, endDate: `29/10/2023` }
+];
 
 export default function ProfileTabs() {
     const [activeTab, setActiveTab] = useState("marqueurs");
@@ -22,6 +31,9 @@ export default function ProfileTabs() {
 
     // Sort pinsData by dateAdded from newest to oldest
     const sortedPinsData = [...pinsData].sort((a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime());
+    
+    // Sort tripsData by dateAdded from newest to oldest
+    const sortedTripsData = [...tripsData].sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
 
   return (
     <>
@@ -49,9 +61,23 @@ export default function ProfileTabs() {
               <div className="space-y-4 mt-4 h-60 overflow-y-auto pr-2">
                 {sortedPinsData.map((activity) => (
                   <div key={activity.id} className="flex items-center space-x-2">
-                    <img src={pinMarkerIcon} alt="Icone marqueur" className="w-8 h-8" />
+                    <img src={pinMarkerIcon} alt="Icône marqueur" className="w-8 h-8" />
                     <p className="flex text-lg font-medium text-black mx-auto">
                       {activity.title}, {activity.country}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </TabPanel>
+
+            <TabPanel value="trips">
+              <div className="space-y-4 mt-4 h-60 overflow-y-auto pr-2">
+                {sortedTripsData.map((trip) => (
+                  <div key={trip.id} className="flex items-center space-x-2 md:space-x-4">
+                    <img src={planeIcon} alt="Icône avion de voyage" className="w-6 h-6 md:w-8 md:h-8" />
+                    <p className="text-sm font-medium text-black lg:text-lg">
+                      Voyage à {trip.destination} - du {trip.startDate} au{" "}
+                      {trip.endDate}
                     </p>
                   </div>
                 ))}
