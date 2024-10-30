@@ -1,196 +1,208 @@
-import { Card, Typography, Input, Checkbox, Button } from "@material-tailwind/react";
-import { useFormik } from "formik";
-import { number, object } from "yup";
-import addTripConditions from "../../api/Trip";
+import {
+	Card,
+	Typography,
+	Input,
+	Button,
+	Checkbox,
+} from '@material-tailwind/react';
+import { useFormikContext, ErrorMessage } from 'formik';
+import { useEffect } from 'react';
 import './TripConditions.css';
-import { useEffect } from "react";
-import type { TripConditions } from "../../interfaces/TripConditions";
+import { FormValues } from '../../interfaces/FormInterfaces/FormInterfaces';
 
 export default function TripConditions() {
+	// Utilisation de Formik context pour accéder aux valeurs et les mettre à jour
+	const { values, setFieldValue } = useFormikContext<FormValues>();
 
-    // Default form values
-    const defaultValues: TripConditions = {
-        condition_gender: "",
-        condition_age_min: 18,
-        condition_age_max: 99,
-        condition_physical: "none",
-        condition_user_limit: 5,
-    };
+	// Mise à jour de la couleur de fond du slider
+	const updateSliderBackground = (
+		value: number,
+		min: number,
+		max: number,
+		slider: HTMLInputElement,
+	) => {
+		const percentage = ((value - min) / (max - min)) * 100;
+		slider.style.background = `linear-gradient(to right, #185C22 ${percentage}%, #ccc ${percentage}%)`;
+	};
 
-    // Custom error message if ageMin > ageMax or ageMax < ageMin
-    const validateAgeRange = (values: TripConditions) => {
-        if (values.condition_age_min > values.condition_age_max) {
-            return { condition_age_min: "L'âge minimum ne peut pas être supérieur à l'âge maximum" };
-        }
-        if (values.condition_age_max < values.condition_age_min) {
-            return { condition_age_max: "L'âge maximum ne peut pas être inférieur à l'âge minimum" };
-        }
-        return {};
-    };
+	// Appliquer le design du slider après le montage du composant
+	useEffect(() => {
+		const slider = document.querySelector(
+			'input[type="range"]',
+		) as HTMLInputElement;
+		if (slider) {
+			updateSliderBackground(
+				values.condition_user_limit,
+				+slider.min,
+				+slider.max,
+				slider,
+			);
+		}
+	}, [values.condition_user_limit]);
 
-    // Handle form with formik
-    const formik = useFormik({
-        initialValues: defaultValues,
-        validate: validateAgeRange,
-        validationSchema: object({
-            ageMin: number().min(18, "L'âge minimum doit être supérieur à 18 ans").max(99, "L'âge minimum doit être inférieur à 99 ans"),
-            ageMax: number().min(18, "L'âge maximum doit être supérieur à 18 ans").max(99, "L'âge maximum doit être inférieur à 100 ans"),
-        }),
-        onSubmit: values => {
-            addTripConditions(values);
-        }
-    })
+	// Gérer le changement de valeur du slider
+	const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const value = parseInt(e.target.value, 10);
+		setFieldValue('condition_user_limit', value);
 
-    // Update slider background color
-    const updateSliderBackground = (value: number, min: number, max: number, slider: HTMLInputElement) => {
-        const percentage = ((value - min) / (max - min)) * 100;
-        slider.style.background = `linear-gradient(to right, #185C22 ${percentage}%, #ccc ${percentage}%)`;
-    };
+		const slider = e.target as HTMLInputElement;
+		updateSliderBackground(value, +slider.min, +slider.max, slider);
+	};
 
-    // Compute slider value in percentage
-    const calculateSliderValue = (slider: HTMLInputElement) => {
-        return ((+slider.value - +slider.min) / (+slider.max - +slider.min)) * 100;
-    };
+	return (
+		<Card color="transparent" shadow={false}>
+			<div className="flex justify-center">
+				<div className="mt-8 mb-2 w-80 sm:w-96">
+					<div className="mb-1 flex flex-col gap-6">
+						{/* condition_gender */}
+						<div className="flex items-center">
+							<Typography
+								variant="paragraph"
+								color="blue-gray"
+								className="font-bold"
+							>
+								Je veux voyager uniquement avec des user.genre
+							</Typography>
+							<Checkbox
+								name="condition_gender"
+								onChange={e =>
+									setFieldValue('condition_gender', e.target.value)
+								}
+								color="green"
+								className="border border-gray-300 rounded p-2 w-full"
+								crossOrigin={undefined}
+							/>
+							<ErrorMessage
+								name="condition_gender"
+								component="div"
+								className="text-red-500 text-sm"
+							/>
+						</div>
 
-    // Apply slider design after page is mounted
-    useEffect(() => {
-        const slider = document.querySelector('input[type="range"]') as HTMLInputElement;
+						{/* condition_age_min && condition_age_max */}
+						<Typography
+							variant="paragraph"
+							color="blue-gray"
+							className="-mb-3 font-bold"
+						>
+							Âgés entre
+						</Typography>
+						<div className="flex items-center gap-4">
+							<div>
+								<Input
+									name="condition_age_min"
+									type="number"
+									onChange={e =>
+										setFieldValue('condition_age_min', Number(e.target.value))
+									}
+									className="border border-gray-300 rounded p-2 text-center"
+									crossOrigin={undefined}
+									placeholder="Age min"
+								/>
+								<ErrorMessage
+									name="condition_age_min"
+									component="div"
+									className="text-red-500 text-sm"
+								/>
+							</div>
+							<Typography className="ms-4 me-4">et</Typography>
+							<div>
+								<Input
+									name="condition_age_max"
+									type="number"
+									onChange={e =>
+										setFieldValue('condition_age_max', Number(e.target.value))
+									}
+									className="border border-gray-300 rounded p-2 text-center"
+									crossOrigin={undefined}
+									placeholder="Age max"
+								/>
+								<ErrorMessage
+									name="condition_age_max"
+									component="div"
+									className="text-red-500 text-sm"
+								/>
+							</div>
+							<Typography>ans</Typography>
+						</div>
 
-        if (slider) {
-            updateSliderBackground(formik.values.condition_user_limit, +slider.min, +slider.max, slider);
-        }
-    }, [formik.values.condition_user_limit]);
+						{/* condition_physical */}
+						<Typography
+							variant="paragraph"
+							color="blue-gray"
+							className="-mb-3 font-bold"
+						>
+							Condition physique recommandée
+						</Typography>
+						<div className="flex justify-between space-x-2">
+							<Button
+								variant="outlined"
+								type="button"
+								className={`${
+									values.condition_physical === 'none'
+										? 'bg-green text-white'
+										: 'bg-white text-black'
+								}`}
+								onClick={() => setFieldValue('condition_physical', 'none')}
+							>
+								Aucune
+							</Button>
+							<Button
+								variant="outlined"
+								type="button"
+								className={`${
+									values.condition_physical === 'normal'
+										? 'bg-green text-white'
+										: 'bg-white text-black'
+								}`}
+								onClick={() => setFieldValue('condition_physical', 'normal')}
+							>
+								Normale
+							</Button>
+							<Button
+								variant="outlined"
+								type="button"
+								className={`${
+									values.condition_physical === 'excellent'
+										? 'bg-green text-white'
+										: 'bg-white text-black'
+								}`}
+								onClick={() => setFieldValue('condition_physical', 'excellent')}
+							>
+								Excellente
+							</Button>
+						</div>
 
-    // Handle slider value on change
-    const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-
-        // Get slider element and it's value
-        const slider = e.target as HTMLInputElement;
-        const value = calculateSliderValue(slider);
-
-        // Slider value and color update
-        updateSliderBackground(value, +slider.min, +slider.max, slider);
-    };
-
-    return (
-        <>
-            <Card color="transparent" shadow={false}>
-                <div className="flex justify-center">
-                    <form className="mt-8 mb-2 w-80 sm:w-96" onSubmit={formik.handleSubmit}>
-                        <div className="mb-1 flex flex-col gap-6">
-
-                            {/* condition_gender */}
-                            <div className="flex items-center">
-                                <Typography variant="paragraph" color="blue-gray" className="font-bold">
-                                    Je veux voyager uniquement avec des user.genre
-                                </Typography>
-                                <Checkbox crossOrigin={undefined} value={formik.values.condition_gender} color="green" />
-                            </div>
-
-                            {/* condition_age_min && condition_age_max */}
-                            <Typography variant="paragraph" color="blue-gray" className="-mb-3 font-bold">
-                                Âgés entre
-                            </Typography>
-                            <div className="flex items-center gap-4">
-                                <div>
-                                    <Input
-                                        name="condition_age_min"
-                                        value={formik.values.condition_age_min}
-                                        onChange={formik.handleChange}
-                                        containerProps={{ className: "min-w-[48px]" }}
-                                        placeholder="Âge min"
-                                        className=" !border-t-blue-gray-200 focus:!border-t-gray-900 text-center"
-                                        labelProps={{
-                                            className: "before:content-none after:content-none",
-                                        }} crossOrigin={undefined} />
-                                </div>
-                                <Typography className="ms-4 me-4">et</Typography>
-                                <div>
-                                    <Input
-                                        name="condition_age_max"
-                                        value={formik.values.condition_age_max}
-                                        onChange={formik.handleChange}
-                                        containerProps={{ className: "min-w-[48px]" }}
-                                        placeholder="Âge max"
-                                        className=" !border-t-blue-gray-200 focus:!border-t-gray-900 text-center"
-                                        labelProps={{
-                                            className: "before:content-none after:content-none",
-                                        }} crossOrigin={undefined} />
-                                </div>
-                                <Typography>ans</Typography>
-                            </div>
-
-                            {/* ageMin and ageMax errors display */}
-                            {formik.touched.condition_age_min && formik.errors.condition_age_min ? (
-
-                                <div>{formik.errors.condition_age_min}</div>
-
-                            ) : null}
-                            {formik.touched.condition_age_max && formik.errors.condition_age_max ? (
-
-                                <div>{formik.errors.condition_age_max}</div>
-
-                            ) : null}
-
-                            {/* condition_physical */}
-                            <Typography variant="paragraph" color="blue-gray" className="-mb-3 font-bold">
-                                Condition physique recommandée
-                            </Typography>
-                            <div className="flex justify-between space-x-2">
-                                <Button
-                                    variant="outlined"
-                                    type="button"
-                                    className={`${formik.values.condition_physical === 'none' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
-                                    onClick={() => formik.setFieldValue('condition_physical', 'none')}>
-                                    Aucune
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    type="button"
-                                    className={`${formik.values.condition_physical === 'normal' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
-                                    onClick={() => formik.setFieldValue('condition_physical', 'normal')}>
-                                    Normale
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    type="button"
-                                    className={`${formik.values.condition_physical === 'excellent' ? 'bg-green-900 text-white' : 'bg-white text-black'}`}
-                                    onClick={() => formik.setFieldValue('condition_physical', 'excellent')}>
-                                    Excellente
-                                </Button>
-                            </div>
-
-                            {/* condition_user_limit */}
-                            <Typography variant="paragraph" color="blue-gray" className="-mb-3 font-bold">
-                                Nombre limite de participants
-                            </Typography>
-                            <div className="flex justify-between -mb-3">
-                                <span className="text-start">2</span>
-                                <span className="text-center">{formik.values.condition_user_limit} participants max</span>
-                                <span className="text-end">10</span>
-                            </div>
-                            <input
-                                type="range"
-                                min={2}
-                                max={10}
-                                step={1}
-                                name="condition_user_limit"
-                                value={formik.values.condition_user_limit}
-                                className="w-full h-2 bg-green-900 rounded-lg appearance-none cursor-pointer"
-                                onChange={(e) => {handleSliderChange(e); formik.handleChange(e)} }
-                            />
-                        </div>
-                        <div className="flex justify-between gap-12 mt-12">
-                            <Button onClick={() => formik.resetForm()} className="w-1/2" type="button" fullWidth>
-                                Réinitialiser
-                            </Button>
-                            <Button type="submit" className="w-1/2 bg-green-900" fullWidth>
-                                Valider
-                            </Button>
-                        </div>
-                    </form>
-                </div>
-            </Card>
-        </>
-    )
+						{/* condition_user_limit */}
+						<Typography
+							variant="paragraph"
+							color="blue-gray"
+							className="-mb-3 font-bold"
+						>
+							Nombre limite de participants
+						</Typography>
+						<div className="flex justify-between -mb-3">
+							<span className="text-start">2</span>
+							<span className="text-center">
+								{values.condition_user_limit} participants max
+							</span>
+							<span className="text-end">10</span>
+						</div>
+						<input
+							type="range"
+							min={2}
+							max={10}
+							step={1}
+							name="condition_user_limit"
+							className="w-full h-2 bg-green rounded-lg appearance-none cursor-pointer"
+							onChange={e => {
+								handleSliderChange(e);
+								setFieldValue('condition_user_limit', Number(e.target.value));
+							}}
+						/>
+					</div>
+				</div>
+			</div>
+		</Card>
+	);
 }
