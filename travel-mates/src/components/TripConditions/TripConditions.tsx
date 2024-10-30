@@ -66,10 +66,11 @@ export default function TripConditions() {
 							<Checkbox
 								name="condition_gender"
 								onChange={e =>
-									setFieldValue('condition_gender', e.target.value)
+									setFieldValue('condition_gender', e.target.checked)
 								}
 								color="green"
-								className="border border-gray-300 rounded p-2 w-full"
+								className="custom-checkbox bg-green border border-gray-300 rounded p-2 w-full"
+								checked={Boolean(values.condition_gender)}
 								crossOrigin={undefined}
 							/>
 							<ErrorMessage
