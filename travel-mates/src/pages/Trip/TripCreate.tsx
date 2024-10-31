@@ -1,8 +1,8 @@
 import { Form, Formik } from 'formik';
 import { useState } from 'react';
 import * as Yup from 'yup';
-import StepTwo from '../../components/MultiStepForm/StepTwoAddTrip';
-import StepOne from '../../components/MultiStepForm/StepOneAddTrip';
+import StepTwo from '../../components/MultiStepFormAddTrip/StepTwoAddTrip';
+import StepOne from '../../components/MultiStepFormAddTrip/StepOneAddTrip';
 import { Button } from '@material-tailwind/react';
 
 export default function TripCreateMultiStepForm() {
@@ -31,9 +31,30 @@ export default function TripCreateMultiStepForm() {
 					Yup.ref('conditions_budget_min'),
 					'Le budget maximum doit être supérieur au budget minimum',
 				),
-			// travelWith: Yup.string().required('Veuillez sélectionner une option'),
+			condition_gender: Yup.boolean(),
+			condition_age_min: Yup.number()
+				.min(18, "L'âge minimum doit être de 18 ans")
+				.required("L'âge minimum est requis"),
+			condition_age_max: Yup.number()
+				.max(100, "L'âge maximum doit être de 100 ans")
+				.required("L'âge maximum est requis")
+				.moreThan(
+					Yup.ref('condition_age_min'),
+					"L'âge maximum doit être supérieur à l'âge minimum",
+				),
+			condition_physical: Yup.string()
+				.oneOf(
+					['none', 'normal', 'excellent'],
+					'Choisissez une condition physique valide',
+				)
+				.required('La condition physique est requise'),
+			condition_user_limit: Yup.number()
+				.min(2, 'Le nombre limite de participants doit être au moins 2')
+				.max(10, 'Le nombre limite de participants ne doit pas dépasser 10')
+				.required('Le nombre limite de participants est requis'),
 		}),
 	];
+
 	const handleNext = () => setStep(step + 1);
 	const handleBack = () => setStep(step - 1);
 
@@ -81,7 +102,7 @@ export default function TripCreateMultiStepForm() {
 								<Button
 									type="button"
 									onClick={handleBack}
-									className="bg-gray-900 mt-6 w-[20%] "
+									className="bg-gray-900 mt-6 w-[20%]"
 								>
 									Précédent
 								</Button>
@@ -91,7 +112,7 @@ export default function TripCreateMultiStepForm() {
 							<Button
 								type="submit"
 								disabled={isSubmitting}
-								className=" bg-green text-white mt-6 hover:bg-green w-[20%] "
+								className="bg-green text-white mt-6 hover:bg-green w-[20%]"
 							>
 								{step === 3 ? 'Valider' : 'Continuer'}
 							</Button>

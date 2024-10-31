@@ -11,10 +11,10 @@ import './TripConditions.css';
 import { FormValues } from '../../interfaces/FormInterfaces/FormInterfaces';
 
 export default function TripConditions() {
-	// Utilisation de Formik context pour accéder aux valeurs et les mettre à jour
+	// Use Formik context to access and update values
 	const { values, setFieldValue } = useFormikContext<FormValues>();
 
-	// Mise à jour de la couleur de fond du slider
+	// Update the background color of the slider based on its value
 	const updateSliderBackground = (
 		value: number,
 		min: number,
@@ -25,7 +25,7 @@ export default function TripConditions() {
 		slider.style.background = `linear-gradient(to right, #185C22 ${percentage}%, #ccc ${percentage}%)`;
 	};
 
-	// Appliquer le design du slider après le montage du composant
+	// Apply the slider design after component mounts
 	useEffect(() => {
 		const slider = document.querySelector(
 			'input[type="range"]',
@@ -40,7 +40,7 @@ export default function TripConditions() {
 		}
 	}, [values.condition_user_limit]);
 
-	// Gérer le changement de valeur du slider
+	// Handle slider value change
 	const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = parseInt(e.target.value, 10);
 		setFieldValue('condition_user_limit', value);
@@ -146,7 +146,7 @@ export default function TripConditions() {
 								}`}
 								onClick={() => setFieldValue('condition_physical', 'none')}
 							>
-								Aucune
+								AucuneNombre limite de participants participants max
 							</Button>
 							<Button
 								variant="outlined"
@@ -158,7 +158,7 @@ export default function TripConditions() {
 								}`}
 								onClick={() => setFieldValue('condition_physical', 'normal')}
 							>
-								Normale
+								Normal
 							</Button>
 							<Button
 								variant="outlined"
@@ -170,7 +170,7 @@ export default function TripConditions() {
 								}`}
 								onClick={() => setFieldValue('condition_physical', 'excellent')}
 							>
-								Excellente
+								Excellent
 							</Button>
 						</div>
 
@@ -185,7 +185,8 @@ export default function TripConditions() {
 						<div className="flex justify-between -mb-3">
 							<span className="text-start">2</span>
 							<span className="text-center">
-								{values.condition_user_limit} participants max
+								{values.condition_user_limit}
+								participants max
 							</span>
 							<span className="text-end">10</span>
 						</div>

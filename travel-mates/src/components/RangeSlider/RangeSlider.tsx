@@ -27,7 +27,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
 
 	return (
 		<div className="range-slider-container">
-			{/* Valeurs sélectionnées (en haut) */}
+			{/* Selected values (top) */}
 			<div className="range-slider-values range-slider-values-top">
 				<span>{value[0]} €</span>
 				<span>{value[1]} €</span>
@@ -44,7 +44,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
 				className="range-slider"
 			/>
 
-			{/* Valeurs minimum et maximum (en bas) */}
+			{/* Minimum and maximum values (bottom) */}
 			<div className="range-slider-values range-slider-values-bottom">
 				<span>{min} €</span>
 				<span>{max} €</span>

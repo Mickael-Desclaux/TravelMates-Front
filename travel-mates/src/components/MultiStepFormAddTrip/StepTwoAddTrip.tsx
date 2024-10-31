@@ -10,39 +10,43 @@ const StepTwo = () => {
 	const [isActivityPickerOpen, setIsActivityPickerOpen] = useState(false);
 	const [isTripConditionsOpen, setIsTripConditionsOpen] = useState(false);
 
-	// Accès aux valeurs de Formik
+	// Access Formik values
 	const { values, setFieldValue } = useFormikContext<{
 		activities: number[];
 		conditions_budget_min: number;
 		conditions_budget_max: number;
 	}>();
 
+	// Function to open the ActivityPicker modal
 	const openActivityPicker = () => {
 		setIsActivityPickerOpen(true);
 	};
 
+	// Function to close the ActivityPicker modal
 	const closeActivityPicker = () => {
 		setIsActivityPickerOpen(false);
 	};
 
+	// Function to open the TripConditions modal
 	const openTripConditions = () => {
 		setIsTripConditionsOpen(true);
 	};
 
+	// Function to close the TripConditions modal
 	const closeTripConditions = () => {
 		setIsTripConditionsOpen(false);
 	};
 
-	// Fonction pour valider la sélection d'activités et fermer ActivityPicker
+	// Validate activity selection and close ActivityPicker if at least one activity is selected
 	const handleValidation = () => {
 		if (values.activities.length > 0) {
 			closeActivityPicker();
 		} else {
-			alert('Veuillez sélectionner au moins une activité.');
+			alert('Please select at least one activity.');
 		}
 	};
 
-	// Fonction de gestion du changement de valeurs pour le slider
+	// Handle budget slider value change and update Formik values
 	const handleBudgetChange = (value: number[]) => {
 		setFieldValue('conditions_budget_min', value[0]);
 		setFieldValue('conditions_budget_max', value[1]);
@@ -50,11 +54,11 @@ const StepTwo = () => {
 
 	return (
 		<>
-			{/* Formulaire StepTwo */}
+			{/* StepTwo form section */}
 			<section className="p-4 max-w-lg mx-auto bg-white shadow rounded-lg">
 				<h2 className="text-xl font-bold mb-4">Parlez-nous de votre trip</h2>
 
-				{/* Titre du voyage */}
+				{/* Trip title */}
 				<div className="mb-4">
 					<Typography className="block text-black font-bold mb-1">
 						Titre du voyage
@@ -68,7 +72,7 @@ const StepTwo = () => {
 					<ErrorMessage name="title" component="div" className="text-red-500" />
 				</div>
 
-				{/* Description du voyage */}
+				{/* Trip description */}
 				<div className="mb-4">
 					<Typography className="block text-black font-bold mb-1">
 						Décrivez votre voyage
@@ -87,7 +91,7 @@ const StepTwo = () => {
 					/>
 				</div>
 
-				{/* Choisir les activités avec le menu burger */}
+				{/* Activity selection with burger menu */}
 				<div className="mb-4">
 					<Typography className="block text-black font-bold mb-1">
 						Choisir les activités
@@ -101,7 +105,7 @@ const StepTwo = () => {
 					</div>
 				</div>
 
-				{/* Budget hors transport */}
+				{/* Budget slider */}
 				<div className="mb-4">
 					<Typography className="block text-black font-bold mb-1">
 						Budget hors transport
@@ -127,7 +131,7 @@ const StepTwo = () => {
 					/>
 				</div>
 
-				{/* Conditions de voyage */}
+				{/* Travel conditions selection */}
 				<div className="mb-4">
 					<Typography className="block text-black font-bold mb-1">
 						Avec qui voulez-vous partir ?
@@ -142,10 +146,10 @@ const StepTwo = () => {
 				</div>
 			</section>
 
-			{/* ActivityPicker affiché en plein écran */}
+			{/* ActivityPicker displayed as full-screen modal */}
 			{isActivityPickerOpen && (
 				<div className="fixed inset-0 z-50 bg-white flex flex-col justify-center items-center">
-					{/* Bouton pour fermer l'ActivityPicker */}
+					{/* Button to close the ActivityPicker */}
 					<button
 						onClick={closeActivityPicker}
 						className="absolute top-4 right-4 p-2 bg-red-500 text-white rounded"
@@ -153,15 +157,15 @@ const StepTwo = () => {
 						Fermer
 					</button>
 
-					{/* Titre */}
+					{/* Title */}
 					<Typography variant="h4" className="mb-6 text-center">
 						Sélectionner les activités de votre trip
 					</Typography>
 
-					{/* Affichage de ActivityPicker */}
+					{/* Display ActivityPicker */}
 					<ActivityPicker />
 
-					{/* Bouton Valider */}
+					{/* Validation button */}
 					<Button
 						size="lg"
 						className="mt-6 bg-green"
@@ -172,10 +176,10 @@ const StepTwo = () => {
 				</div>
 			)}
 
-			{/* TripConditions affiché en plein écran */}
+			{/* TripConditions displayed as full-screen modal */}
 			{isTripConditionsOpen && (
 				<div className="fixed inset-0 z-50 bg-white flex flex-col justify-center items-center">
-					{/* Bouton pour fermer TripConditions */}
+					{/* Button to close TripConditions */}
 					<button
 						onClick={closeTripConditions}
 						className="absolute top-4 right-4 p-2 bg-red-500 text-white rounded"
@@ -183,15 +187,15 @@ const StepTwo = () => {
 						Fermer
 					</button>
 
-					{/* Titre */}
+					{/* Title */}
 					<Typography variant="h4" className="mb-6 text-center">
 						Sélectionner les conditions de votre trip
 					</Typography>
 
-					{/* Affichage de TripConditions */}
+					{/* Display TripConditions */}
 					<TripConditions />
 
-					{/* Bouton Valider */}
+					{/* Validation button */}
 					<Button
 						size="lg"
 						className="mt-6 bg-green"
