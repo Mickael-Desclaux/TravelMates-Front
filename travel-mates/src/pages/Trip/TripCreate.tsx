@@ -95,7 +95,7 @@ export default function TripCreateMultiStepForm() {
 					<Form>
 						{step === 1 && <StepOne />}
 						{step === 2 && <StepTwo />}
-
+						
 						<div className="flex justify-center text-left gap-x-8 mt-2 mb-8">
 							{/* Button previous to go back to the previous step */}
 							{step > 1 && (

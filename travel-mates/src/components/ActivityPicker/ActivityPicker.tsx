@@ -17,10 +17,10 @@ export default function ActivityPicker() {
         { id: 2, name: "Nature", icon: natureIcon },
         { id: 3, name: "Aventure", icon: adventureIcon },
         { id: 4, name: "Détente", icon: relaxationIcon },
-        { id: 5, name: "Loisirs", icon: leisureIcon },
+        { id: 5, name: "Gastronomie", icon: gastronomyIcon },
         { id: 6, name: "Sport", icon: sportIcon },
         { id: 7, name: "Bar et Fête", icon: partyIcon },
-        { id: 8, name: "Gastronomie", icon: gastronomyIcon },
+        { id: 8, name: "Loisirs", icon: leisureIcon },
         { id: 9, name: "Famille", icon: familyIcon }
     ];
 
@@ -49,7 +49,7 @@ export default function ActivityPicker() {
     return (
         <>
             <div className="flex justify-center">
-                <div className="grid gap-3 grid-cols-3 grid-rows-3 w-full md:w-[40%]">
+                <div className="grid gap-3 grid-cols-3 grid-rows-3">
                     {activities.map((activity) => (
                         <Activity
                             key={activity.id}

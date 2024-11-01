@@ -53,12 +53,15 @@ export const getFakeTrips = async (): Promise<Trip[]> => {
 				Math.floor(Math.random() * 6) + 1, // Select 1 to 6 activities
 			);
 
+			const dateFrom = new Date(2024, 10, Math.floor(Math.random() * 30) + 1);
+			const dateTo = new Date(2024, 11, Math.floor(Math.random() * 31) + 1);
+
 			return {
 				id: post.id, // Use the post's id as the trip's id
 				title: post.title, // Use the post's title for the trip title
 				destination: `Destination ${post.id}`, // Generate a fake destination
-				dateFrom: '2024-10-01', // Fixed date for the trip start
-				dateTo: '2024-10-10', // Fixed date for the trip end
+				dateFrom: dateFrom, // Fixed date for the trip start
+				dateTo: dateTo, // Fixed date for the trip end
 				description: post.body, // Use the post's body as the trip description
 				budgetMin: Math.floor(Math.random() * 500) + 100, // Generate a random minimum budget
 				budgetMax: Math.floor(Math.random() * 1500) + 600, // Generate a random maximum budget

@@ -16,8 +16,8 @@ export interface Trip {
 	id: number; // Unique identifier for the trip
 	title: string; // The title or name of the trip
 	destination: string; // Destination or location of the trip
-	dateFrom: string; // Start date of the trip (in ISO format or any date format)
-	dateTo: string; // End date of the trip (in ISO format or any date format)
+	dateFrom: Date; // Start date of the trip (in ISO format or any date format)
+	dateTo: Date; // End date of the trip (in ISO format or any date format)
 	description: string; // Detailed description of the trip
 	budgetMin: number; // Minimum budget required for the trip
 	budgetMax: number; // Maximum budget required for the trip
