@@ -5,7 +5,7 @@ import {
 	CardFooter,
 	Typography,
 } from '@material-tailwind/react';
-import { useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { Trip } from '../../interfaces/TripProps/TripProps';
 
 // Importing SVG icons for activities
@@ -30,7 +30,6 @@ const TripCardContainer: React.FC<Trip> = ({
 	media,
 	activities,
 }) => {
-	const navigate = useNavigate();
 
 	// Mapping activity types to their corresponding SVG icons
 	const activityIcons: { [key: string]: string } = {
@@ -57,11 +56,6 @@ const TripCardContainer: React.FC<Trip> = ({
 					.join(' ') + '...'
 			: description;
 
-	// Function to navigate to the trip details page
-	const handleReadMore = () => {
-		navigate(`/trip/${title}`);
-	};
-
 	// Divide activities into two rows for display
 	const firstRowActivities = activities.slice(0, 3); // First 3 activities in the top row
 	const secondRowActivities = activities.slice(3); // Remaining activities in the bottom row
@@ -73,14 +67,16 @@ const TripCardContainer: React.FC<Trip> = ({
 		>
 			{/* Card header containing the trip image */}
 			<CardHeader floated={false} className="relative h-60 -mt-8 mx-4">
-				<img
-					src={media}
-					alt="Trip Image"
-					onError={
-						e => (e.currentTarget.src = 'https://via.placeholder.com/150') // Fallback image in case of an error
-					}
-					className="w-full h-full object-cover rounded-lg" // Ensures image is fully displayed with rounded corners
-				/>
+				<NavLink to={"/trip-detail"}>
+					<img
+						src={media}
+						alt="Trip Image"
+						onError={
+							e => (e.currentTarget.src = 'https://via.placeholder.com/150') // Fallback image in case of an error
+						}
+						className="w-full h-full object-cover rounded-lg" // Ensures image is fully displayed with rounded corners
+					/>
+				</NavLink>
 				<span className="absolute top-2 left-2 bg-black text-white text-xs px-3 py-1 rounded-md">
 					Recommended
 				</span>
@@ -97,14 +93,16 @@ const TripCardContainer: React.FC<Trip> = ({
 				<div className="flex items-start justify-between">
 					{/* Title and destination section */}
 					<div className="w-[70%]">
-						<Typography
-							variant="h5"
-							color="blue-gray"
-							className="mb-1 text-2xl"
-						>
-							{title.length > 45 ? title.slice(0, 45) : title}{' '}
-							{/* Title is limited to 45 characters */}
-						</Typography>
+						<NavLink to={"/trip-detail"}>
+							<Typography
+								variant="h5"
+								color="blue-gray"
+								className="mb-1 text-2xl"
+							>
+								{title.length > 45 ? title.slice(0, 45) : title}{' '}
+								{/* Title is limited to 45 characters */}
+							</Typography>
+						</NavLink>
 						<Typography color="gray" className="text-base">
 							{destination}{' '}
 							<span className="whitespace-nowrap">
@@ -145,12 +143,10 @@ const TripCardContainer: React.FC<Trip> = ({
 				<Typography color="gray" className="text-sm leading-relaxed mt-4">
 					{truncatedDescription}
 					{description.length > maxDescriptionLength && (
-						<span
-							className="text-blue-500 cursor-pointer"
-							onClick={handleReadMore}
-						>
+						<NavLink
+							className="text-blue-500 cursor-pointer" to={'/trip-detail'}						>
 							&nbsp;voir plus
-						</span>
+						</NavLink>
 					)}
 				</Typography>
 			</CardBody>

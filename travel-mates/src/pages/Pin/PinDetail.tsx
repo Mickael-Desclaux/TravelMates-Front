@@ -67,6 +67,24 @@ export default function PinDetail() {
             pin_image: ["https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
                 "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
             ],
+        },        {
+            user_firstname: "Michel",
+            user_lastname: "Dupoitou",
+            user_profile_picture: "https://docs.material-tailwind.com/img/face-1.jpg",
+            rating: 5,
+            comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas fringilla dui eu maximus. Curabitur non nulla tellus.",
+            pin_image: ["https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
+                "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
+            ],
+        },        {
+            user_firstname: "Michel",
+            user_lastname: "Dupoitou",
+            user_profile_picture: "https://docs.material-tailwind.com/img/face-1.jpg",
+            rating: 5,
+            comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas fringilla dui eu maximus. Curabitur non nulla tellus.",
+            pin_image: ["https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
+                "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
+            ],
         },
         {
             user_firstname: "Patrick",
@@ -134,6 +152,10 @@ export default function PinDetail() {
         {
             label: "Avis",
             value: "review",
+            header:
+            <>                     
+
+            </>,
             desc:
                 <>
                     <div className="flex flex-row items-center justify-between mt-2">
@@ -148,7 +170,7 @@ export default function PinDetail() {
                     </NavLink>
                     {
                         pinReviews ? pinReviews.map((review: PinReview, index: number) => (
-                            <div key={index} className="mt-6">
+                            <div key={index} className="mb-4">
                                 <div className="flex flex-row items-start">
                                     <Avatar src={review.user_profile_picture} alt={review.user_firstname + ' ' + review.user_lastname} />
                                     <div className="ml-3">
@@ -168,7 +190,7 @@ export default function PinDetail() {
 
     return (
         <>
-            <div className="md:mt-32 md:grid md:place-content-center">
+            <div className="md:mt-32 md:grid md:place-content-center mb-32">
                 <div className="md:w-[60vw]">
                     <ThemeProvider value={carouselTheme}>
                         <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
@@ -189,11 +211,13 @@ export default function PinDetail() {
                             ))}
                         </TabsHeader>
                         <TabsBody>
-                            {data.map(({ value, desc }) => (
-                                <TabPanel key={value} value={value}>
-                                    {desc}
-                                </TabPanel>
-                            ))}
+                            <div className="h-1/4 overflow-y-auto">
+                                {data.map(({ value, desc }) => (
+                                    <TabPanel key={value} value={value}>
+                                        {desc}
+                                    </TabPanel>
+                                ))}
+                            </div>
                         </TabsBody>
                     </Tabs>
                 </div>

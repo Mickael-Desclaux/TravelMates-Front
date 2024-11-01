@@ -5,7 +5,7 @@ import {
 	Button,
 	Checkbox,
 } from '@material-tailwind/react';
-import { useFormikContext, ErrorMessage } from 'formik';
+import { useFormikContext } from 'formik';
 import { useEffect } from 'react';
 import './TripConditions.css';
 import { FormValues } from '../../interfaces/FormInterfaces/FormInterfaces';
@@ -73,11 +73,6 @@ export default function TripConditions() {
 								checked={Boolean(values.condition_gender)}
 								crossOrigin={undefined}
 							/>
-							<ErrorMessage
-								name="condition_gender"
-								component="div"
-								className="text-red-500 text-sm"
-							/>
 						</div>
 
 						{/* condition_age_min && condition_age_max */}
@@ -100,11 +95,6 @@ export default function TripConditions() {
 									crossOrigin={undefined}
 									placeholder="Age min"
 								/>
-								<ErrorMessage
-									name="condition_age_min"
-									component="div"
-									className="text-red-500 text-sm"
-								/>
 							</div>
 							<Typography className="ms-4 me-4">et</Typography>
 							<div>
@@ -117,11 +107,6 @@ export default function TripConditions() {
 									className="border border-gray-300 rounded p-2 text-center"
 									crossOrigin={undefined}
 									placeholder="Age max"
-								/>
-								<ErrorMessage
-									name="condition_age_max"
-									component="div"
-									className="text-red-500 text-sm"
 								/>
 							</div>
 							<Typography>ans</Typography>
@@ -146,7 +131,7 @@ export default function TripConditions() {
 								}`}
 								onClick={() => setFieldValue('condition_physical', 'none')}
 							>
-								AucuneNombre limite de participants participants max
+								Aucune
 							</Button>
 							<Button
 								variant="outlined"
@@ -185,8 +170,7 @@ export default function TripConditions() {
 						<div className="flex justify-between -mb-3">
 							<span className="text-start">2</span>
 							<span className="text-center">
-								{values.condition_user_limit}
-								participants max
+								{values.condition_user_limit + ' ' + "participants max"}
 							</span>
 							<span className="text-end">10</span>
 						</div>

@@ -1,61 +1,54 @@
 import { useState } from 'react';
 import { Field, ErrorMessage, useFormikContext } from 'formik';
-// import DatePickerComponent from '../DatePicker.tsx/DatePicker';
-
 import SearchIcon from '../../assets/Icons/search.svg';
 import CalendarIcon from '../../assets/Icons/datepicker.svg';
 // import PlaneIcon from '../../assets/Icons/plane.svg'; // Commentaire sur l'importation de PlaneIcon
-
 import { Typography } from '@material-tailwind/react';
 import DatePickerComponent from '../DatePicker.tsx/DatePicker';
-import { FormValues } from '../../interfaces/FormInterfaces/FormInterfaces';
-// import { fetchSuggestions } from '../../api/Mapbox';
+import { FormValues, Suggestion } from '../../interfaces/FormInterfaces/FormInterfaces';
+import { fetchSuggestions } from '../../api/Mapbox';
 
 const StepOne = () => {
+
 	const [showCalendar, setShowCalendar] = useState(false);
-
 	const { values, setFieldValue } = useFormikContext<FormValues>();
+	const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
 
-	// const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+	const fetchSuggestionsFromAPI = async (query: string) => {
+		try {
+			const suggestions = await fetchSuggestions(query.toUpperCase());
+			const formattedSuggestions = suggestions.map(
+				(suggestion: Suggestion) => ({
+					name: suggestion.name,
+					context: suggestion.context,
+					country: suggestion.context.country,
+					country_name: suggestion.context.country.name,
+				}),
+			);
+			setSuggestions(formattedSuggestions);
+		} catch (error) {
+			console.error('Error fetching suggestions from Mapbox API:', error);
+		}
+	};
 
-	// const handleClearDates = (
-	// 	setFieldValue: FormikHelpers<FormValues>['setFieldValue'],
-	// ) => {
-	// 	setFieldValue('dates', ''); // Effacer les dates dans Formik
-	// 	setFormData({ ...formData, dates: '' });
-	// };
+	const handleDestinationChange = (value: string, setFieldValue: (field: string, value: string) => void) => {
+		
+		setFieldValue('destination', value);
 
-	// const fetchSuggestionsFromAPI = async (query: string) => {
-	// 	try {
-	// 		const suggestions = await fetchSuggestions(query.toUpperCase());
-	// 		const formattedSuggestions = suggestions.map(
-	// 			(suggestion: Suggestion) => ({
-	// 				name: suggestion.name,
-	// 				context: suggestion.context,
-	// 				country: suggestion.context.country,
-	// 				country_name: suggestion.context.country.name,
-	// 			}),
-	// 		);
-	// 		setSuggestions(formattedSuggestions);
-	// 	} catch (error) {
-	// 		console.error('Error fetching suggestions from Mapbox API:', error);
-	// 	}
-	// };
+        if (value.trim() === '') {
+            setSuggestions([]);
+            return;
+        }
 
-	// const handleDestinationChange = (
-	// 	value: string,
-	// 	setFieldValue: FormikHelpers<FormValues>['setFieldValue'],
-	// ) => {
-	// 	// Appel de la fonction Mapbox pour les suggestions
-	// 	// fetchSuggestionsFromAPI(value);
-
-	// 	// Met à jour la valeur dans Formik
-	// 	setFieldValue('destination', value);
-	// };
+        fetchSuggestionsFromAPI(value);
+	}
 
 	return (
-		<section>
-			<div className="mb-4">
+		<section className='md:mt-32 mt-8'>
+			<Typography variant='h1' className='font-title text-2xl font-bold mb-12 text-center'>
+				Ajouter un Trip
+			</Typography>
+			<div className="m-4">
 				<Typography className="block text-black font-bold mb-1">
 					Quel est votre destination ?
 				</Typography>
@@ -68,6 +61,7 @@ const StepOne = () => {
 					<Field
 						id="destination"
 						name="destination"
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleDestinationChange(e.target.value, setFieldValue)}
 						placeholder="Où allez-vous ?"
 						className="w-full pl-10 p-2 border border-gray-300 rounded"
 					/>
@@ -76,7 +70,7 @@ const StepOne = () => {
 						component="div"
 						className="text-red-500"
 					/>
-					{/* {suggestions.length > 0 && (
+					{suggestions.length > 0 && (
 								<ul className="absolute z-10 bg-white border border-gray-200 mt-1 w-full max-h-40 overflow-y-auto">
 									{suggestions.map((suggestion: Suggestion, index: number) => (
 										<li
@@ -99,7 +93,7 @@ const StepOne = () => {
 										</li>
 									))}
 								</ul>
-							)} */}
+							)}
 				</div>
 			</div>
 			{/* <div className="mb-4">
@@ -131,7 +125,7 @@ const StepOne = () => {
 						)}
 					</div> */}{' '}
 			{/* Commentaire sur la section Ville de départ */}
-			<div className="mb-4 relative">
+			<div className="m-4 relative">
 				<Typography className="block text-black font-bold mb-1">
 					Dates
 				</Typography>

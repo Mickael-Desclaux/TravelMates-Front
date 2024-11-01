@@ -8,7 +8,7 @@ import natureIcon from '../../assets/activity/nature.svg';
 import partyIcon from '../../assets/activity/party-and-bar.svg';
 import relaxationIcon from '../../assets/activity/relaxation.svg';
 import sportIcon from '../../assets/activity/sport.svg';
-import { ErrorMessage, useFormikContext } from "formik";
+import { useFormikContext } from "formik";
 
 export default function ActivityPicker() {
 
@@ -61,9 +61,6 @@ export default function ActivityPicker() {
                         />
                     ))}
                 </div>
-            </div>
-            <div className="mb-2 mt-4">
-                <ErrorMessage name="activities" component="div" className="text-red-500 text-sm mt-1 w-full" />
             </div>
         </>
     );

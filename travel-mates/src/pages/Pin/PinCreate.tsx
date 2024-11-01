@@ -139,6 +139,7 @@ export default function PinCreate() {
     const mediaType = ['image/jpg', 'image/jpeg', 'image/png'];
     const mediaMaxSize: number = 10485760; // media max size = 10Mb
     const maxImages: number = 3;
+    const minImages: number = 1;
 
     // Check if title is submitted through a suggestion
     const validateTitle = (values: AddPin) => {
@@ -151,7 +152,6 @@ export default function PinCreate() {
 
     // Validation schema
     const validationSchema = Yup.object().shape({
-        title: Yup.string().required("Veuillez renseigner le titre du marqueur"),
         description: Yup.string().required("Veuillez renseigner une description du marqueur"),
         longitude: Yup.number().required("Une erreur est survenue lors de la récupération des coordonnées de votre marqueur"),
         latitude: Yup.number().required("Une erreur est survenue lors de la récupération des coordonnées de votre marqueur"),
@@ -167,6 +167,7 @@ export default function PinCreate() {
                         return (value as File).size <= mediaMaxSize;
                     })
             )
+            .min(minImages, "Veuillez ajouter au moins une image")
             .max(maxImages, `Vous ne pouvez pas ajouter plus de ${maxImages} images`)
             .required("Veuillez ajouter au moins une image"),
         activities: Yup.array().min(1, "Veuillez sélectionner au moins une activité").max(6, "Veuillez sélectionner moins de 6 activités")
@@ -193,8 +194,8 @@ export default function PinCreate() {
                     {({ isSubmitting, handleChange, setFieldValue, values }) => (
                         <Form>
                             <div className="flex justify-center">
-                                <div className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
-                                    <div className="mb-1 flex flex-col gap-6">
+                                <div className="mt-8 mb-2 max-w-screen-lg">
+                                    <div className="m-4 flex flex-col gap-6">
                                         <Typography variant="h6" className="-mb-3">
                                             Titre
                                         </Typography>
@@ -263,7 +264,7 @@ export default function PinCreate() {
                                             labelProps={{
                                                 className: "before:content-none after:content-none",
                                             }} />
-                                        <ErrorMessage name="description" component="div" className="text-red-500" />
+                                        <ErrorMessage name="description" component="div" className="text-red-500 -mt-4" />
                                         <Typography variant="h6" className="-mb-3">
                                             Images
                                         </Typography>
@@ -280,7 +281,7 @@ export default function PinCreate() {
                                             }}
                                             className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
                                         />
-                                        <ErrorMessage name="medias" component="div" className="text-red-500" />
+                                        <ErrorMessage name="medias" component="div" className="text-red-500 -mt-4" />
                                         {values.medias && values.medias.length > 0 && (
                                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                                                 {values.medias.map((file, index) => (
@@ -311,12 +312,12 @@ export default function PinCreate() {
                                             Activités
                                         </Typography>
                                         <ActivityPicker />
-                                        <ErrorMessage name="activities" component="div" className="text-red-500" />
                                     </div>
+                                    <ErrorMessage name="activities" component="div" className="text-red-500 mb-8" />
                                 </div>
                             </div>
                             <div className="flex justify-center">
-                                <Button type="submit" size="lg" disabled={isSubmitting} className="bg-green md:mb-8 mb-32 -mt-10">
+                                <Button type="submit" size="lg" disabled={isSubmitting} className="bg-green md:mb-8 mb-32">
                                     Valider
                                 </Button>
                             </div>

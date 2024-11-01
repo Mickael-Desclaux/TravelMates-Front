@@ -75,7 +75,7 @@ const TripListe = () => {
 
 	return (
 		<>
-			<div className='md:mt-24'>
+			<div className='md:mt-24 mb-32'>
 				<header className='flex justify-center'>
 					<TripSearch onFilter={handleFilter} />
 				</header>

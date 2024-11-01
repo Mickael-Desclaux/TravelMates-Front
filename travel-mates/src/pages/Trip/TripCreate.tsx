@@ -25,33 +25,10 @@ export default function TripCreateMultiStepForm() {
 				.min(50, 'Le budget minimum doit être au moins de 50')
 				.required('Veuillez indiquer un budget minimum'),
 			conditions_budget_max: Yup.number()
-				.max(5000, 'Le budget maximum ne peut dépasser 5000')
-				.required('Veuillez indiquer un budget maximum')
 				.moreThan(
 					Yup.ref('conditions_budget_min'),
 					'Le budget maximum doit être supérieur au budget minimum',
 				),
-			condition_gender: Yup.boolean(),
-			condition_age_min: Yup.number()
-				.min(18, "L'âge minimum doit être de 18 ans")
-				.required("L'âge minimum est requis"),
-			condition_age_max: Yup.number()
-				.max(100, "L'âge maximum doit être de 100 ans")
-				.required("L'âge maximum est requis")
-				.moreThan(
-					Yup.ref('condition_age_min'),
-					"L'âge maximum doit être supérieur à l'âge minimum",
-				),
-			condition_physical: Yup.string()
-				.oneOf(
-					['none', 'normal', 'excellent'],
-					'Choisissez une condition physique valide',
-				)
-				.required('La condition physique est requise'),
-			condition_user_limit: Yup.number()
-				.min(2, 'Le nombre limite de participants doit être au moins 2')
-				.max(10, 'Le nombre limite de participants ne doit pas dépasser 10')
-				.required('Le nombre limite de participants est requis'),
 		}),
 	];
 
@@ -80,9 +57,6 @@ export default function TripCreateMultiStepForm() {
 				onSubmit={(values, { setSubmitting }) => {
 					try {
 						console.log('Form values at step:', step, values);
-						if (step === 2) {
-							alert('All fields validated successfully for step 2.');
-						}
 						handleNext();
 					} catch (error) {
 						console.error('Error during submission', error);
@@ -102,7 +76,7 @@ export default function TripCreateMultiStepForm() {
 								<Button
 									type="button"
 									onClick={handleBack}
-									className="bg-gray-900 mt-6 w-[20%]"
+									className="bg-gray-900 mt-6"
 								>
 									Précédent
 								</Button>
@@ -112,7 +86,7 @@ export default function TripCreateMultiStepForm() {
 							<Button
 								type="submit"
 								disabled={isSubmitting}
-								className="bg-green text-white mt-6 hover:bg-green w-[20%]"
+								className="bg-green text-white mt-6 hover:bg-green"
 							>
 								{step === 3 ? 'Valider' : 'Continuer'}
 							</Button>
