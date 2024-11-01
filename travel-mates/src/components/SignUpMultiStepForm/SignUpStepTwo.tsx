@@ -2,6 +2,9 @@ import { Typography } from '@material-tailwind/react';
 import { Field, ErrorMessage, useFormikContext } from 'formik';
 import uploadIcon from '../../assets/icons/up-loading.png';
 import CustomSelect from '../CustomSelect/CustomSelect';
+import { useState } from 'react';
+import { fetchSuggestions } from '../../api/Mapbox';
+import { Suggestion } from '../../interfaces/FormInterfaces/FormInterfaces';
  
 export default function SignUpStepTwo() { 
 
@@ -13,6 +16,34 @@ export default function SignUpStepTwo() {
     setFieldValue('profilePicture', selectedFile);
     e.preventDefault();
   };
+
+  const fetchSuggestionsFromAPI = async (query: string) => {
+		try {
+			const suggestions = await fetchSuggestions(query.toUpperCase());
+			const formattedSuggestions = suggestions.map(
+				(suggestion: Suggestion) => ({
+					name: suggestion.name,
+					context: suggestion.context,
+					country: suggestion.context.country,
+					country_name: suggestion.context.country.name,
+				}),
+			);
+			setSuggestions(formattedSuggestions);
+		} catch (error) {
+			console.error('Error fetching suggestions from Mapbox API:', error);
+		}
+	};
+
+  const handleAddressChange = (value: string, setFieldValue: (field: string, value: string) => void) => {
+		setFieldValue('address', value);
+
+        if (value.trim() === '') {
+            setSuggestions([]);
+            return;
+        }
+
+        fetchSuggestionsFromAPI(value);
+	}
 
   // List of gender options for the custom select dropdown
   const listOptionsGender = [
@@ -35,6 +66,8 @@ export default function SignUpStepTwo() {
     'Portugais',
     'Russe',
   ];
+
+	const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
 
   return (
     <>
@@ -122,10 +155,37 @@ export default function SignUpStepTwo() {
             id="address"
             name="address"
             type="text"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAddressChange(e.target.value, setFieldValue)}
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
           />
           <ErrorMessage name="address" component="div" className="text-red-500 text-sm mt-1" />
         </div>
+
+        {suggestions.length > 0 && (
+          <ul className="absolute z-10 bg-white border border-gray-200 mt-1 w-full max-h-40 overflow-y-auto">
+            {suggestions.map((suggestion: Suggestion, index: number) => (
+              <li
+                key={index}
+                className="p-2 hover:bg-gray-200 cursor-pointer"
+                onClick={() => {
+                  setFieldValue(
+                    'address',
+                    suggestion.name +
+                    ', ' +
+                    suggestion.context.country.name,
+                  );
+                  setSuggestions([]);
+                }}
+              >
+                {suggestion.name ? suggestion.name : 'Unknown'},{' '}
+                {suggestion.context && suggestion.context.country
+                  ? suggestion.context.country.name
+                  : 'Unknown'}
+              </li>
+            ))}
+          </ul>
+        )}
+
         <div className="mb-6">
           <label htmlFor="language">
             <Typography

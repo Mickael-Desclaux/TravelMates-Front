@@ -8,10 +8,16 @@ import StepOne from "../../components/SignUpMultiStepForm/SignUpStepOne";
 import StepTwo from "../../components/SignUpMultiStepForm/SignUpStepTwo";
 import StepThree from "../../components/SignUpMultiStepForm/SignUpStepThree";
 import SignUpStepFour from "../../components/SignUpMultiStepForm/SignUpStepFour";
+import { subYears } from "date-fns";
 
 export default function SignUpMultiStepForm() {
   // Step of the form
   const [step, setStep] = useState(1);
+
+  // Validation const
+  const minimumDate = subYears(new Date(), 18);
+  const mediaType = ['image/jpg', 'image/jpeg', 'image/png'];
+  const mediaMaxSize: number = 10485760; // media max size = 10Mb
 
   // Validation of the form
   const validationSchemas = [
@@ -25,11 +31,19 @@ export default function SignUpMultiStepForm() {
     Yup.object().shape({
       firstName: Yup.string().required("Le prénom est requis"),
       lastName: Yup.string().required("Le nom est requis"),
-      birthDate: Yup.date().required("La date de naissance est requise"),
+      birthDate: Yup.date().max(minimumDate, "Vous devez avoir au moins 18 ans").required("La date de naissance est requise"),
       gender: Yup.string().required("Le genre est requis"),
       address: Yup.string().required("L'adresse est requise"),
       language: Yup.array().of(Yup.string()).min(1, 'Sélectionnez au moins une langue').required("Sélectionnez au moins une langue"),
-      profilePicture: Yup.mixed().required("La photo de profil est requise")
+      profilePicture: Yup.mixed()
+        .test("fileType", "Seuls les formats jpg, jpeg et png sont autorisés", (value) => {
+            if (!value) return true;
+            return mediaType.includes((value as File).type);
+        })
+        .test("fileSize", "La taille de l'image doit être inférieure à 10Mo", (value) => {
+            if (!value) return true;
+            return (value as File).size <= mediaMaxSize;
+        }).required("Ajoutez une photo de profil")
     }),
     // Step 3: Validate the selection of at least three activities
     Yup.object().shape({
@@ -43,7 +57,7 @@ export default function SignUpMultiStepForm() {
 
   return (
     <>
-      <div className="md:mt-32">
+      <div className="md:mt-32 mb-24">
         <section className="grid text-center items-center">
           <div className="mt-8 mb-2 w-96 max-w-screen-lg sm:w-96 mx-auto">
             {/* TravelMates logo */}
@@ -67,7 +81,7 @@ export default function SignUpMultiStepForm() {
                 birthDate: "",
                 gender: "",
                 address: "",
-                language: "",
+                language: [],
                 profilePicture: null,
                 activities: []
               }}
