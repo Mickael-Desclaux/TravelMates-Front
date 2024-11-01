@@ -1,0 +1,42 @@
+.range-slider-container {
+  margin: 1rem 0;
+}
+
+.range-slider-values {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  /* Correspond à text-sm en Tailwind */
+  color: #6B7280;
+  /* Correspond à text-gray-500 en Tailwind */
+}
+
+.range-slider-values-top {
+  margin-bottom: 0.5rem;
+  /* Espacement entre les valeurs du haut et le slider */
+}
+
+.range-slider-values-bottom {
+  margin-top: 0.5rem;
+  /* Espacement entre le slider et les valeurs du bas */
+}
+
+/* Styles du slider */
+.range-slider .MuiSlider-track {
+  color: #2E7D32;
+  /* Couleur verte pour la piste active */
+}
+
+.range-slider .MuiSlider-rail {
+  color: #E0E0E0;
+  /* Couleur gris clair pour la piste inactive */
+}
+
+.range-slider .MuiSlider-thumb {
+  color: #2E7D32;
+  /* Couleur verte pour les poignées */
+  border-radius: 50%;
+  /* Poignées rondes */
+  border: 2px solid white;
+  /* Bordure blanche autour des poignées */
+}
