@@ -10,6 +10,7 @@ import Profile from './pages/Profile/Profile';
 import PinCreate from './pages/Pin/PinCreate';
 import PinDetail from './pages/Pin/PinDetail';
 import NavbarComponent from './components/Navbar/Navbar';
+import TripDetail from './pages/Trip/TripDetail';
 
 function App() {
 	return (
@@ -20,6 +21,7 @@ function App() {
 				<Route path="/sign-in" element={<SignIn />} />
 				<Route path="/sign-up" element={<SignUpMultiStepForm />} />
 				<Route path="/trip-create" element={<TripCreate />} />
+				<Route path="/trip-detail" element={<TripDetail />} />
 				<Route path="/map" element={<Map />} />
 				<Route path="/profile" element={<Profile />} />
 				<Route path="/pin-create" element={<PinCreate />} />
