@@ -10,6 +10,7 @@ import peoplesIcon from '../../assets/icons/peoples.svg';
 import runIcon from '../../assets/icons/run.svg';
 import './TripDetail.css';
 import { Activity } from "../../interfaces/TripProps/TripProps";
+import TripManagePopUp from "../../components/TripManagePopUp/TripManagePopUp";
 
 const carouselTheme = {
     carousel: {
@@ -25,6 +26,7 @@ interface User {
     profilePicture: string;
 }
 
+// Fake data
 const data: Trip = {
     owner: {
         firstname: "Micheline",
@@ -76,21 +78,26 @@ const data: Trip = {
         { id: 3, type: 'Détente', icon: relaxationIcon },
         { id: 5, type: 'Fête', icon: partyIcon },
         { id: 4, type: 'Sport', icon: sportIcon }],
-}
+};
 
 export default function TripDetail() {
 
     return (
         <>
             <div className="md:mt-32 md:grid md:place-content-center mb-32">
-                <div className="md:w-[60vw]">
+                <div className="md:w-[50vw]">
                     <div>
                         <ThemeProvider value={carouselTheme}>
-                            <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
-                                {data.medias.map((image: string, index: number) => (
-                                    <img key={index} src={image} alt="Image" className="max-h-[400px] mx-auto" />
-                                ))}
-                            </Carousel>
+                            <div className="relative">
+                                <div className="absolute top-4 me-2 right-0 z-10 w-full justify-center">
+                                    <TripManagePopUp />
+                                </div>
+                                <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
+                                    {data.medias.map((image: string, index: number) => (
+                                        <img key={index} src={image} alt="Image" className="max-h-[400px] mx-auto" />
+                                    ))}
+                                </Carousel>
+                            </div>
                         </ThemeProvider>
                     </div>
                     <div className="flex flex-row items-center justify-between mt-2 m-4">
