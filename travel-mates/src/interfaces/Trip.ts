@@ -1,6 +1,7 @@
 import { Activity } from "./TripProps/TripProps";
 
 export default interface Trip {
+    id: number;
     owner: {
         firstname: string;
         lastname: string;
