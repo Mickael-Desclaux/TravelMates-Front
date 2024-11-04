@@ -14,7 +14,12 @@ interface Participants {
     status: string;
 }
 
-export default function TripManagePopUp() {
+interface TripManagePopUpProps {
+    tripId: number;
+    removeTrip: (id: number) => void;
+}
+
+export default function TripManagePopUp({removeTrip, tripId}: TripManagePopUpProps) {
 
     const [ showOptions, setShowOptions ] = useState<boolean>(false);
     const [ showManageParticipants, setShowManageParticipants] = useState<boolean>(false);
@@ -148,6 +153,32 @@ export default function TripManagePopUp() {
                             </Button>
                             <Button
                                 onClick={() => { setShowManageParticipants(!showManageParticipants); setshowKickParticipant(!showKickParticipant); selectedParticipant && kickParticipant(selectedParticipant); }}
+                                className="bg-red-900">
+                                Confirmer
+                            </Button>
+                        </div>
+                    </div>
+                    : null
+            }
+
+            {
+                showRemoveTrip ?
+                    <div className="m-4 border border-black rounded-lg bg-gray-100 ms-7 mt-2 md:mx-auto md:w-[50%] text-center">
+                        <div className="flex justify-end m-4">
+                            <button className="flex justify-end w-6 aspect-ratio-1"
+                                onClick={() => { setShowRemoveTrip(false); setShowOptions(false) }}>
+                                <XMarkIcon />
+                            </button>
+                        </div>
+                        <Typography variant="h3" className="font-title text-xl text-center mb-8 -mt-4">Supprimer le Trip</Typography>
+                        <p>Êtes vous sûr de vouloir supprimer votre trip?</p>
+                        <div className="flex flex-row items-center justify-evenly p-6">
+                            <Button
+                                onClick={() => { setShowRemoveTrip(!showRemoveTrip); setShowOptions(!showOptions) }}>
+                                Annuler
+                            </Button>
+                            <Button
+                                onClick={() => removeTrip(tripId)}
                                 className="bg-red-900">
                                 Confirmer
                             </Button>

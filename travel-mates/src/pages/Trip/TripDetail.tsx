@@ -11,6 +11,7 @@ import runIcon from '../../assets/icons/run.svg';
 import './TripDetail.css';
 import { Activity } from "../../interfaces/TripProps/TripProps";
 import TripManagePopUp from "../../components/TripManagePopUp/TripManagePopUp";
+import { useNavigate } from "react-router-dom";
 
 const carouselTheme = {
     carousel: {
@@ -28,6 +29,7 @@ interface User {
 
 // Fake data
 const data: Trip = {
+    id: 1,
     owner: {
         firstname: "Micheline",
         lastname: "Michelin",
@@ -82,6 +84,13 @@ const data: Trip = {
 
 export default function TripDetail() {
 
+    const navigate = useNavigate();
+
+    function removeTrip(id: number) {
+        console.log(`Trip avec l'id ${id} supprimé`)
+        navigate({ pathname: "/" });
+    }
+
     return (
         <>
             <div className="md:mt-32 md:grid md:place-content-center mb-32">
@@ -89,10 +98,10 @@ export default function TripDetail() {
                     <div>
                         <ThemeProvider value={carouselTheme}>
                             <div className="relative">
-                                <div className="absolute top-4 me-2 right-0 z-10 w-full justify-center">
-                                    <TripManagePopUp />
+                                <div className="absolute top-4 me-2 right-0 z-20 w-full justify-center">
+                                    <TripManagePopUp removeTrip={() => removeTrip(data.id)} tripId={data.id} />
                                 </div>
-                                <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
+                                <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel z-10">
                                     {data.medias.map((image: string, index: number) => (
                                         <img key={index} src={image} alt="Image" className="max-h-[400px] mx-auto" />
                                     ))}
@@ -108,7 +117,7 @@ export default function TripDetail() {
                     </div>
                     <div>
                         <Typography variant="h3" className="text-lg underline m-4">
-                            {data.destination + ' - ' + data.dateFrom.toLocaleDateString() + ' / ' + data.dateTo.toLocaleDateString()}
+                            {data.destination + ' - du ' + data.dateFrom.toLocaleDateString() + ' au ' + data.dateTo.toLocaleDateString()}
                         </Typography>
                     </div>
                     <div>
@@ -137,26 +146,32 @@ export default function TripDetail() {
                     </div>
                     <div className="m-4">
                         <Typography variant="h2" className="text-2xl mt-8">Critères</Typography>
-                        <div className="grid grid-cols-2 gap-4 items-center mt-4">
+                        <div className="grid grid-cols-2 gap-2 items-center mt-4">
                             <div className="flex items-center">
                                 <img src={genderIcon} alt="genre" className="me-4" />
                                 <p className="font-bold">Je voyage avec</p>
                             </div>
-                            <p className="me-4 border border-lg border-black rounded-lg p-2 font-bold text-right flex justify-center">{data.conditionGender}</p>
+                            <p className="border border-lg border-black rounded-lg p-2 font-bold text-right flex justify-center">
+                                {data.conditionGender}
+                                </p>
                         </div>
-                        <div className="grid grid-cols-2 gap-4 items-center mt-4">
+                        <div className="grid grid-cols-2 gap-2 items-center mt-4">
                             <div className="flex items-center">
                                 <img src={peoplesIcon} alt="genre" className="me-4" />
                                 <p className="font-bold">Âgés entre</p>
                             </div>
-                            <p className="me-4 border border-lg border-black rounded-lg p-2 font-bold text-right flex justify-center">{`${data.conditionAgeMin} - ${data.conditionAgeMax} ans`}</p>
+                            <p className="border border-lg border-black rounded-lg p-2 font-bold text-right flex justify-center">
+                                {`${data.conditionAgeMin} - ${data.conditionAgeMax} ans`}
+                            </p>
                         </div>
-                        <div className="grid grid-cols-2 gap-4 items-center mt-4">
+                        <div className="grid grid-cols-2 gap-2 items-center mt-4">
                             <div className="flex items-center">
                                 <img src={runIcon} alt="genre" className="me-4" />
                                 <p className="font-bold">Condition physique recommandée</p>
                             </div>
-                            <p className="me-4 border border-lg border-black rounded-lg p-2 font-bold text-right flex justify-center">{data.conditionPhysical}</p>
+                            <p className="border border-lg border-black rounded-lg p-2 font-bold text-right flex justify-center">
+                                {data.conditionPhysical}
+                            </p>
                         </div>
                     </div>
 
