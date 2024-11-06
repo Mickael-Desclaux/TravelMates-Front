@@ -11,6 +11,7 @@ import PinCreate from './pages/Pin/PinCreate';
 import PinDetail from './pages/Pin/PinDetail';
 import NavbarComponent from './components/Navbar/Navbar';
 import TripDetail from './pages/Trip/TripDetail';
+import ReviewCreate from './pages/Pin/ReviewCreate';
 
 function App() {
 	return (
@@ -26,6 +27,7 @@ function App() {
 				<Route path="/profile" element={<Profile />} />
 				<Route path="/pin-create" element={<PinCreate />} />
 				<Route path="/pin" element={<PinDetail />} />
+				<Route path="/pin-review" element={<ReviewCreate />} />
 			</Routes>
 
 			<ReactQueryDevtools />
