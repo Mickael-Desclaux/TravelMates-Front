@@ -279,7 +279,7 @@ export default function PinCreate() {
                                                 const updatedMedias = [...values.medias, ...newFiles];
                                                 setFieldValue("medias", updatedMedias);
                                             }}
-                                            className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+                                            className="!border-t-blue-gray-200 focus:!border-t-gray-900"
                                         />
                                         <ErrorMessage name="medias" component="div" className="text-red-500 -mt-4" />
                                         {values.medias && values.medias.length > 0 && (
