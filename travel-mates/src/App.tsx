@@ -12,6 +12,7 @@ import PinDetail from './pages/Pin/PinDetail';
 import NavbarComponent from './components/Navbar/Navbar';
 import TripDetail from './pages/Trip/TripDetail';
 import ReviewCreate from './pages/Pin/ReviewCreate';
+import Chat from './pages/Chat/Chat';
 
 function App() {
 	return (
@@ -28,6 +29,7 @@ function App() {
 				<Route path="/pin-create" element={<PinCreate />} />
 				<Route path="/pin" element={<PinDetail />} />
 				<Route path="/pin-review" element={<ReviewCreate />} />
+				<Route path="/message" element={<Chat />} />
 			</Routes>
 
 			<ReactQueryDevtools />
