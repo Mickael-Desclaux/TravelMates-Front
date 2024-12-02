@@ -61,7 +61,7 @@ export default function CustomSelect({ field, form, options, multiple = false }:
 
           {/* Option list */}
           {isOpen && (
-              <ul className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md shadow-md z-10">
+              <ul className="absolute top-full left-0 w-full bg-light-white border border-gray-300 rounded-md shadow-md z-10">
                  {/* Map through the options to display them in the dropdown */}
                  {options.map((option) => (
                  <li 
