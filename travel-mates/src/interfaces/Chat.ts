@@ -22,3 +22,12 @@ export interface DetailedTripChat {
     text: string;
     sentAt: Date;
 }
+
+export interface DetailedTripChatWithTripInfos {
+    id: number
+    title: string
+    media: {
+        url: string
+    }
+    messages: DetailedTripChat[]
+}

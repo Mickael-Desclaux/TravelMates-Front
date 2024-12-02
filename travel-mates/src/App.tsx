@@ -30,7 +30,7 @@ function App() {
 				<Route path="/pin-create" element={<PinCreate />} />
 				<Route path="/pin" element={<PinDetail />} />
 				<Route path="/pin-review" element={<ReviewCreate />} />
-				<Route path="/message" element={<ChatList title={''} />} />
+				<Route path="/message" element={<ChatList />} />
 				<Route path="/message/:id" element={<Chat />} />
 			</Routes>
 
