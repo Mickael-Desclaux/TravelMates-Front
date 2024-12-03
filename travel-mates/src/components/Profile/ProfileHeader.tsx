@@ -85,7 +85,8 @@ export default function ProfileHeader({ values }: ProfilePageProps) {
 
                             <div className="flex flex-col space-y-10 items-end">
                                 <SettingsButton />
-                                <AddFriendButton />
+                                {/* Implemented this button for the Version 2 app */}
+                                {/* <AddFriendButton /> */}
                             </div>
                         </div>
 
