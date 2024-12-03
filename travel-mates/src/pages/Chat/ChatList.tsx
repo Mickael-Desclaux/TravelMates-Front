@@ -76,7 +76,7 @@ export default function ChatList() {
     return (
         <>
             <div className="md:mt-32 m-4 md:max-w-[60vw] mx-auto">
-                <div className="m-4 md:max-w-[20vw] md:mx-auto mb-8">
+                <div className="m-4 md:max-w-[30vw] md:mx-auto mb-8">
                     <ChatSearch onFilter={handleFilter} />
                 </div>
                 {filteredChats

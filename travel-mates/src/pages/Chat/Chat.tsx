@@ -93,7 +93,7 @@ export default function Chat() {
             text: text,
             sentAt: new Date()
         };
-
+        //TODO: call api to store message
         setMessages([...messages, newMessage]);
         scrollToBottom();
     }
@@ -104,7 +104,7 @@ export default function Chat() {
 
     return (
         <>
-            <div className="flex flex-col max-h-[90vh] md:max-w-[60vw] mx-auto">
+            <div className="flex flex-col max-h-[90vh] md:min-h-[90vh] md:max-w-[40vw] mx-auto">
                 <div className="flex items-center justify-center md:mt-32 mt-4">
                     <Avatar src={data.media.url} alt={data.title} className="me-4" size="xl"/>
                     <Typography
@@ -145,7 +145,7 @@ export default function Chat() {
                         ))}
                     <div ref={bottomRef}></div>
                 </div>
-                <div className="m-6 bg-white md:mx-auto md:min-w-[30vw]">
+                <div className="m-6 bg-white md:mx-auto md:min-w-[35vw]">
                     <ChatSendMessage sendMessage={sendMessage} />
                 </div>
             </div>
