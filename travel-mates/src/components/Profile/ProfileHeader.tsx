@@ -44,7 +44,7 @@ export default function ProfileHeader({ values }: ProfilePageProps) {
 
                 {/* Section profile header */}
                 <div className="flex justify-center border-b-0 border-gray-80">
-                    <div className="flex flex-col bg-white shadow-md p-4 w-full max-w-3xl mt-2 md:mt-16 lg:mt-32">
+                    <div className="flex flex-col bg-light-white shadow-md p-4 w-full max-w-3xl mt-2 md:mt-16 lg:mt-32">
                         <div className="flex items-start">
                             <div className="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden bg-gray-300 mr-6 flex-shrink-0">
                                 {values.profilePicture ? (
@@ -85,7 +85,8 @@ export default function ProfileHeader({ values }: ProfilePageProps) {
 
                             <div className="flex flex-col space-y-10 items-end">
                                 <SettingsButton />
-                                <AddFriendButton />
+                                {/* Implemented this button for the Version 2 app */}
+                                {/* <AddFriendButton /> */}
                             </div>
                         </div>
 
@@ -99,7 +100,7 @@ export default function ProfileHeader({ values }: ProfilePageProps) {
                 </div>
 
                 {/* Section profile biography */}
-                <div className="p-6 bg-white w-full max-w-3xl mx-auto">
+                <div className="p-6 bg-light-white w-full max-w-3xl mx-auto">
                     <Typography className="text-2xl font-title font-bold pb-4">Bio</Typography>
                     {values.description}
                 </div>

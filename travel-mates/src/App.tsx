@@ -11,6 +11,7 @@ import PinCreate from './pages/Pin/PinCreate';
 import PinDetail from './pages/Pin/PinDetail';
 import NavbarComponent from './components/Navbar/Navbar';
 import TripDetail from './pages/Trip/TripDetail';
+import ProfileEdit from './pages/Profile/ProfileEdit';
 import ReviewCreate from './pages/Pin/ReviewCreate';
 import ChatList from './pages/Chat/ChatList';
 import Chat from './pages/Chat/Chat';
@@ -27,6 +28,7 @@ function App() {
 				<Route path="/trip-detail" element={<TripDetail />} />
 				<Route path="/map" element={<Map />} />
 				<Route path="/profile" element={<Profile />} />
+				<Route path="/profile-edit" element={<ProfileEdit  />} />
 				<Route path="/pin-create" element={<PinCreate />} />
 				<Route path="/pin" element={<PinDetail />} />
 				<Route path="/pin-review" element={<ReviewCreate />} />

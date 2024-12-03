@@ -11,7 +11,8 @@ module.exports = withMT({
     colors: {
       'green': '#185C22',
       'white': '#FCFFFC',
-      'black': '#041010'
+      'black': '#041010',
+      'light-white': '#FFFFFF'
     },
     fontFamily: {
       sans: ['"Oxygen"', 'sans-serif'],
