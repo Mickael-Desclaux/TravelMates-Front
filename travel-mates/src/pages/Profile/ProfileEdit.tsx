@@ -3,10 +3,13 @@ import { NavLink } from "react-router-dom";
 import Arrow from "../../assets/icons/arrow.svg";
 import EditIcon from "../../assets/icons/edit-icon.svg";
 import { Typography } from "@material-tailwind/react";
-import { Field, Formik, Form } from "formik";
+import { Field, Formik, Form, ErrorMessage } from "formik";
 import CustomSelect from "../../components/CustomSelect/CustomSelect";
 import ActivityPicker from "../../components/ActivityPicker/ActivityPicker";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { Suggestion } from "../../interfaces/FormInterfaces/FormInterfaces";
+import { fetchSuggestions } from "../../api/Mapbox";
+import * as Yup from "yup";
 
 export default function ProfileEdit() {
   // Reference to the hidden file input so it can be clicked through the profile picture
@@ -30,6 +33,63 @@ export default function ProfileEdit() {
     }
   };
 
+  // Function to fetch suggestions from Mapbox
+  const fetchSuggestionsFromAPI = async (query: string) => {
+    try {
+      const suggestions = await fetchSuggestions(query.toUpperCase());
+      const formattedSuggestions = suggestions.map(
+        (suggestion: Suggestion) => ({
+          name: suggestion.name,
+          context: suggestion.context,
+          country: suggestion.context.country,
+          country_name: suggestion.context.country.name,
+        }),
+      );
+      setSuggestions(formattedSuggestions);
+    } catch (error) {
+      console.error('Error fetching suggestions from Mapbox API:', error);
+    }
+  };
+
+  const handleAddressChange = (value: string, setFieldValue: (field: string, value: string) => void) => {
+    setFieldValue('address', value);
+
+    if (value.trim() === '') {
+      setSuggestions([]);
+      return;
+    }
+    fetchSuggestionsFromAPI(value);
+  }
+
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [currentStep, setCurrentStep] = useState(0);
+  const mediaType = ['image/jpg', 'image/jpeg', 'image/png'];
+  const mediaMaxSize: number = 10485760; // media max size = 10Mb
+
+  // Validation of the form : Step 1 Validate personal information fields
+  const validationSchemas = [
+    Yup.object().shape({
+      profilePicture: Yup.mixed()
+        .test("fileType", "Seuls les formats jpg, jpeg et png sont autorisés", (value) => {
+          if (!value || typeof value === "string") return true;
+          return mediaType.includes((value as File).type);
+        })
+        .test("fileSize", "La taille de l'image doit être inférieure à 10Mo", (value) => {
+          if (!value || typeof value === "string") return true;
+          return (value as File).size <= mediaMaxSize;
+        }).required("Ajoutez une photo de profil"),
+      address: Yup.string().required("L'adresse est requise"),
+      description: Yup.string().required("La biographie est requise"),
+      activities: Yup.array().min(3, "Veuillez choisir au moins trois activités ").required("Veuillez choisir au moins trois activités"),
+      language: Yup.array().of(Yup.string()).min(1, 'Sélectionnez au moins une langue').required("Sélectionnez au moins une langue"),
+    })
+  ];
+    
+  // Validation of the form : Step 2 Validate email
+  const accountValidationSchema = Yup.object().shape({
+    email: Yup.string().email("Email invalide").required("L'email est requis"),
+  });
+
   // List of language options for the custom select dropdown of profile
   const listOptionsLanguageProfile = [
     "Allemand",
@@ -48,6 +108,7 @@ export default function ProfileEdit() {
 
   return (
     <div className="mx-auto w-full max-w-3xl mb-36 md:mt-32">
+      {/* Section profile header info */}
       <div className="px-4">
         <div className="flex">
           <NavLink to={"/profile"} aria-current="page">
@@ -85,7 +146,13 @@ export default function ProfileEdit() {
           }}
           onSubmit={(values) => {
             console.log(values);
+            if (currentStep < validationSchemas.length - 1) {
+              setCurrentStep((prev) => prev + 1);
+            } else {
+              console.log("Formulaire soumis");
+            }
           }}
+          validationSchema={validationSchemas[currentStep]}
         >
           {({ values, handleChange, setFieldValue }) => (
             <Form>
@@ -113,6 +180,7 @@ export default function ProfileEdit() {
                     className="w-8 h-8 text-white"
                   />
                 </div>
+                <ErrorMessage name="profilePicture" component="div" className="text-red-500 text-sm mt-1" />
               </div>
 
               {/* Firstname and lastname field */}
@@ -133,10 +201,11 @@ export default function ProfileEdit() {
                   disabled
                   className="w-full p-2 border rounded-md border-gray-300 text-gray-500"
                 />
+                <ErrorMessage name="firstNameAndLastName" component="div" className="text-red-500 text-sm mt-1" />
               </div>
 
               {/* Address field */}
-              <div className="mb-6">
+              <div className="relative">
                 <label htmlFor="address">
                   <Typography
                     variant="h6"
@@ -145,18 +214,43 @@ export default function ProfileEdit() {
                     Adresse
                   </Typography>
                 </label>
-                <input
-                  type="text"
-                  name="address"
+                <Field
                   id="address"
-                  value={values.address}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md border-gray-300"
+                  name="address"
+                  type="text"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAddressChange(e.target.value, setFieldValue)}
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
                 />
+                <ErrorMessage name="address" component="div" className="text-red-500 text-sm mt-1" />
+
+                {suggestions.length > 0 && (
+                  <ul className="absolute z-10 bg-light-white border border-gray-200 rounded-md left-0 w-full max-h-50 overflow-y-auto shadow-md">
+                    {suggestions.map((suggestion: Suggestion, index: number) => (
+                      <li
+                        key={index}
+                        className="p-2 hover:bg-gray-200 cursor-pointer"
+                        onClick={() => {
+                          setFieldValue(
+                            'address',
+                            suggestion.name +
+                            ', ' +
+                            suggestion.context.country.name,
+                          );
+                          setSuggestions([]);
+                        }}
+                      >
+                        {suggestion.name ? suggestion.name : 'Unknown'},{' '}
+                        {suggestion.context && suggestion.context.country
+                          ? suggestion.context.country.name
+                          : 'Unknown'}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
               {/* Biography field */}
-              <div className="mb-6">
+              <div className="relative mt-6 mb-6">
                 <label htmlFor="biography">
                   <Typography
                     variant="h6"
@@ -167,7 +261,7 @@ export default function ProfileEdit() {
                 </label>
                 <textarea
                   name="description"
-                  id="biography"
+                  id="description"
                   value={values.description}
                   onChange={handleChange}
                   className="w-full p-2 border rounded-md border-gray-300"
@@ -175,6 +269,7 @@ export default function ProfileEdit() {
                   placeholder="Votre biographie"
                   maxLength={1000}
                 />
+                <ErrorMessage name="description" component="div" className="text-red-500 text-sm mt-1" />
               </div>
 
               {/* Activities field */}
@@ -188,6 +283,7 @@ export default function ProfileEdit() {
                   </Typography>
                 </label>
                 <ActivityPicker />
+                <ErrorMessage name="activities" component="div" className="text-red-500 text-sm mt-1" />
               </div>
 
               {/* Language field */}
@@ -200,15 +296,15 @@ export default function ProfileEdit() {
                     Langue
                   </Typography>
                 </label>
-                <div className="relative z-20">
+                <div className="relative z-10">
                   <Field
                     name="language"
                     id="language"
                     component={CustomSelect}
                     options={listOptionsLanguageProfile}
                     multiple={true}
-                    className="max-h-60 overflow-y-auto"
                   />
+                  <ErrorMessage name="language" component="div" className="text-red-500 text-sm mt-1" />
                 </div>
 
                 {/* Submit button */}
@@ -233,9 +329,8 @@ export default function ProfileEdit() {
       <div className="px-4">
         <Formik
           initialValues={{ email: "eloisedebordeaux@gmail.com" }}
-          onSubmit={(values) => {
-            console.log(values);
-          }}
+          onSubmit={(values) => console.log(values)}
+          validationSchema={accountValidationSchema}
         >
           {({ values, handleChange }) => (
             <Form>
@@ -257,7 +352,7 @@ export default function ProfileEdit() {
                       Email
                     </Typography>
                   </label>
-                  <input
+                  <Field
                     type="email"
                     name="email"
                     id="email"
@@ -265,6 +360,7 @@ export default function ProfileEdit() {
                     onChange={handleChange}
                     className="w-full p-2 border rounded-md border-gray-300"
                   />
+                  <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
                 </div>
 
                 {/* Submit button */}
