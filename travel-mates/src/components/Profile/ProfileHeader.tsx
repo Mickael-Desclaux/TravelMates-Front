@@ -4,7 +4,7 @@ import leisureIcon from '../../assets/activity/leisure.svg';
 import relaxationIcon from '../../assets/activity/relaxation.svg';
 import sportIcon from '../../assets/activity/sport.svg';
 import SettingsButton from "../SettingsButton/SettingsButton";
-import AddFriendButton from "../AddFriendButton/AddFriendButton";
+//import AddFriendButton from "../AddFriendButton/AddFriendButton";
 import { Typography } from "@material-tailwind/react";
 
 interface ProfilePageProps {

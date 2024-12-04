@@ -10,6 +10,7 @@ import { useRef, useState } from "react";
 import { Suggestion } from "../../interfaces/FormInterfaces/FormInterfaces";
 import { fetchSuggestions } from "../../api/Mapbox";
 import * as Yup from "yup";
+import ProfileDeleteAccount from "../../components/Profile/ProfileDeleteAccount";
 
 export default function ProfileEdit() {
   // Reference to the hidden file input so it can be clicked through the profile picture
@@ -60,6 +61,22 @@ export default function ProfileEdit() {
     }
     fetchSuggestionsFromAPI(value);
   }
+
+  // Function to handle the modal delete account
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const handleDeleteAccount = () => {
+    setDeleteModalOpen(true);
+  };
+  
+  const handleCloseModal = () => {
+    setDeleteModalOpen(false);
+  };
+
+  const handleConfirmDelete = () => {
+    console.log("Compte supprimé !");
+    setDeleteModalOpen(false);
+  };
 
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
@@ -388,9 +405,11 @@ export default function ProfileEdit() {
                   <button
                     type="submit"
                     className="mt-8 text-red-500 font-bold mx-auto block"
+                    onClick={handleDeleteAccount}
                   >
                     Supprimer mon compte
                   </button>
+                  <ProfileDeleteAccount isOpen={isDeleteModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmDelete} />
                 </div>
               </div>
             </Form>
