@@ -19,9 +19,9 @@ export default function SignIn() {
             email: string().email("Veuillez renseigner une adresse mail valide").required("Veuillez renseigner votre adresse email"),
             password: string().required("Veuillez renseigner votre mot de passe")
         }),
-        onSubmit: values => {
+        onSubmit: async values => {
             try {
-                HandleSignIn(values);
+                await HandleSignIn(values);
             } catch (error) {
                 setLoginError(error as string)
             }
