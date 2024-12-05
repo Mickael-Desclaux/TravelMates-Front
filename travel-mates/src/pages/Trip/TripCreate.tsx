@@ -1,9 +1,11 @@
 import { Form, Formik } from 'formik';
 import { useState } from 'react';
 import * as Yup from 'yup';
-import StepTwo from '../../components/MultiStepFormAddTrip/StepTwoAddTrip';
+import { useNavigate } from 'react-router-dom';
 import StepOne from '../../components/MultiStepFormAddTrip/StepOneAddTrip';
+import StepTwo from '../../components/MultiStepFormAddTrip/StepTwoAddTrip';
 import { Button } from '@material-tailwind/react';
+import StepThree from '../../components/MultiStepFormAddTrip/StepThreeAddTip';
 
 export default function TripCreateMultiStepForm() {
 	const [step, setStep] = useState(1);
@@ -24,76 +26,79 @@ export default function TripCreateMultiStepForm() {
 			conditions_budget_min: Yup.number()
 				.min(50, 'Le budget minimum doit être au moins de 50')
 				.required('Veuillez indiquer un budget minimum'),
-			conditions_budget_max: Yup.number()
-				.moreThan(
-					Yup.ref('conditions_budget_min'),
-					'Le budget maximum doit être supérieur au budget minimum',
-				),
+			conditions_budget_max: Yup.number().moreThan(
+				Yup.ref('conditions_budget_min'),
+				'Le budget maximum doit être supérieur au budget minimum',
+			),
+		}),
+		Yup.object().shape({
+			urls: Yup.array()
+				.min(1, 'Veuillez sélectionner au moins une image')
+				.max(3, 'Veuillez sélectionner 3 images maximum'),
 		}),
 	];
 
 	const handleNext = () => setStep(step + 1);
 	const handleBack = () => setStep(step - 1);
+	const navigate = useNavigate(); // 
 
 	return (
-		<>
-			<Formik
-				initialValues={{
-					destination: '',
-					// departureCity: '',
-					dates: '',
-					title: '',
-					description: '',
-					activities: [],
-					conditions_budget_min: 50,
-					conditions_budget_max: 5000,
-					condition_gender: false,
-					condition_age_min: 18,
-					condition_age_max: 99,
-					condition_physical: '',
-					condition_user_limit: 10,
-				}}
-				validationSchema={validationSchema[step - 1]}
-				onSubmit={(values, { setSubmitting }) => {
-					try {
-						console.log('Form values at step:', step, values);
-						handleNext();
-					} catch (error) {
-						console.error('Error during submission', error);
-					} finally {
-						setSubmitting(false);
-					}
-				}}
-			>
-				{({ isSubmitting }) => (
-					<Form>
-						{step === 1 && <StepOne />}
-						{step === 2 && <StepTwo />}
-						
-						<div className="flex justify-center text-left gap-x-8 mt-2 mb-8">
-							{/* Button previous to go back to the previous step */}
-							{step > 1 && (
-								<Button
-									type="button"
-									onClick={handleBack}
-									className="bg-gray-900 mt-6"
-								>
-									Précédent
-								</Button>
-							)}
+		<Formik
+			initialValues={{
+				destination: '',
+				dates: '',
+				title: '',
+				description: '',
+				activities: [],
+				conditions_budget_min: 50,
+				conditions_budget_max: 5000,
+				urls: [],
+				condition_user_limit: 10,
+				condition_age_min: 18,
+				condition_age_max: 99,
+				condition_physical: 'normal',
 
-							{/* Button next to go to the next step */}
+			}}
+			validationSchema={validationSchema[step - 1]}
+			onSubmit={(values, { setSubmitting }) => {
+				if (step === 3) {
+					// Redirect to homepage after submission
+					console.log('Final form values:', values);
+					navigate('/'); // Redirect to homepage
+				} else {
+					handleNext();
+				}
+				setSubmitting(false);
+			}}
+		>
+			{({ isSubmitting }) => (
+				<Form>
+					{step === 1 && <StepOne />}
+					{step === 2 && <StepTwo />}
+					{step === 3 && <StepThree />}
+					<div className="flex justify-center text-left gap-x-8 mt-2 mb-8">
+						{/* Button to go back to the previous step */}
+						{step > 1 && (
 							<Button
-								type="submit"
-								disabled={isSubmitting}
-								className="bg-green text-white mt-6 hover:bg-green"
+								type="button"
+								onClick={handleBack}
+								className="bg-gray-900 mt-6"
 							>
-								{step === 3 ? 'Valider' : 'Continuer'}
+								Précédent
 							</Button>
-						</div>
-					</Form>
-				)}
-			</Formik>
-		</>
+						)}
+
+						{/* Button to go to the next step or submit on the last step */}
+						<Button
+							type="submit"
+							disabled={isSubmitting}
+							className="bg-green text-white mt-6 hover:bg-green"
+						>
+							{step === 3 ? 'Valider' : 'Continuer'}
+						</Button>
+					</div>
+				</Form>
+			)}
+		</Formik>
 	);
 }
