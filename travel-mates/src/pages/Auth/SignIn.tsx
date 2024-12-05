@@ -4,10 +4,14 @@ import { useState } from "react";
 import { object, string } from "yup";
 import travelmatesLogo from "../../assets/Logo/travelmates.png";
 import HandleSignIn from "../../api/Auth";
+import { useNavigate } from "react-router-dom";
 
 export default function SignIn() {
 
     const [loginError, setLoginError] = useState("");
+    const navigate = useNavigate();
+
+    // TODO: Add a check if user is already logged in, then redirect to home page
 
     // Validation du formulaire
     const formik = useFormik({
@@ -19,9 +23,10 @@ export default function SignIn() {
             email: string().email("Veuillez renseigner une adresse mail valide").required("Veuillez renseigner votre adresse email"),
             password: string().required("Veuillez renseigner votre mot de passe")
         }),
-        onSubmit: values => {
+        onSubmit: async values => {
             try {
-                HandleSignIn(values);
+                await HandleSignIn(values);
+                navigate('/');
             } catch (error) {
                 setLoginError(error as string)
             }

@@ -1,10 +1,18 @@
+import {useApi} from "../hooks/UseApi";
 import { Auth } from "../interfaces/Auth";
+import useAuthStore from "../utils/AuthStore";
 
-export default function HandleSignIn(body: Auth) {
+const api = useApi();
+
+export default async function HandleSignIn(body: Auth): Promise<void> {
     try {
-        console.log(body);
-        return body;
+        const {data} = await api.post('auth/login', body);
+        
+        const accessToken = data.access_token;
+        await useAuthStore.getState().setAccessToken(accessToken);
+
+        return data;
     } catch (error) {
-        throw new Error(error as string)
+        throw error;
     }
 }
