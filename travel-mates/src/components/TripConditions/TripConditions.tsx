@@ -181,6 +181,7 @@ export default function TripConditions() {
 							step={1}
 							name="condition_user_limit"
 							className="w-full h-2 bg-green rounded-lg appearance-none cursor-pointer"
+							defaultValue={10}
 							onChange={e => {
 								handleSliderChange(e);
 								setFieldValue('condition_user_limit', Number(e.target.value));
