@@ -11,6 +11,7 @@ import { Suggestion } from "../../interfaces/FormInterfaces/FormInterfaces";
 import { fetchSuggestions } from "../../api/Mapbox";
 import * as Yup from "yup";
 import ProfileDeleteAccount from "../../components/Profile/ProfileDeleteAccount";
+import ChangePasswordModal from "../../components/ProfilePassword/ProfilePasswordModal";
 
 export default function ProfileEdit() {
   // Reference to the hidden file input so it can be clicked through the profile picture
@@ -61,6 +62,8 @@ export default function ProfileEdit() {
     }
     fetchSuggestionsFromAPI(value);
   }
+  // Function to handle the change for password
+  const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
 
   // Function to handle the modal delete account
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -84,7 +87,7 @@ export default function ProfileEdit() {
   const mediaMaxSize: number = 10485760; // media max size = 10Mb
 
   // Validation of the form : Step 1 Validate personal information fields
-  const validationSchemas = [
+  const profileValidationSchema = [
     Yup.object().shape({
       profilePicture: Yup.mixed()
         .test("fileType", "Seuls les formats jpg, jpeg et png sont autorisés", (value) => {
@@ -163,13 +166,11 @@ export default function ProfileEdit() {
           }}
           onSubmit={(values) => {
             console.log(values);
-            if (currentStep < validationSchemas.length - 1) {
+            if (currentStep < profileValidationSchema.length - 1) {
               setCurrentStep((prev) => prev + 1);
-            } else {
-              console.log("Formulaire soumis");
             }
           }}
-          validationSchema={validationSchemas[currentStep]}
+          validationSchema={profileValidationSchema[currentStep]}
         >
           {({ values, handleChange, setFieldValue }) => (
             <Form>
@@ -268,7 +269,7 @@ export default function ProfileEdit() {
 
               {/* Biography field */}
               <div className="relative mt-6 mb-6">
-                <label htmlFor="biography">
+                <label htmlFor="description">
                   <Typography
                     variant="h6"
                     className="mb-2 block text-black font-bold"
@@ -389,32 +390,40 @@ export default function ProfileEdit() {
                     Valider les modifications
                   </button>
                 </div>
-
-                {/* Password field */}
-                <div className="mt-8">
-                  <button
-                    type="submit"
-                    className="p-2 lg:w-2/4 w-3/4 border border-gray-400 text-black rounded hover:bg-opacity-85 mx-auto block"
-                  >
-                    Mot de passe
-                  </button>
-                </div>
-
-                {/* Delete account field */}
-                <div>
-                  <button
-                    type="submit"
-                    className="mt-8 text-red-500 font-bold mx-auto block"
-                    onClick={handleDeleteAccount}
-                  >
-                    Supprimer mon compte
-                  </button>
-                  <ProfileDeleteAccount isOpen={isDeleteModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmDelete} />
-                </div>
               </div>
             </Form>
           )}
         </Formik>
+
+        <div>
+          {/* Password field */}
+          <div className="mt-8">
+            <button
+              type="submit"
+              className="p-2 lg:w-2/4 w-3/4 border border-gray-400 text-black rounded hover:bg-opacity-85 mx-auto block"
+              onClick={() => setPasswordModalOpen(true)}
+            >
+              Mot de passe
+            </button>
+            <ChangePasswordModal
+              isOpen={isPasswordModalOpen}
+              onClose={() => setPasswordModalOpen(false)}
+              onConfirm={(newPassword) => console.log("Mot de passe changé :", newPassword)}
+            />
+          </div>
+
+          {/* Delete account field */}
+          <div>
+            <button
+              type="submit"
+              className="mt-8 text-red-500 font-bold mx-auto block"
+              onClick={handleDeleteAccount}
+            >
+              Supprimer mon compte
+            </button>
+            <ProfileDeleteAccount isOpen={isDeleteModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmDelete} />
+          </div>
+        </div>
       </div>
     </div>
   );
