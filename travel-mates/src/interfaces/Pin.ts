@@ -1,5 +1,3 @@
-import { Activity } from "./TripProps/TripProps";
-
 export interface AddPin {
     title: string;
     description: string;
@@ -13,7 +11,7 @@ export interface AddPin {
 export interface MapPin {
     id: number;
     title: string;
-    activities: Activity[];
+    pinActivities: { activity: string }[];
     latitude: number;
     longitude: number;
     rating: number
