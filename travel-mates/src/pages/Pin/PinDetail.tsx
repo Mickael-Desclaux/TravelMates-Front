@@ -1,31 +1,25 @@
 import { Avatar, Button, Carousel, Rating, Tab, TabPanel, Tabs, TabsBody, TabsHeader, ThemeProvider, Typography } from "@material-tailwind/react";
-import { Activity } from "../../interfaces/TripProps/TripProps";
-import adventureIcon from '../../assets/activity/adventure.svg';
-import cultureIcon from '../../assets/activity/culture.svg';
-import relaxationIcon from '../../assets/activity/relaxation.svg';
-import sportIcon from '../../assets/activity/sport.svg';
-import partyIcon from '../../assets/activity/party-and-bar.svg';
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import './PinDetail.css';
-import { NavLink } from "react-router-dom";
-
-interface PinInfos {
-    title: string;
-    description: string;
-    activities: Activity[];
-    owner_firstname: string;
-    owner_lastname: string;
-    owner_profile_picture: string;
-    pin_image: string[];
-}
+import { NavLink, useParams } from "react-router-dom";
+import { GetPinById } from "../../api/Pin";
+import { Pin } from "../../interfaces/Pin";
 
 interface PinReview {
-    user_firstname: string;
-    user_lastname: string;
-    user_profile_picture: string;
+    user: {
+        profile: {
+            firstname: string;
+            lastname: string;
+            media: {
+                url: string;
+            };
+        };
+    };
     rating: number;
     comment: string;
-    pin_image?: string[];
+    media: {
+        url: string;
+    };
 }
 
 const carouselTheme = {
@@ -38,91 +32,40 @@ const carouselTheme = {
 
 export default function PinDetail() {
 
-    // Fake Pin infos data
-    const pinInfoData: PinInfos = useMemo(() => ({
-        title: "Tour Eiffel",
-        description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas fringilla dui eu maximus. 
-        Curabitur non nulla tellus. Nulla facilisi. Aenean suscipit odio elit, et rutrum nisi rutrum et. Nullam nec convallis justo. 
-        Mauris et laoreet turpis. In maximus rutrum magna non mattis. Integer venenatis gravida ex, quis faucibus massa congue ut. 
-        Proin placerat semper hendrerit. Ut id massa mauris.`,
-        activities: [
-            { id: 1, type: 'Museum', icon: cultureIcon },
-            { id: 2, type: 'Adventure', icon: adventureIcon },
-            { id: 3, type: 'Détente', icon: relaxationIcon },
-            { id: 5, type: 'Fête', icon: partyIcon },
-            { id: 4, type: 'Sport', icon: sportIcon }],
-        owner_firstname: "Émilie",
-        owner_lastname: "Deparis",
-        owner_profile_picture: "https://docs.material-tailwind.com/img/face-2.jpg",
-        pin_image: ["https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80"],
-    }), []);
-
-    const pinReviews: PinReview[] = useMemo(() => [
-        {
-            user_firstname: "Michel",
-            user_lastname: "Dupoitou",
-            user_profile_picture: "https://docs.material-tailwind.com/img/face-1.jpg",
-            rating: 5,
-            comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas fringilla dui eu maximus. Curabitur non nulla tellus.",
-            pin_image: ["https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
-                "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
-            ],
-        },        {
-            user_firstname: "Michel",
-            user_lastname: "Dupoitou",
-            user_profile_picture: "https://docs.material-tailwind.com/img/face-1.jpg",
-            rating: 5,
-            comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas fringilla dui eu maximus. Curabitur non nulla tellus.",
-            pin_image: ["https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
-                "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
-            ],
-        },        {
-            user_firstname: "Michel",
-            user_lastname: "Dupoitou",
-            user_profile_picture: "https://docs.material-tailwind.com/img/face-1.jpg",
-            rating: 5,
-            comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas fringilla dui eu maximus. Curabitur non nulla tellus.",
-            pin_image: ["https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
-                "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
-            ],
-        },
-        {
-            user_firstname: "Patrick",
-            user_lastname: "Decharente",
-            user_profile_picture: "https://docs.material-tailwind.com/img/face-4.jpg",
-            rating: 2,
-            comment: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam egestas fringilla dui eu maximus. Curabitur non nulla tellus.",
-            pin_image: ["https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
-                "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
-            ],
-        },
-        {
-            user_firstname: "Éloïse",
-            user_lastname: "Debordeaux",
-            user_profile_picture: "https://docs.material-tailwind.com/img/face-3.jpg",
-            rating: 1,
-            comment: "",
-            pin_image: [],
-        },
-    ], []);
-
+    const [pin, setPin] = useState<Pin>();
     const [images, setImages] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState<string>("detail");
     const [averageRating, setAverageRating] = useState<number>(0)
     const [averageExactRating, setAverageExactRating] = useState<number>(0.0)
+    const {id} = useParams();
+
+    useEffect(() => {
+        const fetchData = async() => {
+            if (id) {
+                try {
+                    const data = await GetPinById(parseInt(id));
+                    setPin(data);
+                } catch (error) {
+                    throw new Error(error as string)
+                }
+            }
+        }
+        fetchData();
+    }, [id]);
 
     useEffect(() => {
         const images = [
-            ...pinInfoData.pin_image,
-            ...pinReviews.flatMap(review => review.pin_image ?? []),
+            ...(pin?.pinMedias ?? []).map(media => media.media.url),
+            ...(pin?.review ?? []).flatMap(review => review.media?.url ?? []),
         ].filter(image => image !== undefined);
+    
         setImages(images);
-    }, [pinInfoData, pinReviews]);
+    }, [pin]);
 
     useEffect(() => {
-        setAverageRating(pinReviews.length > 0 ? Math.floor(pinReviews.reduce((sum, review) => sum + review.rating, 0) / pinReviews.length) : 0);
-        setAverageExactRating(pinReviews.length > 0 ? (pinReviews.reduce((sum, review) => sum + review.rating, 0) / pinReviews.length) : 0)
-    }, [pinReviews])
+        setAverageRating((pin?.review?.length ?? 0) > 0 ? Math.floor((pin?.review?.reduce((sum, review) => sum + (review?.rating ?? 0), 0) || 0) / (pin?.review?.length ?? 0)) : 0);
+        setAverageExactRating((pin?.review?.length ?? 0) > 0 ? ((pin?.review ?? []).reduce((sum, review) => sum + (review?.rating ?? 0), 0)) / (pin?.review?.length ?? 0) : 0);
+    });
 
     const data = [
         {
@@ -131,35 +74,31 @@ export default function PinDetail() {
             desc:
                 <>
                     <div className="flex flex-row items-center justify-between mt-2">
-                        <Typography variant="h2" className="font-title text-2xl text-black">{pinInfoData.title}</Typography>
+                        <Typography variant="h2" className="font-title text-2xl text-black">{pin?.title || "test"}</Typography>
                         <div>
                             {
-                                pinInfoData.activities.map((activity: Activity, index: number) => (
-                                    <Avatar src={activity.icon} key={index} alt={activity.type} size="sm" className="ms-1"></Avatar>
+                                pin?.pinActivities.map((activityObj: { activity: string }, index: number) => (
+                                    <Avatar src={`/activity/${activityObj.activity.toLowerCase()}.svg`} key={index} alt={activityObj.activity} size="sm" className="ms-1"></Avatar>
                                 ))
                             }
                         </div>
                     </div>
                     <div className="flex flex-row items-center mt-6">
-                        <Avatar src={pinInfoData.owner_profile_picture} alt={pinInfoData.owner_firstname + ' ' + pinInfoData.owner_lastname} />
-                        <Typography variant="h3" className="text-md text-black ms-3">Créé par {pinInfoData.owner_firstname + ' ' + pinInfoData.owner_lastname}</Typography>
+                        <Avatar src={import.meta.env.VITE_API_BASE_URL + pin?.user.profile.media.url} alt={pin?.user.profile.firstname + ' ' + pin?.user.profile.lastname} />
+                        <Typography variant="h3" className="text-md text-black ms-3">Créé par {pin?.user.profile.firstname + ' ' + pin?.user.profile.lastname}</Typography>
                     </div>
                     <div className="mt-4">
-                        <Typography variant="paragraph" className="text-black">{pinInfoData.description}</Typography>
+                        <Typography variant="paragraph" className="text-black">{pin?.description || "test"}</Typography>
                     </div>
                 </>,
         },
         {
             label: "Avis",
             value: "review",
-            header:
-            <>                     
-
-            </>,
             desc:
                 <>
                     <div className="flex flex-row items-center justify-between mt-2">
-                        <Typography variant="h2" className="font-title text-2xl text-black">{pinInfoData.title}</Typography>
+                        <Typography variant="h2" className="font-title text-2xl text-black">{pin?.title || "test"}</Typography>
                         <div className="flex flex-row items-center">
                             <p className="me-2">{parseFloat(averageExactRating.toFixed(2))}</p>
                             <Rating key={averageRating} value={averageRating} className="custom-rating" readonly />
@@ -169,20 +108,27 @@ export default function PinDetail() {
                         <Button type="button" className="bg-green">Ajouter un avis</Button>
                     </NavLink>
                     {
-                        pinReviews ? pinReviews.map((review: PinReview, index: number) => (
+                        pin?.review && pin.review.length > 0 ? pin.review.map((review: PinReview, index: number) => (
                             <div key={index} className="mb-4">
                                 <div className="flex flex-row items-start">
-                                    <Avatar src={review.user_profile_picture} alt={review.user_firstname + ' ' + review.user_lastname} />
+                                    <Avatar
+                                        src={import.meta.env.VITE_API_BASE_URL + review.user?.profile?.media?.url || "default-avatar.png"}
+                                        alt={`${review.user?.profile?.firstname || "Utilisateur"} ${review.user?.profile?.lastname || ""}`}
+                                    />
                                     <div className="ml-3">
-                                        <Typography className="text-black">{review.user_firstname + ' ' + review.user_lastname}</Typography>
+                                        <Typography className="text-black">
+                                            {`${review.user?.profile?.firstname || "Utilisateur"} ${review.user?.profile?.lastname || ""}`}
+                                        </Typography>
                                         <Rating value={review.rating} readonly className="custom-rating" />
                                     </div>
                                 </div>
                                 <div>
-                                    <Typography>{review.comment}</Typography>
+                                    <Typography>{review.comment || "Pas de commentaire."}</Typography>
                                 </div>
                             </div>
-                        )) : <Typography variant="lead" className="text-black">Il n'y a pas encore d'avis sur ce marqueur</Typography>
+                        )) : (
+                            <Typography variant="lead" className="text-black">Il n'y a pas encore d'avis sur ce marqueur</Typography>
+                        )
                     }
                 </>,
         },
@@ -195,9 +141,10 @@ export default function PinDetail() {
                     <ThemeProvider value={carouselTheme}>
                         <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
                             {images.map((image: string, index: number) => (
-                                <img key={index} src={image} alt="Image" className="max-h-[400px] mx-auto" />
+                                <img key={index} src={import.meta.env.VITE_API_BASE_URL + image} alt="Image" className="max-h-[400px] mx-auto" />
                             ))}
                         </Carousel>
+
                     </ThemeProvider>
                     <Tabs value="detail">
                         <TabsHeader className="bg-gray-100">

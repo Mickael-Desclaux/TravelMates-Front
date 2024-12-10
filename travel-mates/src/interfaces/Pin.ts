@@ -16,3 +16,42 @@ export interface MapPin {
     longitude: number;
     rating: number
 }
+
+export interface Pin {
+    title: string;
+    description: string;
+    pinActivities: {activity: string}[];
+    user: {
+        profile: {
+            id: number;
+            firstname: string;
+            lastname: string;
+            media: {
+                url: string
+            }
+        }
+    };
+    pinMedias: {
+        media: {
+            id: number;
+            url: string;
+        }
+    }[];
+    review: {
+        user: {
+            profile: {
+                firstname: string;
+                lastname: string;
+                media: {
+                    id: number;
+                    url: string
+                }
+            }
+        };
+        rating: number;
+        comment: string;
+        media: {
+            url: string;
+        };
+    }[];
+}
