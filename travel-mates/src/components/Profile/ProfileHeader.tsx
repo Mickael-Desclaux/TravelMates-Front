@@ -3,9 +3,9 @@ import adventureIcon from '../../assets/activity/adventure.svg';
 import leisureIcon from '../../assets/activity/leisure.svg';
 import relaxationIcon from '../../assets/activity/relaxation.svg';
 import sportIcon from '../../assets/activity/sport.svg';
-import SettingsButton from "../SettingsButton/SettingsButton";
 //import AddFriendButton from "../AddFriendButton/AddFriendButton";
 import { Typography } from "@material-tailwind/react";
+import ProfilePopover from "../ProfilePopover/ProfilePopover";
 
 interface ProfilePageProps {
     values: ProfileData;
@@ -84,7 +84,7 @@ export default function ProfileHeader({ values }: ProfilePageProps) {
                             </div>
 
                             <div className="flex flex-col space-y-10 items-end">
-                                <SettingsButton />
+                                <ProfilePopover />
                                 {/* Implemented this button for the Version 2 app */}
                                 {/* <AddFriendButton /> */}
                             </div>
