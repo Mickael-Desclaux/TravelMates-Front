@@ -2,20 +2,24 @@ import axios, { AxiosInstance } from "axios";
 import useAuthStore from "../utils/AuthStore";
 
 export function useApi() {
-    const headers = {
-        "Content-Type": "application/json",
-    };
-
     const api: AxiosInstance = axios.create({
         baseURL: import.meta.env.VITE_API_BASE_URL,
-        headers,
-        withCredentials: true,
+        withCredentials: true, // Permet d'envoyer des cookies si nécessaire
     });
     
     api.interceptors.request.use((config) => {
         const token = useAuthStore.getState().access_token; // Récupère le token du store Zustand
         if (token) {
             config.headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        // Vérifier si le body est un FormData et ajuster les headers
+        if (config.data instanceof FormData) {
+            // Si FormData, Axios gère automatiquement le Content-Type
+            delete config.headers["Content-Type"];
+        } else {
+            // Si ce n'est pas un FormData, le Content-Type est JSON
+            config.headers["Content-Type"] = "application/json";
         }
 
         return config;
@@ -26,28 +30,25 @@ export function useApi() {
         async error => {
             const originalRequest = error.config;
             if (error.response.status === 401 && !originalRequest._retry) {
-                originalRequest._retry = true; // Mark the request as retried to avoid infinite loops.
-            try {
-                // const refreshToken = localStorage.getItem('refresh_token');
-                const response = await api.get("auth/refreshToken", {withCredentials: true});
-            
-            // Store the access_token in Zustand store
-            const newAccessToken = response.data.accessToken;
-            useAuthStore.getState().setAccessToken(newAccessToken);
+                originalRequest._retry = true; // Marque la requête comme réessayée pour éviter une boucle infinie.
+                try {
+                    const response = await api.get("auth/refreshToken", { withCredentials: true });
 
-            api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+                    // Stocker le nouveau access_token dans le store Zustand
+                    const newAccessToken = response.data.accessToken;
+                    useAuthStore.getState().setAccessToken(newAccessToken);
 
-            return api(originalRequest); // Retry the original request with the new access token.
-            } catch (refreshError) {
-                console.error('Token refresh failed:', refreshError);
-                useAuthStore.getState().clearAccessToken();
-                
-                window.location.href = '/login';
+                    api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
 
-                return Promise.reject(refreshError);
+                    return api(originalRequest); // Réessayer la requête originale avec le nouveau token.
+                } catch (refreshError) {
+                    console.error('Échec du rafraîchissement du token:', refreshError);
+                    useAuthStore.getState().clearAccessToken();
+                    window.location.href = '/login'; // Rediriger vers la page de connexion si le refresh échoue
+                    return Promise.reject(refreshError);
+                }
             }
-        }
-        return Promise.reject(error);
+            return Promise.reject(error);
         }
     );
 

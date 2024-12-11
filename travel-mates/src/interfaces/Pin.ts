@@ -1,6 +1,7 @@
 export interface AddPin {
     title: string;
     description: string;
+    country: string;
     longitude: number | null;
     latitude: number | null;
     medias: File[];
@@ -18,6 +19,7 @@ export interface MapPin {
 }
 
 export interface Pin {
+    id: number;
     title: string;
     description: string;
     pinActivities: {activity: string}[];
