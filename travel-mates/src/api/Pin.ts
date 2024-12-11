@@ -37,10 +37,8 @@ export async function CreatePin(body: AddPin): Promise<Pin> {
         if (body.medias && body.medias.length > 0) {
             body.medias.forEach((file: File) => {
                 formData.append("files", file);
-                console.log("🚀 ~ body.medias.forEach ~ file:", file)
             });
         }
-        console.log("🚀 ~ CreatePin ~ formData:", formData)
         const response = await api.post("pin", formData);
 
         return response.data;
