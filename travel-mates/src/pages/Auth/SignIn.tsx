@@ -11,8 +11,6 @@ export default function SignIn() {
     const [loginError, setLoginError] = useState("");
     const navigate = useNavigate();
 
-    // TODO: Add a check if user is already logged in, then redirect to home page
-
     // Validation du formulaire
     const formik = useFormik({
         initialValues: {
