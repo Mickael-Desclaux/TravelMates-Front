@@ -1,21 +1,23 @@
 import axios, { AxiosInstance } from "axios";
 import useAuthStore from "../utils/AuthStore";
+import Cookies from 'js-cookie';
 
 export function useApi() {
-    const headers = {
-        "Content-Type": "application/json",
-    };
-
     const api: AxiosInstance = axios.create({
         baseURL: import.meta.env.VITE_API_BASE_URL,
-        headers,
         withCredentials: true,
     });
     
     api.interceptors.request.use((config) => {
-        const token = useAuthStore.getState().access_token; // Récupère le token du store Zustand
+        const token = useAuthStore.getState().access_token;
         if (token) {
             config.headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        if (config.data instanceof FormData) {
+            delete config.headers["Content-Type"];
+        } else {
+            config.headers["Content-Type"] = "application/json";
         }
 
         return config;
@@ -26,28 +28,33 @@ export function useApi() {
         async error => {
             const originalRequest = error.config;
             if (error.response.status === 401 && !originalRequest._retry) {
-                originalRequest._retry = true; // Mark the request as retried to avoid infinite loops.
-            try {
-                // const refreshToken = localStorage.getItem('refresh_token');
-                const response = await api.get("auth/refreshToken", {withCredentials: true});
-            
-            // Store the access_token in Zustand store
-            const newAccessToken = response.data.accessToken;
-            useAuthStore.getState().setAccessToken(newAccessToken);
+                originalRequest._retry = true;
 
-            api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+                const refreshToken = Cookies.get('refresh_token');
+                if (!refreshToken) {
+                    console.log('Refresh token non disponible.');
+                    useAuthStore.getState().clearAccessToken();
+                    window.location.href = '/sign-in';
+                    return Promise.reject(error);
+                }
 
-            return api(originalRequest); // Retry the original request with the new access token.
-            } catch (refreshError) {
-                console.error('Token refresh failed:', refreshError);
-                useAuthStore.getState().clearAccessToken();
-                
-                window.location.href = '/login';
+                try {
+                    const response = await api.get("auth/refreshToken", { withCredentials: true });
 
-                return Promise.reject(refreshError);
+                    const newAccessToken = response.data.accessToken;
+                    useAuthStore.getState().setAccessToken(newAccessToken);
+
+                    api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+
+                    return api(originalRequest);
+                } catch (refreshError) {
+                    console.error('Échec du rafraîchissement du token:', refreshError);
+                    useAuthStore.getState().clearAccessToken();
+                    window.location.href = '/sign-in';
+                    return Promise.reject(refreshError);
+                }
             }
-        }
-        return Promise.reject(error);
+            return Promise.reject(error);
         }
     );
 
