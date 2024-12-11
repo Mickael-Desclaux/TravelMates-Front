@@ -15,8 +15,10 @@ import ProfileEdit from './pages/Profile/ProfileEdit';
 import ReviewCreate from './pages/Pin/ReviewCreate';
 import ChatList from './pages/Chat/ChatList';
 import Chat from './pages/Chat/Chat';
+import ProtectRoute from './components/ProtectRoute/ProtectRoute';
 
 function App() {
+
 	return (
 		<>
 			<NavbarComponent />
@@ -24,16 +26,19 @@ function App() {
 				<Route path="/" element={<TripListe />} />
 				<Route path="/sign-in" element={<SignIn />} />
 				<Route path="/sign-up" element={<SignUpMultiStepForm />} />
-				<Route path="/trip-create" element={<TripCreate />} />
 				<Route path="/trip-detail" element={<TripDetail />} />
 				<Route path="/map" element={<Map />} />
 				<Route path="/profile" element={<Profile />} />
-				<Route path="/profile-edit" element={<ProfileEdit  />} />
-				<Route path="/pin-create" element={<PinCreate />} />
 				<Route path="/pin/:id" element={<PinDetail />} />
-				<Route path="/pin-review" element={<ReviewCreate />} />
-				<Route path="/message" element={<ChatList />} />
-				<Route path="/message/:id" element={<Chat />} />
+
+				<Route element={<ProtectRoute />}>
+					<Route path="/trip-create" element={<TripCreate />} />
+					<Route path="/profile-edit" element={<ProfileEdit />} />
+					<Route path="/pin-create" element={<PinCreate />} />
+					<Route path="/pin-review" element={<ReviewCreate />} />
+					<Route path="/message" element={<ChatList />} />
+					<Route path="/message/:id" element={<Chat />} />
+				</Route>
 			</Routes>
 
 			<ReactQueryDevtools />
