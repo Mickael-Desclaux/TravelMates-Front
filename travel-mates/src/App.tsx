@@ -28,14 +28,14 @@ function App() {
 				<Route path="/sign-up" element={<SignUpMultiStepForm />} />
 				<Route path="/trip-detail" element={<TripDetail />} />
 				<Route path="/map" element={<Map />} />
-				<Route path="/profile" element={<Profile />} />
 				<Route path="/pin/:id" element={<PinDetail />} />
 
 				<Route element={<ProtectRoute />}>
+					<Route path="/profile/:id" element={<Profile />} />
 					<Route path="/trip-create" element={<TripCreate />} />
 					<Route path="/profile-edit" element={<ProfileEdit />} />
 					<Route path="/pin-create" element={<PinCreate />} />
-					<Route path="/pin-review" element={<ReviewCreate />} />
+					<Route path="/pin-review/:id" element={<ReviewCreate />} />
 					<Route path="/message" element={<ChatList />} />
 					<Route path="/message/:id" element={<Chat />} />
 				</Route>

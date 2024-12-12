@@ -190,7 +190,6 @@ export default function PinCreate() {
             const { title, country } = handleTitleSplit(values.title);
             values.title = title;
             values.country = country;
-            console.log("🚀 ~ onSubmit ~ values:", values)
             const response = await CreatePin(values);
             navigate(`/pin/${response.id}`); 
         } catch (error) {

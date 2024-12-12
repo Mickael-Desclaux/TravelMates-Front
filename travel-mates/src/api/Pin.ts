@@ -1,5 +1,6 @@
 import {useApi} from "../hooks/UseApi";
 import { AddPin, MapPin, Pin } from "../interfaces/Pin";
+import { AddReview, ReviewWithId } from "../interfaces/Review";
 
 const api = useApi();
 
@@ -40,6 +41,21 @@ export async function CreatePin(body: AddPin): Promise<Pin> {
             });
         }
         const response = await api.post("pin", formData);
+
+        return response.data;
+    } catch (error) {
+        throw new Error;
+    }
+}
+
+export async function addReview(id: number, body: AddReview): Promise<ReviewWithId> {
+    try {
+        const formData = new FormData();
+        formData.append("rating", body.rating.toString());
+        formData.append("comment", body.comment);
+        if (body.media) formData.append("file", body.media);
+
+        const response = await api.post(`review/${id}`, formData);
 
         return response.data;
     } catch (error) {

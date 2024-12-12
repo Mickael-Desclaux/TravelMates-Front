@@ -2,41 +2,54 @@ import { Button, Rating, Textarea, Typography } from "@material-tailwind/react";
 import { Input } from "@mui/material";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
-import { Review } from "../../interfaces/Review";
+import { AddReview } from "../../interfaces/Review";
 import './ReviewCreate.css';
+import { addReview } from "../../api/Pin";
+import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
 
 export default function ReviewCreate() {
 
-    const defaultValues: Review = {
+    const navigate = useNavigate();
+    const [globalError, setGlobalError] = useState<string>();
+    const {id} = useParams();
+
+    const defaultValues: AddReview = {
         rating: 5,
-        description: "",
-        medias: []
+        comment: "",
+        media: null,
     };
 
     const mediaType = ['image/jpg', 'image/jpeg', 'image/png'];
     const mediaMaxSize: number = 10485760; // media max size = 10Mb
-    const maxImages: number = 3;
 
     const validationSchema = Yup.object().shape({
         rating: Yup.number().required(),
         description: Yup.string(),
-        medias: Yup.array()
-            .of(
-                Yup.mixed()
-                    .test("fileType", "Seuls les formats jpg, jpeg et png sont autorisés", (value) => {
-                        if (!value) return true;
-                        return mediaType.includes((value as File).type);
-                    })
-                    .test("fileSize", "La taille de l'image doit être inférieure à 10Mo", (value) => {
-                        if (!value) return true;
-                        return (value as File).size <= mediaMaxSize;
-                    })
-            )
-            .max(maxImages, `Vous ne pouvez pas ajouter plus de ${maxImages} images`)
+        media: Yup.mixed()
+            .test("fileType", "Seuls les formats jpg, jpeg et png sont autorisés", (value) => {
+                if (!value) return true;
+                return mediaType.includes((value as File).type);
+            })
+            .test("fileSize", "La taille de l'image doit être inférieure à 10Mo", (value) => {
+                if (!value) return true;
+                return (value as File).size <= mediaMaxSize;
+            })
     })
 
-    function onSubmit(values: Review) {
-        console.log(values)
+    async function onSubmit(values: AddReview) {
+        if (id !== undefined) {
+            try {
+                const response = await addReview(+id, values);
+                navigate(`/pin/${response.pin_id}`);
+            } catch (error: unknown) {
+                // if (error instanceof Error) console.log(error.response.data.message);
+                const errorMessage = (error as any).response?.data?.message || "Une erreur est survenue, veuillez réessayer.";
+                setGlobalError(errorMessage);
+            }
+        } else {
+            navigate(`/map`);
+        }
     };
 
     return (
@@ -65,13 +78,13 @@ export default function ReviewCreate() {
                                     />
                                     <ErrorMessage name="rating" component="div" className="text-red-500 -mt-4" />
                                     <Typography variant="h6" className="mt-4 -mb-3">
-                                        Description
+                                        Commentaire
                                     </Typography>
                                     <Field
                                         component={Textarea}
-                                        name="description"
-                                        id="description"
-                                        value={values.description}
+                                        name="comment"
+                                        id="comment"
+                                        value={values.comment}
                                         onChange={handleChange}
                                         type="text"
                                         size="lg"
@@ -82,45 +95,37 @@ export default function ReviewCreate() {
                                         }} />
                                     <ErrorMessage name="description" component="div" className="text-red-500 -mt-4" />
                                     <Typography variant="h6" className="mt-4 -mb-3">
-                                        Images
+                                        Image
                                     </Typography>
                                     <Field
                                         component={Input}
-                                        id="medias"
+                                        id="media"
                                         type="file"
                                         size="lg"
-                                        multiple
                                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                            const newFiles = Array.from(event.currentTarget.files || []);
-                                            const updatedMedias = [...values.medias, ...newFiles];
-                                            setFieldValue("medias", updatedMedias);
+                                            const file = event.currentTarget.files ? event.currentTarget.files[0] : null;
+                                            setFieldValue("media", file);
                                         }}
                                         className="custom-input"
                                     />
-                                    <ErrorMessage name="medias" component="div" className="text-red-500" />
-                                    {values.medias && values.medias.length > 0 && (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                                            {values.medias.map((file, index) => (
-                                                <div key={index} className="relative">
-                                                    <img
-                                                        src={URL.createObjectURL(file)}
-                                                        alt="Image"
-                                                        className="w-full h-auto object-cover rounded-lg"
-                                                    />
-                                                    <Button
-                                                        type="button"
-                                                        size="sm"
-                                                        className="!bg-red-800 !text-white !p-2 !absolute !top-2 !right-2"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            const updatedMedias = values.medias.filter((_f, i) => i !== index);
-                                                            setFieldValue("medias", updatedMedias);
-                                                        }}
-                                                    >
-                                                        &#10005;
-                                                    </Button>
-                                                </div>
-                                            ))}
+                                    <ErrorMessage name="media" component="div" className="text-red-500" />
+                                    {values.media && (
+                                        <div className="mt-4">
+                                            <div className="relative">
+                                                <img
+                                                    src={URL.createObjectURL(values.media)}
+                                                    alt="Image"
+                                                    className="w-full h-auto object-cover rounded-lg"
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    className="!bg-red-800 !text-white !p-2 !absolute !top-2 !right-2"
+                                                    onClick={() => setFieldValue("media", null)}
+                                                >
+                                                    &#10005;
+                                                </Button>
+                                            </div>
                                         </div>
                                     )}
                                     <div className="flex justify-center">
@@ -128,6 +133,11 @@ export default function ReviewCreate() {
                                             Valider
                                         </Button>
                                     </div>
+                                    {globalError && (
+                                        <div className="text-red-500 text-center mb-4">
+                                            {globalError}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

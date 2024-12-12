@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from "axios";
 import useAuthStore from "../utils/AuthStore";
-import Cookies from 'js-cookie';
 
 export function useApi() {
     const api: AxiosInstance = axios.create({
@@ -30,25 +29,16 @@ export function useApi() {
             if (error.response.status === 401 && !originalRequest._retry) {
                 originalRequest._retry = true;
 
-                const refreshToken = Cookies.get('refresh_token');
-                if (!refreshToken) {
-                    console.log('Refresh token non disponible.');
-                    useAuthStore.getState().clearAccessToken();
-                    window.location.href = '/sign-in';
-                    return Promise.reject(error);
-                }
-
                 try {
                     const response = await api.get("auth/refreshToken", { withCredentials: true });
-
-                    const newAccessToken = response.data.accessToken;
+                    if (error.response.status === 401) return Promise.reject(error);
+                    const newAccessToken = response.data.token;
                     useAuthStore.getState().setAccessToken(newAccessToken);
 
                     api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
 
                     return api(originalRequest);
                 } catch (refreshError) {
-                    console.error('Échec du rafraîchissement du token:', refreshError);
                     useAuthStore.getState().clearAccessToken();
                     window.location.href = '/sign-in';
                     return Promise.reject(refreshError);
