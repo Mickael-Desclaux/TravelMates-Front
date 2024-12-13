@@ -31,6 +31,7 @@ export default function PinCreate() {
     const [bbox, setBbox] = useState<string>('');
     const proximity: string = `${longitude},${latitude}`;
     const navigate = useNavigate();
+    const [globalError, setGlobalError] = useState<string>();
 
     // Coordinates box to display only suggestions that are 100km or less than current position
     const distanceKm = 100;
@@ -192,8 +193,16 @@ export default function PinCreate() {
             values.country = country;
             const response = await CreatePin(values);
             navigate(`/pin/${response.id}`); 
-        } catch (error) {
-            throw new Error;
+        } catch (error: any) {
+            if (error.response) {
+                const errorMessage = error.response.data.message || 
+                    "Une erreur est survenue, veuillez réessayer.";
+                setGlobalError(errorMessage);
+            } else if (error.message) {
+                setGlobalError(error.message);
+            } else {
+                setGlobalError("Une erreur est survenue, veuillez réessayer.");
+            }
         }
     }
     // #endregion
@@ -341,6 +350,11 @@ export default function PinCreate() {
                                     Valider
                                 </Button>
                             </div>
+                            {globalError && (
+                                <div className="text-red-500 text-center mb-4">
+                                    {globalError}
+                                </div>
+                            )}
                         </Form>
                     )}
                 </Formik>

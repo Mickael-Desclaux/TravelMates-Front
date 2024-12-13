@@ -25,7 +25,7 @@ export default function ReviewCreate() {
 
     const validationSchema = Yup.object().shape({
         rating: Yup.number().required(),
-        description: Yup.string(),
+        comment: Yup.string(),
         media: Yup.mixed()
             .test("fileType", "Seuls les formats jpg, jpeg et png sont autorisés", (value) => {
                 if (!value) return true;
@@ -42,15 +42,22 @@ export default function ReviewCreate() {
             try {
                 const response = await addReview(+id, values);
                 navigate(`/pin/${response.pin_id}`);
-            } catch (error: unknown) {
-                // if (error instanceof Error) console.log(error.response.data.message);
-                const errorMessage = (error as any).response?.data?.message || "Une erreur est survenue, veuillez réessayer.";
-                setGlobalError(errorMessage);
+            } catch (error: any) {
+                
+                if (error.response) {
+                    const errorMessage = error.response.data.message || 
+                        "Une erreur est survenue, veuillez réessayer.";
+                    setGlobalError(errorMessage);
+                } else if (error.message) {
+                    setGlobalError(error.message);
+                } else {
+                    setGlobalError("Une erreur est survenue, veuillez réessayer.");
+                }
             }
         } else {
             navigate(`/map`);
         }
-    };
+    }
 
     return (
         <div className="md:mt-32 m-4">

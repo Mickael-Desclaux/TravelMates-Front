@@ -1,57 +1,3 @@
-// import axios, { AxiosInstance } from "axios";
-// import useAuthStore from "../utils/AuthStore";
-
-// export function useApi() {
-//     const api: AxiosInstance = axios.create({
-//         baseURL: import.meta.env.VITE_API_BASE_URL,
-//         withCredentials: true,
-//     });
-    
-//     api.interceptors.request.use((config) => {
-//         const token = useAuthStore.getState().access_token;
-//         if (token) {
-//             config.headers["Authorization"] = `Bearer ${token}`;
-//         }
-
-//         if (config.data instanceof FormData) {
-//             delete config.headers["Content-Type"];
-//         } else {
-//             config.headers["Content-Type"] = "application/json";
-//         }
-
-//         return config;
-//     });
-
-//     api.interceptors.response.use(
-//         response => response,
-//         async error => {
-//             const originalRequest = error.config;
-//             if (error.response.status === 401 && !originalRequest._retry) {
-//                 originalRequest._retry = true;
-
-//                 try {
-//                     const response = await api.get("auth/refresh-token", { withCredentials: true });
-//                     const newAccessToken = response.data.token;
-//                     useAuthStore.getState().setAccessToken(newAccessToken);
-
-//                     api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-
-//                     return api(originalRequest);
-//                 } catch (refreshError: any) {
-//                     if (refreshError.response && refreshError.response.status === 401) {
-//                         useAuthStore.getState().clearAccessToken();
-//                         window.location.href = '/sign-in';
-//                         throw refreshError;
-//                     }
-//                 }
-//             }
-//             return Promise.reject(error);
-//         }
-//     );
-
-//     return api;
-// }
-
 import axios, { AxiosInstance } from "axios";
 import useAuthStore from "../utils/AuthStore";
 
@@ -91,7 +37,7 @@ export function useApi() {
                 
                 try {
                     // Use the separate axios instance for refresh token
-                    const response = await refreshTokenInstance.get("auth/refresh-token");
+                    const response = await refreshTokenInstance.get("auth/refreshToken");
                     
                     const newAccessToken = response.data.token;
                     
