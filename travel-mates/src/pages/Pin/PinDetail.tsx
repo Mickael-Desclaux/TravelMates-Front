@@ -104,7 +104,7 @@ export default function PinDetail() {
                             <Rating key={averageRating} value={averageRating} className="custom-rating" readonly />
                         </div>
                     </div>
-                    <NavLink className="flex justify-end mt-2" to={"/pin-review/"}>
+                    <NavLink className="flex justify-end mt-2" to={`/pin-review/${pin?.id}`}>
                         <Button type="button" className="bg-green">Ajouter un avis</Button>
                     </NavLink>
                     {
