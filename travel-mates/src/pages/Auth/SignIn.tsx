@@ -2,9 +2,9 @@ import { Card, Typography, Input, Button } from "@material-tailwind/react";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { object, string } from "yup";
-import travelmatesLogo from "../../assets/Logo/travelmates.png";
+import travelmatesLogo from "/public/Logo/travelmates.png";
 import HandleSignIn from "../../api/Auth";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import useAuthStore from "../../utils/AuthStore";
 
 export default function SignIn() {
@@ -43,7 +43,9 @@ export default function SignIn() {
             <div className="md:mt-32">
                 {/* TravelMates logo */}
                 <div className="flex justify-center mt-10 mb-10">
-                    <img src={travelmatesLogo} alt="TravelMates" className="w-40" />
+                    <NavLink to="/">
+                        <img  src={travelmatesLogo} alt="TravelMates" className="w-40" />
+                    </NavLink>
                 </div>
 
                 {/* Sign in form */}

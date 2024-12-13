@@ -1,10 +1,23 @@
 import { Popover, PopoverHandler, PopoverContent, List, ListItem } from "@material-tailwind/react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { logoutApi } from "../../api/Auth";
+import useAuthStore from "../../utils/AuthStore";
+import { useState } from "react";
 
   export default function ProfilePopover() {
-    const handleLogOut = () => {
-      console.log("🤸🏾 🪩 👀 ~ Déconnexion effectué ", handleLogOut)
-    }
+    const navigate = useNavigate();
+    const [logoutError, setLogoutError] = useState<string | null>(null);
+
+    const handleLogout = async () => {
+      try {
+        await logoutApi();
+        localStorage.removeItem('authToken');
+        useAuthStore.getState().clearAccessToken();
+        navigate('/sign-in');
+      } catch (error) {
+        setLogoutError("Erreur lors de la déconnexion. Réessayez.");
+      }
+    };
  
     return (
      <Popover placement="bottom-end">
@@ -26,15 +39,16 @@ import { NavLink } from "react-router-dom";
             </NavLink>
             <hr className="my-1 border-t border-gray-200" />
             <NavLink 
-              to="/" 
+              to="/sign-in" 
               className="text-normal font-bold text-red-500"
-              onClick={handleLogOut}>
+              onClick={handleLogout}>
               <ListItem className="bg-transparent hover:text-red-500 hover:bg-gray-50">
                 Déconnexion
               </ListItem>
             </NavLink>
           </List>
         </PopoverContent>
+        {logoutError && <p className="text-red-500 mt-2"></p>}
       </Popover>
     );
   }

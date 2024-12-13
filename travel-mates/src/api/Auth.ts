@@ -16,3 +16,13 @@ export default async function HandleSignIn(body: Auth): Promise<void> {
         throw error;
     }
 }
+
+export async function logoutApi(): Promise<void> {
+    try {
+      const response = await api.post('auth/logout');
+
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
