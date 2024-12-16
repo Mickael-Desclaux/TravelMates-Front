@@ -2,12 +2,15 @@ import { Avatar, Typography } from "@material-tailwind/react"
 import { useNavigate } from "react-router-dom"
 import ChatSearch from "../../components/ChatSearch/ChatSearch"
 import { useEffect, useState } from "react";
-import { Chat as ChatInterface } from "../../interfaces/Chat";
+import { Conversation } from "../../interfaces/Chat";
 import { formatDate } from "../../utils/DateService";
+import { getConversations } from "../../api/Chat";
 
 export default function ChatList() {
 
     const [screenSize, setScreenSize] = useState(window.innerWidth);
+    const [data, setData] = useState<Conversation[]>([]);
+    const [filteredChats, setFilteredChats] = useState<Conversation[]>(data);
 
     useEffect(() => {
         const handleResize = () => {
@@ -15,6 +18,19 @@ export default function ChatList() {
         };
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await getConversations();
+                setData(response);
+                setFilteredChats(response);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchData();
     }, []);
 
     const getMaxLength = () => {
@@ -27,45 +43,12 @@ export default function ChatList() {
         }
     };
 
-    const data = [
-        {
-            tripId: 1,
-            media: {
-                url: "https://docs.material-tailwind.com/img/face-2.jpg"
-            },
-            title: "Voyage à Dubai",
-            lastMessage: "On se donne rdv à 16h pour le golf sur le rooftop avant le meeting avec les japonais",
-            lastMessageDate: new Date()
-        },
-        {
-            tripId: 31,
-            media: {
-                url: "https://docs.material-tailwind.com/img/face-1.jpg"
-            },
-            title: "Voyage à Paris",
-            lastMessage: "Tu sais combien ça coûte une baguette? Je crois c'est dans les genre 1000€",
-            lastMessageDate: new Date()
-        },
-        {
-            tripId: 32,
-            media: {
-                url: "https://docs.material-tailwind.com/img/face-3.jpg"
-            },
-            title: "Road trip en Islande",
-            lastMessage: "Prenez un manteau",
-            lastMessageDate: new Date("2024-12-02T16:30:00Z")
-        }
-    ]
-
-    const [chats] = useState<ChatInterface[]>(data);
-    const [filteredChats, setFilteredChats] = useState<ChatInterface[]>(data);
-
     function handleFilter(searchTerm: string) {
         if (searchTerm.trim() === "") {
-            setFilteredChats(chats);
+            setFilteredChats(data);
         } else {
-            const filtered = chats.filter((chat) =>
-                chat.title.toLowerCase().includes(searchTerm.toLowerCase())
+            const filtered = data.filter((chat) =>
+                chat.trip?.title?.toLowerCase().includes(searchTerm.toLowerCase())
             );
             setFilteredChats(filtered);
         }
@@ -81,25 +64,25 @@ export default function ChatList() {
                 </div>
                 {filteredChats
                     .slice()
-                    .sort((a, b) => new Date(b.lastMessageDate).getTime() - new Date(a.lastMessageDate).getTime())
+                    .sort((a, b) => new Date(b.sent_at).getTime() - new Date(a.sent_at).getTime())
                     .map((conversation, id) => (
                         <div
                             key={id}
                             className="flex flex-row items-start m-4 cursor-pointer md:mt-4"
-                            onClick={() => navigate(`/message/${conversation.tripId}`)}
+                            onClick={() => navigate(`/message/${conversation.reference_id}`)}
                         >
-                            <Avatar src={conversation.media.url} alt={conversation.title} className="ms-4 mr-4" />
+                            <Avatar src={conversation.trip.imageUrl} alt={conversation.trip.title} className="ms-4 mr-4" />
                             <div className="flex flex-col justify-center">
                                 <Typography variant="h2" className="text-lg font-title">
-                                    {conversation.title}
+                                    {conversation.trip.title}
                                 </Typography>
                                 <Typography variant="small">
                                     <span className="me-3">
-                                        {conversation.lastMessage.length > getMaxLength()
-                                            ? `${conversation.lastMessage.slice(0, getMaxLength())}...`
-                                            : conversation.lastMessage}
+                                        {conversation.text.length > getMaxLength()
+                                            ? `${conversation.text.slice(0, getMaxLength())}...`
+                                            : conversation.text}
                                     </span>
-                                    {` ${formatDate(conversation.lastMessageDate)}`}
+                                    {` ${formatDate(new Date(conversation.sent_at))}`}
                                 </Typography>
                             </div>
                         </div>
