@@ -2,7 +2,7 @@ import { Card, Typography, Input, Button } from "@material-tailwind/react";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { object, string } from "yup";
-import travelmatesLogo from "/public/Logo/travelmates.png";
+import travelmatesLogo from "/Logo/travelmates.png";
 import HandleSignIn from "../../api/Auth";
 import { NavLink, useNavigate } from "react-router-dom";
 import useAuthStore from "../../utils/AuthStore";

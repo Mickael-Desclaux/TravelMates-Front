@@ -8,28 +8,28 @@ export interface Chat {
     lastMessageDate: Date
 }
 
-export interface DetailedTripChat {
+export interface DetailedTripChat extends Message {
     user: {
         profile: {
             id: number;
             firstname: string;
             lastname: string;
-            profilePicture: {
+            media: {
                 url: string;
             };
         };
     };
-    text: string;
-    sentAt: Date;
 }
 
 export interface DetailedTripChatWithTripInfos {
-    id: number
-    title: string
-    media: {
-        url: string
+    data: {
+        id: number
+        title: string
+        media: {
+            url: string
+        }
+        messages: DetailedTripChat[]
     }
-    messages: DetailedTripChat[]
 }
 
 export interface Conversation {
@@ -55,4 +55,21 @@ export interface Conversation {
         title?: string;
         imageUrl?: string;
     }
+}
+
+export interface Message {
+    text: string;
+    sent_at: Date;
+}
+
+export interface MessageWithUserInfos extends Message {
+    user: {
+        profile: {
+            media: {
+                url: string;
+        };
+        firstname: string;
+        lastname: string;
+        };
+    };
 }

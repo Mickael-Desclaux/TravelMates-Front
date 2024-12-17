@@ -15,3 +15,23 @@ export function formatDate(date: Date): string {
         return date.toLocaleDateString();
     }
 }
+
+export function formatApiDate(date: string | Date): string {
+    const parsedDate = typeof date === 'string' ? new Date(date) : date;
+
+    const today = new Date();
+
+    // Comparaison des dates sans l'heure
+    const isSameDate =
+        parsedDate.getDate() === today.getDate() &&
+        parsedDate.getMonth() === today.getMonth() &&
+        parsedDate.getFullYear() === today.getFullYear();
+
+    if (isSameDate) {
+        // Affiche l'heure et les minutes si c'est aujourd'hui
+        return parsedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else {
+        // Sinon affiche la date complète
+        return parsedDate.toLocaleDateString();
+    }
+}
