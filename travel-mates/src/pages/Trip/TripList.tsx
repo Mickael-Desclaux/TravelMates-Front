@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import TripCardContainer from '../../components/TripCardContainer/TripCardContainer';
 import { Trip } from '../../interfaces/TripProps/TripProps';
 import { Typography, Tabs, Tab, TabsHeader, TabsBody, TabPanel, Button } from '@material-tailwind/react';
-import { getFakeTrips } from '../../api/Trips';
+import { GetTrips } from '../../api/Trips';
 import TripSearch from '../../components/TripSearch/TripSearch';
 
 /**
@@ -16,15 +16,15 @@ const TripListe = () => {
     const [trips, setTrips] = useState<Trip[]>([]);
     const [filteredTrips, setFilteredTrips] = useState<Trip[]>([]);
     const [myTrips] = useState<Trip[]>([]);
-    const [title, setTitle] = useState<string>('Trips list');
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<string>('all-trips');
     const [isAuthenticated] = useState<boolean>(false); // Simulate user authentication
+    const [message, setMessage] = useState<string>('')
 
     useEffect(() => {
-        const fetchTrips = async () => {
+        const fetchTrips = async() => {
             try {
-                const tripsData = await getFakeTrips();
+                const tripsData = await GetTrips();
                 setTrips(tripsData);
                 setFilteredTrips(tripsData);
             } catch (error) {
@@ -66,32 +66,41 @@ const TripListe = () => {
                           .includes(destination.toLowerCase())
                     : true) &&
                 (startDate
-                    ? trip.dateFrom.getTime() >= startDate.getTime()
+                    ? trip.date_from.getTime() >= startDate.getTime()
                     : true) &&
-                (endDate ? trip.dateTo.getTime() <= endDate.getTime() : true)
+                (endDate ? trip.date_to.getTime() <= endDate.getTime() : true)
         );
-        updateTitle(destination, startDate, endDate);
-        setFilteredTrips(filtered);
+
+        if (filtered.length === 0) {
+            setFilteredTrips([]);
+            setMessage(
+                `Aucun trip trouvé ${destination ? `pour la destination "${destination}"` : ''
+                }${startDate && endDate
+                    ? ` entre le ${startDate.toLocaleDateString('fr-FR')} et le ${endDate.toLocaleDateString('fr-FR')}`
+                    : ''
+                }.`
+            );
+        } else {
+            updateTitle(destination, startDate, endDate);
+            setFilteredTrips(filtered);
+        }
     };
 
-    const updateTitle = (destination: string, dateFrom?: Date, dateTo?: Date) => {
+    const updateTitle = (destination: string, date_from?: Date, date_to?: Date) => {
         const formattedDates =
-            dateFrom && dateTo
-                ? `${dateFrom.toLocaleDateString('fr-FR', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: '2-digit',
-                  })} au ${dateTo.toLocaleDateString('fr-FR', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: '2-digit',
-                  })}`
+            date_from && date_to
+                ? `${date_from.toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: '2-digit',
+                })} au ${date_to.toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: '2-digit',
+                })}`
                 : '';
-        setTitle(
-            `Trips ${
-                destination ? `à ${destination}` : ''
+        `Trips ${destination ? `à ${destination}` : ''
             } ${formattedDates ? ` du ${formattedDates}` : ''}`
-        );
     };
 
     if (loading) return <div>Loading trips...</div>;
@@ -104,7 +113,7 @@ const TripListe = () => {
                 </header>
                 <section className="container mx-auto ps-4 pe-4">
                     <Tabs value={activeTab}>
-                        <TabsHeader className="mt-[20px]">
+                        <TabsHeader className="mt-6 w-11/12 mx-auto">
                             <Tab
                                 value="all-trips"
                                 onClick={() => setActiveTab('all-trips')}
@@ -120,31 +129,30 @@ const TripListe = () => {
                         </TabsHeader>
                         <TabsBody>
                             <TabPanel value="all-trips">
-                                {/* Page title */}
-                                <Typography
-                                    variant="h1"
-                                    className="font-title text-2xl mt-4"
-                                >
-                                    {title}
-                                </Typography>
-                                {/* Grid layout to display all trips */}
-                                <div className="grid gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10">
+                                {message ? (
+                                    <Typography variant="h5" className="text-center mx-auto font-bold text-black mt-10">
+                                        {message}
+                                    </Typography>
+                                ) : (
+                                <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10">
                                     {filteredTrips.map((trip) => (
                                         <TripCardContainer
                                             key={trip.id}
                                             id={trip.id}
                                             title={trip.title}
                                             destination={trip.destination}
-                                            dateFrom={trip.dateFrom}
-                                            dateTo={trip.dateTo}
+                                            date_from={trip.date_from}
+                                            date_to={trip.date_to}
                                             description={trip.description}
-                                            budgetMin={trip.budgetMin}
-                                            budgetMax={trip.budgetMax}
-                                            media={trip.media}
-                                            activities={trip.activities}
+                                            budget_min={trip.budget_min}
+                                            budget_max={trip.budget_max}
+                                            tripUnsplashImage={trip.tripUnsplashImage}
+                                            tripActivities={trip.tripActivities}
+                                            owner={trip.owner}
                                         />
                                     ))}
                                 </div>
+                                )}
                             </TabPanel>
                             <TabPanel value="my-trips">
                                 {isAuthenticated ? (
@@ -163,13 +171,14 @@ const TripListe = () => {
                                                     id={trip.id}
                                                     title={trip.title}
                                                     destination={trip.destination}
-                                                    dateFrom={trip.dateFrom}
-                                                    dateTo={trip.dateTo}
+                                                    date_from={trip.date_from}
+                                                    date_to={trip.date_to}
                                                     description={trip.description}
-                                                    budgetMin={trip.budgetMin}
-                                                    budgetMax={trip.budgetMax}
-                                                    media={trip.media}
-                                                    activities={trip.activities}
+                                                    budget_min={trip.budget_min}
+                                                    budget_max={trip.budget_max}
+                                                    tripUnsplashImage={trip.tripUnsplashImage}
+                                                    tripActivities={trip.tripActivities}
+                                                    owner={trip.owner}
                                                 />
                                             ))}
                                         </div>
@@ -177,8 +186,8 @@ const TripListe = () => {
                                 ) : (
                                     <div className="flex flex-col items-center justify-center mt-10">
                                         <Typography
-                                            variant="h3"
-                                            className="text-center mb-4"
+                                            variant="h5"
+                                            className="text-center mx-auto font-bold text-black mt-10 mb-8"
                                         >
                                             Veuillez vous connecter pour voir vos trips.
                                         </Typography>

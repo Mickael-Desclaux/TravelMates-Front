@@ -37,7 +37,7 @@ const DatePickerComponent = ({
 	};
 
 	return (
-		<div className="absolute z-10 bg-white border p-2 mt-2">
+		<div className="absolute z-40 bg-light-white border rounded-xl shadow-lg p-2 mt-1 lg:left-96">
 			<DayPicker
 				mode="range"
 				selected={selectedRange}
