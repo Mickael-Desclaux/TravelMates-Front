@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import TripCardContainer from '../../components/TripCardContainer/TripCardContainer';
 import { Trip } from '../../interfaces/TripProps/TripProps';
 import { Typography, Tabs, Tab, TabsHeader, TabsBody, TabPanel, Button } from '@material-tailwind/react';
-import { getFakeTrips } from '../../api/Trips';
+import { GetTrips } from '../../api/Trips';
 import TripSearch from '../../components/TripSearch/TripSearch';
 
 /**
@@ -22,9 +22,9 @@ const TripListe = () => {
     const [message, setMessage] = useState<string>('')
 
     useEffect(() => {
-        const fetchTrips = async () => {
+        const fetchTrips = async() => {
             try {
-                const tripsData = await getFakeTrips();
+                const tripsData = await GetTrips();
                 setTrips(tripsData);
                 setFilteredTrips(tripsData);
             } catch (error) {
@@ -66,9 +66,9 @@ const TripListe = () => {
                           .includes(destination.toLowerCase())
                     : true) &&
                 (startDate
-                    ? trip.dateFrom.getTime() >= startDate.getTime()
+                    ? trip.date_from.getTime() >= startDate.getTime()
                     : true) &&
-                (endDate ? trip.dateTo.getTime() <= endDate.getTime() : true)
+                (endDate ? trip.date_to.getTime() <= endDate.getTime() : true)
         );
 
         if (filtered.length === 0) {
@@ -86,14 +86,14 @@ const TripListe = () => {
         }
     };
 
-    const updateTitle = (destination: string, dateFrom?: Date, dateTo?: Date) => {
+    const updateTitle = (destination: string, date_from?: Date, date_to?: Date) => {
         const formattedDates =
-            dateFrom && dateTo
-                ? `${dateFrom.toLocaleDateString('fr-FR', {
+            date_from && date_to
+                ? `${date_from.toLocaleDateString('fr-FR', {
                     day: '2-digit',
                     month: '2-digit',
                     year: '2-digit',
-                })} au ${dateTo.toLocaleDateString('fr-FR', {
+                })} au ${date_to.toLocaleDateString('fr-FR', {
                     day: '2-digit',
                     month: '2-digit',
                     year: '2-digit',
@@ -134,20 +134,21 @@ const TripListe = () => {
                                         {message}
                                     </Typography>
                                 ) : (
-                                <div className="grid gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10">
+                                <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10">
                                     {filteredTrips.map((trip) => (
                                         <TripCardContainer
                                             key={trip.id}
                                             id={trip.id}
                                             title={trip.title}
                                             destination={trip.destination}
-                                            dateFrom={trip.dateFrom}
-                                            dateTo={trip.dateTo}
+                                            date_from={trip.date_from}
+                                            date_to={trip.date_to}
                                             description={trip.description}
-                                            budgetMin={trip.budgetMin}
-                                            budgetMax={trip.budgetMax}
-                                            media={trip.media}
-                                            activities={trip.activities}
+                                            budget_min={trip.budget_min}
+                                            budget_max={trip.budget_max}
+                                            tripUnsplashImage={trip.tripUnsplashImage}
+                                            tripActivities={trip.tripActivities}
+                                            owner={trip.owner}
                                         />
                                     ))}
                                 </div>
@@ -170,13 +171,14 @@ const TripListe = () => {
                                                     id={trip.id}
                                                     title={trip.title}
                                                     destination={trip.destination}
-                                                    dateFrom={trip.dateFrom}
-                                                    dateTo={trip.dateTo}
+                                                    date_from={trip.date_from}
+                                                    date_to={trip.date_to}
                                                     description={trip.description}
-                                                    budgetMin={trip.budgetMin}
-                                                    budgetMax={trip.budgetMax}
-                                                    media={trip.media}
-                                                    activities={trip.activities}
+                                                    budget_min={trip.budget_min}
+                                                    budget_max={trip.budget_max}
+                                                    tripUnsplashImage={trip.tripUnsplashImage}
+                                                    tripActivities={trip.tripActivities}
+                                                    owner={trip.owner}
                                                 />
                                             ))}
                                         </div>
