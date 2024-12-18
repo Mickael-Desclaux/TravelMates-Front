@@ -41,6 +41,11 @@ const TripListe = () => {
         let startDate: Date | undefined = undefined;
         let endDate: Date | undefined = undefined;
 
+        if(!destination && !dates) {
+            setFilteredTrips(trips);
+            setMessage('');
+        }
+
         if (dates) {
             const tripDates = dates.split(' - ');
             const startDateParts = tripDates[0].split('/');
@@ -83,6 +88,7 @@ const TripListe = () => {
         } else {
             updateTitle(destination, startDate, endDate);
             setFilteredTrips(filtered);
+            setMessage('');
         }
     };
 
