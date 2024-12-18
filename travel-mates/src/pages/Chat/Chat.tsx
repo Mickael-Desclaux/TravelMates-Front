@@ -106,7 +106,7 @@ export default function Chat() {
                 </Typography>
             </div>
 
-            <div className="flex flex-col max-h-[70vh] md:min-h-[70vh] md:max-w-[40vw] mx-auto">
+            <div className="flex flex-col h-[70vh] md:min-h-[70vh] md:max-w-[40vw] mx-auto">
                 <div className="flex-1 overflow-y-auto px-4 space-y-2">
                     {messages
                         .slice()
@@ -154,7 +154,7 @@ export default function Chat() {
                         ))}
                     <div ref={bottomRef}></div>
                 </div>
-                <div className="md:mt-4 m-2 bg-light-white md:min-w-[35vw]">
+                <div className="md:mt-4 m-2 bg-light-white min-w-[90vw] md:min-w-[35vw]">
                     <ChatSendMessage sendMessage={sendMessage} />
                 </div>
             </div>
