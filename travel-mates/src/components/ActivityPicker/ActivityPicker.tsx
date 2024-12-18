@@ -5,7 +5,7 @@ import familyIcon from '/activity/family.svg';
 import gastronomyIcon from '/activity/gastronomy.svg';
 import leisureIcon from '/activity/leisure.svg';
 import natureIcon from '/activity/nature.svg';
-import partyIcon from '/activity/party-and-bar.svg';
+import partyIcon from '/activity/barandparty.svg';
 import relaxationIcon from '/activity/relaxation.svg';
 import sportIcon from '/activity/sport.svg';
 import { useFormikContext } from "formik";
