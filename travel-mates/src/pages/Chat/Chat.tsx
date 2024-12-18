@@ -11,9 +11,12 @@ import { getTripMessages } from "../../api/Chat";
 export default function Chat() {
 
     const [socket, setSocket] = useState<SocketIOClient.Socket | null>(null);
+    const [title, setTitle] = useState<string>("");
+    const [image, setImage] = useState<string>("");
     const [messages, setMessages] = useState<MessageWithUserInfos[]>([]);
-    const {access_token} = useAuthStore();
-    const {id} = useParams();
+    const { access_token } = useAuthStore();
+    const userId = useAuthStore(state => state.user_id);
+    const { id } = useParams();
 
     useEffect(() => {
 
@@ -25,9 +28,11 @@ export default function Chat() {
         const fetchData = async () => {
             try {
                 const response = await getTripMessages(+id);
+                console.log("🚀 ~ fetchData ~ response:", response)
                 const messagesWithUserInfos = response.data.messages.map((message) => ({
                     ...message,
                     user: {
+                        isSentByCurrentUser: message.user.id === userId,
                         ...message.user,
                         profile: {
                             ...message.user.profile,
@@ -35,6 +40,8 @@ export default function Chat() {
                         },
                     },
                 }));
+                setTitle(response.data.title);
+                setImage(response.data.media.url);
                 setMessages(messagesWithUserInfos);
             } catch (error) {
                 console.error(error);
@@ -49,12 +56,10 @@ export default function Chat() {
                 accessToken: access_token
             }
         });
-        console.log("🚀 ~ useEffect ~ newSocket:", newSocket);
-        
+
         setSocket(newSocket);
 
         newSocket.on('chat', (newMessage: MessageWithUserInfos) => {
-            console.log('Socket connecté avec succès');
             setMessages(prevMessages => [...prevMessages, newMessage]);
         });
 
@@ -90,38 +95,68 @@ export default function Chat() {
     }, [messages]);
 
     return (
-        <div className="md:mt-32 flex flex-col max-h-[90vh] md:min-h-[90vh] md:max-w-[40vw] mx-auto">
-            <div className="flex-1 overflow-y-auto px-4">
-                {messages
-                    .slice()
-                    .sort((a, b) => new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime())
-                    .map((message, index) => (
-                        <div key={index} className="flex flex-row items-start me-1 mt-4">
-                            <Avatar
-                                src={import.meta.env.VITE_API_BASE_URL + message.user.profile.media.url}
-                                alt={`${message.user.profile.firstname} ${message.user.profile.lastname}`}
-                                className="mr-4 self-end"
-                                size="sm"
-                            />
-                            <div className="flex flex-col">
-                                <p>
-                                    <span className="bg-gray-200 p-2 rounded-lg block">
-                                        {message.text}
-                                    </span>
-                                </p>
-                                <Typography
-                                    variant="small"
-                                    className="text-gray-500 text-xs mt-1"
-                                >
-                                    {formatApiDate(message.sent_at)}
-                                </Typography>
-                            </div>
-                        </div>
-                    ))}
-                <div ref={bottomRef}></div>
+        <div className="flex flex-col mx-auto">
+            <div className="flex items-center justify-center md:mt-32 mt-8 md:mb-16 mb-12">
+                <Avatar src={image} alt={title} className="me-4" size="lg" />
+                <Typography
+                    variant="h2"
+                    className="font-title font-bold text-2xl text-center"
+                >
+                    {title}
+                </Typography>
             </div>
-            <div className="m-6 bg-white md:mx-auto md:min-w-[35vw]">
-                <ChatSendMessage sendMessage={sendMessage} />
+
+            <div className="flex flex-col max-h-[70vh] md:min-h-[70vh] md:max-w-[40vw] mx-auto">
+                <div className="flex-1 overflow-y-auto px-4 space-y-2">
+                    {messages
+                        .slice()
+                        .sort((a, b) => new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime())
+                        .map((message, index) => (
+                            <div
+                                key={index}
+                                className={`flex items-start space-x-2 ${message.user.id === userId
+                                        ? 'flex-row-reverse self-end'
+                                        : 'flex-row self-start'
+                                    }`}
+                            >
+                                {message.user.id !== userId && (
+                                    <Avatar
+                                        src={import.meta.env.VITE_API_BASE_URL + message.user.profile.media.url}
+                                        alt={`${message.user.profile.firstname} ${message.user.profile.lastname}`}
+                                        className="self-end"
+                                        size="sm"
+                                    />
+                                )}
+                                <div className={`flex flex-col ${message.user.id === userId
+                                        ? 'items-end'
+                                        : 'items-start'
+                                    }`}>
+                                    <div className={`
+                                    px-3 py-2 rounded-xl
+                                    ${message.user.id === userId
+                                            ? 'bg-green text-white'
+                                            : 'bg-gray-200 text-black'
+                                        }
+                                `}>
+                                        <p>{message.text}</p>
+                                    </div>
+                                    <Typography
+                                        variant="small"
+                                        className={`text-xs mt-1 text-gray-500 ${message.user.id === userId
+                                                ? 'self-end'
+                                                : 'self-start'
+                                            }`}
+                                    >
+                                        {formatApiDate(message.sent_at)}
+                                    </Typography>
+                                </div>
+                            </div>
+                        ))}
+                    <div ref={bottomRef}></div>
+                </div>
+                <div className="md:mt-4 m-2 bg-light-white md:min-w-[35vw]">
+                    <ChatSendMessage sendMessage={sendMessage} />
+                </div>
             </div>
         </div>
     );

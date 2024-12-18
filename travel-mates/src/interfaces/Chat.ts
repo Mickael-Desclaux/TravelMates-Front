@@ -10,6 +10,7 @@ export interface Chat {
 
 export interface DetailedTripChat extends Message {
     user: {
+        id: number,
         profile: {
             id: number;
             firstname: string;
@@ -64,7 +65,7 @@ export interface Message {
 
 export interface MessageWithUserInfos extends Message {
     user: {
-        // id: number,
+        id: number,
         profile: {
             media: {
                 url: string;
