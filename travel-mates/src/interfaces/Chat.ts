@@ -64,6 +64,7 @@ export interface Message {
 
 export interface MessageWithUserInfos extends Message {
     user: {
+        // id: number,
         profile: {
             media: {
                 url: string;

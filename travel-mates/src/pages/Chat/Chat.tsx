@@ -22,12 +22,6 @@ export default function Chat() {
             return;
         }
 
-        console.log('Connecting with:', {
-            baseURL: import.meta.env.VITE_API_BASE_URL,
-            accessToken: access_token,
-            tripId: id
-        });
-
         const fetchData = async () => {
             try {
                 const response = await getTripMessages(+id);
@@ -48,8 +42,7 @@ export default function Chat() {
         }
         fetchData();
 
-        const newSocket = io(import.meta.env.VITE_API_BASE_URL, {
-            path: 'chat',
+        const newSocket = io('ws://localhost:3000/chat', {
             transports: ['websocket'],
             query: {
                 tripId: id,
