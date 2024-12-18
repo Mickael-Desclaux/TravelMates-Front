@@ -4,9 +4,11 @@ import { persist, StorageValue } from "zustand/middleware";
 const useAuthStore = create(
     persist(
         (set: any) => ({
-            access_token: null, // État initial
+            access_token: null,
+            user_id: null,
             setAccessToken: (token: string) => set({ access_token: token }),
-            clearAccessToken: () => set({ access_token: null }),
+            setUserId: (id: number) => set({ user_id: id }),
+            clearAccessToken: () => set({ access_token: null, user_id: null }),
         }),
         {
             name: "auth-store", // Nom pour le stockage dans localStorage

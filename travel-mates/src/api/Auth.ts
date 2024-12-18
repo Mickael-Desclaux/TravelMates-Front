@@ -9,6 +9,7 @@ export default async function HandleSignIn(body: Auth): Promise<void> {
         const {data} = await api.post('auth/login', body);
         
         const accessToken = data.access_token;
+        useAuthStore.getState().setUserId(data.user.id)
         useAuthStore.getState().setAccessToken(accessToken);
 
         return data;
