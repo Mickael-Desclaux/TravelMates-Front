@@ -12,8 +12,8 @@ export default interface TripWithParticipants {
     participants: Participant[],
     title: string;
     destination: string;
-    date_from: Date;
-    date_to: Date;
+    date_from: string;
+    date_to: string;
     description: string;
     budget_min: number;
     budget_max: number;

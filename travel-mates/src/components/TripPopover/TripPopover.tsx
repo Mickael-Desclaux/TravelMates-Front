@@ -11,6 +11,9 @@ import {
 } from "@material-tailwind/react";
 import { NavLink } from "react-router-dom";
 import { Participant } from "../../interfaces/Trip";
+import kickIcon from '../../assets/icons/kick.svg';
+import addIcon from '../../assets/icons/add.svg';
+import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 interface TripManagePopoverProps {
     tripId: number;
@@ -61,17 +64,17 @@ export default function TripManagePopover({ removeTrip, tripId, participants }: 
         <div className="p-2">
             <button
                 onClick={() => setView('menu')}
-                className="flex items-center text-sm text-gray-600 mb-4 hover:text-gray-800"
+                className="flex items-center text-sm text-black mb-4 hover:text-gray-800"
             >
-                Retour au menu
+                <ChevronLeftIcon className="w-5 h-5" />
             </button>
-            <Typography variant="h6" className="mb-4">Participants</Typography>
+            <Typography variant="h3" className="mb-4 text-black font-title font-bold text-lg">Participants</Typography>
             {participants && participants.length > 0 ? (
                     participants.map((participant: Participant) => (
                         <div key={participant.user.id} className="flex items-center justify-between p-2 hover:bg-gray-50">
                             <div className="flex items-center">
                                 <Avatar src={import.meta.env.VITE_API_BASE_URL + participant.user.profile.media.url} alt={`${participant.user.profile.firstname} ${participant.user.profile.lastname}`} size="sm" />
-                                <span className="ml-2">{participant.user.profile.firstname} {participant.user.profile.lastname}</span>
+                                <span className="ml-2 text-black">{participant.user.profile.firstname} {participant.user.profile.lastname}</span>
                             </div>
                             <Button
                                 variant="text"
@@ -86,7 +89,10 @@ export default function TripManagePopover({ removeTrip, tripId, participants }: 
                                     }
                                 }}
                             >
-                                {participant.status === "validated" ? "Exclure" : "Ajouter"}
+                                <img
+                                    src={participant.status === "validated" ? kickIcon
+                                        : addIcon} alt={participant.status === "validated" ? "Bannir" : "Ajouter"} />
+
                             </Button>
                         </div>
                     ))
@@ -100,21 +106,21 @@ export default function TripManagePopover({ removeTrip, tripId, participants }: 
         <div className="p-4 text-center">
             <button
                 onClick={() => setView('participants')}
-                className="flex items-center text-sm text-gray-600 mb-4 hover:text-gray-800"
+                className="flex items-center text-sm text-black mb-4 hover:text-gray-800"
             >
-                Retour
+                <ChevronLeftIcon className="w-5 h-5" />
             </button>
-            <Typography variant="h6" className="mb-4">Confirmer l'exclusion</Typography>
+            <Typography variant="h3" className="mb-4 text-black text-lg font-title font-bold">Confirmer l'exclusion</Typography>
             <div className="flex items-center justify-center mb-4">
                 <Avatar
-                    src={selectedParticipant?.user.profile.media.url}
+                    src={import.meta.env.VITE_API_BASE_URL + selectedParticipant?.user.profile.media.url}
                     alt={`${selectedParticipant?.user.profile.firstname} ${selectedParticipant?.user.profile.lastname}`}
                     size="lg"
                 />
             </div>
-            <p className="mb-4">Voulez-vous vraiment exclure {selectedParticipant?.user.profile.firstname} {selectedParticipant?.user.profile.lastname} ?</p>
+            <p className="mb-4 text-black">Voulez-vous vraiment exclure {selectedParticipant?.user.profile.firstname} {selectedParticipant?.user.profile.lastname} ?</p>
             <div className="flex justify-center gap-4">
-                <Button variant="text" onClick={() => setView('participants')}>
+                <Button variant="text" color="black" className="bg-gray-300" onClick={() => setView('participants')}>
                     Annuler
                 </Button>
                 <Button
@@ -131,14 +137,14 @@ export default function TripManagePopover({ removeTrip, tripId, participants }: 
         <div className="p-4 text-center">
             <button
                 onClick={() => setView('menu')}
-                className="flex items-center text-sm text-gray-600 mb-4 hover:text-gray-800"
+                className="flex items-center text-sm text-black mb-4 hover:text-gray-800"
             >
-                Retour
+                <ChevronLeftIcon className="w-5 h-5" />
             </button>
-            <Typography variant="h6" className="mb-4">Supprimer le Trip</Typography>
-            <p className="mb-4">Êtes-vous sûr de vouloir supprimer ce trip ?</p>
+            <Typography variant="h3" className="mb-4 text-lg font-title font-bold text-black">Supprimer le Trip</Typography>
+            <p className="mb-4 text-black">Êtes-vous sûr de vouloir supprimer ce trip ?</p>
             <div className="flex justify-center gap-4">
-                <Button variant="text" onClick={() => setView('menu')}>
+                <Button variant="text" color="black" className="bg-gray-300" onClick={() => setView('menu')}>
                     Annuler
                 </Button>
                 <Button

@@ -22,7 +22,9 @@ export default function TripDetail() {
     const navigate = useNavigate();
     const {id} = useParams();
 
-    const [trip, setTrip] = useState<TripWithParticipants>()
+    const [trip, setTrip] = useState<TripWithParticipants>();
+    const [conditionGender, setConditionGender] = useState<string>();
+    const [conditionPhysical, setConditionPhysical] = useState<string>();
 
     function removeTrip(id: number) {
         console.log(`Trip avec l'id ${id} supprimé`)
@@ -36,6 +38,30 @@ export default function TripDetail() {
                     const data = await GetTripById(parseInt(id));
                     console.log("🚀 ~ fetchData ~ data:", data)
                     setTrip(data);
+
+                    switch (trip?.condition_gender) {
+                        case "male":
+                            setConditionGender("Hommes");
+                            break;
+                        case "female":
+                            setConditionGender("Femmes");
+                            break;
+                        case "all":
+                            setConditionGender("Tout le monde");
+                            break;
+                    }
+
+                    switch (trip?.condition_physical) {
+                        case "none":
+                            setConditionPhysical("Aucune");
+                            break;
+                        case "normal":
+                            setConditionPhysical("Normale");
+                            break;
+                        case "excellent":
+                            setConditionPhysical("Excellente");
+                            break;
+                    }
                 } catch (error) {
                     throw new Error(error as string)
                 }
@@ -51,7 +77,7 @@ export default function TripDetail() {
                     <div>
                         <ThemeProvider value={carouselTheme}>
                             <div className="relative">
-                                <div className="absolute top-4 right-4 z-20">
+                                <div className="absolute top-8 right-4 md:right-60 z-20">
                                     <TripManagePopover tripId={+id!} removeTrip={removeTrip} participants={trip?.participants ?? []} />
                                 </div>
                                 <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
@@ -73,8 +99,20 @@ export default function TripDetail() {
                         </p>
                     </div>
                     <div>
-                        <Typography variant="h3" className="text-lg underline m-4">
-                            {trip?.destination + ' - du ' + trip?.date_from + ' au ' + trip?.date_to}
+                        <Typography variant="h3" className="text-lg underline decoration-black m-4">
+                            {trip?.destination + ' - du ' +
+                                (trip?.date_from ? new Date(trip?.date_from).toLocaleDateString('fr-FR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: '2-digit'
+                                }) : '') +
+                                ' au ' +
+                                (trip?.date_to ? new Date(trip?.date_to).toLocaleDateString('fr-FR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: '2-digit'
+                                }) : '')
+                            }
                         </Typography>
                     </div>
                     <div>
@@ -110,7 +148,7 @@ export default function TripDetail() {
                                 <p className="font-bold">Je voyage avec</p>
                             </div>
                             <p className="border border-lg border-black rounded-lg p-2 font-bold text-right flex justify-center">
-                                {trip?.condition_gender}
+                                {conditionGender}
                                 </p>
                         </div>
                         <div className="grid grid-cols-2 gap-2 items-center mt-4">
@@ -128,7 +166,7 @@ export default function TripDetail() {
                                 <p className="font-bold">Condition physique recommandée</p>
                             </div>
                             <p className="border border-lg border-black rounded-lg p-2 font-bold text-right flex justify-center">
-                                {trip?.condition_physical}
+                                {conditionPhysical}
                             </p>
                         </div>
                     </div>
