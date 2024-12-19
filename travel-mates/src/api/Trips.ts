@@ -1,4 +1,5 @@
 import { useApi } from '../hooks/UseApi';
+import TripWithParticipants from '../interfaces/Trip';
 import { Trip } from '../interfaces/TripProps/TripProps';
 
 const api = useApi();
@@ -11,3 +12,12 @@ export async function GetTrips(): Promise<Trip[]> {
 		throw error;
 	}
 };
+
+export async function GetTripById(id: number): Promise<TripWithParticipants> {
+	try {
+		const response = await api.get(`trip/${id}`);
+		return response.data;
+	} catch (error) {
+		throw error;
+	}
+}
