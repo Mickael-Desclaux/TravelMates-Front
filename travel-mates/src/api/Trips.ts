@@ -11,3 +11,12 @@ export async function GetTrips(): Promise<Trip[]> {
 		throw error;
 	}
 };
+
+export async function GetUserTrips(): Promise<Trip[]> {
+	try {
+		const response = await api.get('trip/my-trips');
+		return response.data;
+	} catch (error) {
+		throw error;
+	}
+};
