@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import TripListe from './pages/Trip/TripList';
+import TripList from './pages/Trip/TripList';
 import SignIn from './pages/Auth/SignIn';
 import SignUpMultiStepForm from './pages/Auth/SignUp';
 import Map from './pages/Map/Map';
@@ -23,7 +23,7 @@ function App() {
 		<>
 			<NavbarComponent />
 			<Routes>
-				<Route path="/" element={<TripListe />} />
+				<Route path="/" element={<TripList />} />
 				<Route path="/sign-in" element={<SignIn />} />
 				<Route path="/sign-up" element={<SignUpMultiStepForm />} />
 				<Route path="/trip-detail" element={<TripDetail />} />
