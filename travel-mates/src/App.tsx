@@ -26,7 +26,7 @@ function App() {
 				<Route path="/" element={<TripList />} />
 				<Route path="/sign-in" element={<SignIn />} />
 				<Route path="/sign-up" element={<SignUpMultiStepForm />} />
-				<Route path="/trip-detail" element={<TripDetail />} />
+				<Route path="/trip-detail/:id" element={<TripDetail />} />
 				<Route path="/map" element={<Map />} />
 				<Route path="/pin/:id" element={<PinDetail />} />
 

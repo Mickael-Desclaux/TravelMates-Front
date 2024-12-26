@@ -1,17 +1,13 @@
 import { ThemeProvider, Carousel, Typography, Avatar } from "@material-tailwind/react";
-import Trip from "../../interfaces/Trip";
-import adventureIcon from '../../assets/activity/adventure.svg';
-import cultureIcon from '../../assets/activity/culture.svg';
-import relaxationIcon from '../../assets/activity/relaxation.svg';
-import sportIcon from '../../assets/activity/sport.svg';
-import partyIcon from '../../assets/activity/party-and-bar.svg';
 import genderIcon from '../../assets/icons/gender.svg';
 import peoplesIcon from '../../assets/icons/peoples.svg';
 import runIcon from '../../assets/icons/run.svg';
 import './TripDetail.css';
-import { Activity } from "../../interfaces/TripProps/TripProps";
-import TripManagePopUp from "../../components/TripManagePopUp/TripManagePopUp";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import TripManagePopover from "../../components/TripPopover/TripPopover";
+import { useEffect, useState } from "react";
+import { GetTripById } from "../../api/Trips";
+import TripWithParticipants, { Participant } from "../../interfaces/Trip";
 
 const carouselTheme = {
     carousel: {
@@ -21,75 +17,69 @@ const carouselTheme = {
     },
 };
 
-interface User {
-    firstname: string;
-    lastname: string;
-    profilePicture: string;
-}
-
-// Fake data
-const data: Trip = {
-    id: 1,
-    owner: {
-        firstname: "Micheline",
-        lastname: "Michelin",
-        profilePicture: "https://docs.material-tailwind.com/img/face-2.jpg",
-    },
-    users: [
-        {
-            firstname: "Marie",
-            lastname: "Martin",
-            profilePicture: "https://docs.material-tailwind.com/img/face-1.jpg"
-        },
-        {
-            firstname: "Pierre",
-            lastname: "Durand",
-            profilePicture: "https://docs.material-tailwind.com/img/face-3.jpg"
-        },
-        {
-            firstname: "Patrick",
-            lastname: "Michel",
-            profilePicture: "https://docs.material-tailwind.com/img/face-4.jpg"
-        }
-    ],
-    title: "Voyage en Italie",
-    destination: "Italie",
-    dateFrom: new Date("2023-06-01"),
-    dateTo: new Date("2023-06-15"),
-    description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam gravida tortor iaculis purus convallis, 
-    non porttitor est congue. Vivamus hendrerit mollis purus, tempor scelerisque risus faucibus sed. Nullam sagittis ante 
-    quis erat porta, ac pulvinar ex accumsan. Interdum et malesuada fames ac ante ipsum primis in faucibus. Cras nec mauris iaculis, 
-    tempus mi quis, rutrum lectus. Vivamus vel lacus pretium, mollis erat sit amet, luctus tellus. Aenean feugiat tortor in pellentesque 
-    suscipit. Cras non viverra urna.`,
-    conditionBudgetMin: 500,
-    conditionBudgetMax: 1000,
-    conditionGender: "Tout le monde",
-    conditionAgeMin: "18",
-    conditionAgeMax: "30",
-    conditionPhysical: "Normal",
-    conditionUserLimit: 10,
-    medias:
-        [
-            "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
-            "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80",
-            "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80"
-        ],
-    activities: [
-        { id: 1, type: 'Museum', icon: cultureIcon },
-        { id: 2, type: 'Adventure', icon: adventureIcon },
-        { id: 3, type: 'Détente', icon: relaxationIcon },
-        { id: 5, type: 'Fête', icon: partyIcon },
-        { id: 4, type: 'Sport', icon: sportIcon }],
-};
-
 export default function TripDetail() {
 
     const navigate = useNavigate();
+    const {id} = useParams();
+
+    const [trip, setTrip] = useState<TripWithParticipants>();
+    const [conditionGender, setConditionGender] = useState<string>();
+    const [conditionPhysical, setConditionPhysical] = useState<string>();
 
     function removeTrip(id: number) {
         console.log(`Trip avec l'id ${id} supprimé`)
         navigate({ pathname: "/" });
     }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (id) {
+                try {
+                    const data = await GetTripById(parseInt(id));
+                    console.log("🚀 ~ fetchData ~ data:", data)
+                    setTrip(data);
+
+                    switch (trip?.condition_gender) {
+                        case "male":
+                            setConditionGender("Hommes");
+                            break;
+                        case "female":
+                            setConditionGender("Femmes");
+                            break;
+                        case "all":
+                            setConditionGender("Tout le monde");
+                            break;
+                        default:
+                            setConditionGender("Tout le monde");
+                    }
+
+                    switch (trip?.condition_physical) {
+                        case "none":
+                            setConditionPhysical("Aucune");
+                            break;
+                        case "normal":
+                            setConditionPhysical("Normale");
+                            break;
+                        case "excellent":
+                            setConditionPhysical("Excellente");
+                            break;
+                        default:
+                            setConditionPhysical("Aucune");
+                    }
+                } catch (error) {
+                    throw new Error(error as string)
+                }
+            }
+        }
+        fetchData();
+    }, [id]);
+
+    const handleParticipantsUpdate = (updatedParticipants: Participant[]) => {
+        setTrip(prev => prev ? {
+            ...prev,
+            participants: updatedParticipants
+        } : prev);
+    };
 
     return (
         <>
@@ -98,51 +88,73 @@ export default function TripDetail() {
                     <div>
                         <ThemeProvider value={carouselTheme}>
                             <div className="relative">
-                                <div className="absolute top-4 me-2 right-0 z-20 w-full justify-center">
-                                    <TripManagePopUp removeTrip={() => removeTrip(data.id)} tripId={data.id} />
+                                <div className="absolute top-8 right-4 md:right-60 z-20">
+                                    <TripManagePopover 
+                                        tripId={+id!} 
+                                        removeTrip={removeTrip} 
+                                        participants={trip?.participants ?? []}
+                                        onParticipantsUpdate={handleParticipantsUpdate}
+                                    />
                                 </div>
-                                <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel z-10">
-                                    {data.medias.map((image: string, index: number) => (
-                                        <img key={index} src={image} alt="Image" className="max-h-[400px] mx-auto" />
-                                    ))}
+                                <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
+                                    {
+                                        trip ?
+                                            trip?.tripUnsplashImage.map((image, index: number) => (
+                                                <img key={index} src={image.url} alt="Image" className="max-h-[400px] mx-auto" />
+                                            )) : ""}
                                 </Carousel>
                             </div>
                         </ThemeProvider>
                     </div>
                     <div className="flex flex-row items-center justify-between mt-2 m-4">
-                        <Typography variant="h1" className="text-2xl font-title font-bold">{data.title}</Typography>
+                        <Typography variant="h1" className="text-2xl font-title font-bold">{trip?.title ? trip.title : "Unknown"}</Typography>
                         <p className="border border-lg border-green rounded-lg p-1 text-green shadow-md font-bold">
-                            {data.conditionBudgetMin + "€ - " + data.conditionBudgetMax + "€"}
+                            {
+                                trip ? trip?.budget_min + "€ - " + trip?.budget_max + "€" : ""
+                            }
                         </p>
                     </div>
                     <div>
-                        <Typography variant="h3" className="text-lg underline m-4">
-                            {data.destination + ' - du ' + data.dateFrom.toLocaleDateString() + ' au ' + data.dateTo.toLocaleDateString()}
+                        <Typography variant="h3" className="text-lg underline decoration-black m-4">
+                            {trip?.destination + ' - du ' +
+                                (trip?.date_from ? new Date(trip?.date_from).toLocaleDateString('fr-FR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: '2-digit'
+                                }) : '') +
+                                ' au ' +
+                                (trip?.date_to ? new Date(trip?.date_to).toLocaleDateString('fr-FR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: '2-digit'
+                                }) : '')
+                            }
                         </Typography>
                     </div>
                     <div>
                         {
-                            data.activities.map((activity: Activity, index: number) => (
-                                <Avatar src={activity.icon} key={index} alt={activity.type} size="sm" className="ms-4"></Avatar>
+                            trip?.tripActivities.map((activity: {activity: string}, index: number) => (
+                                <Avatar src={`/activity/${activity.activity.toLowerCase()}.svg`} key={index} alt={activity.activity} size="sm" className="ms-4"></Avatar>
                             ))
                         }
                     </div>
                     <div className="flex flex-row items-center m-4">
                         <Typography variant="h3" className="text-lg">Organisateur: </Typography>
-                        <Avatar src={data.owner.profilePicture} alt={data.owner.firstname + ' ' + data.owner.lastname} size="sm" className="ms-2 me-2"></Avatar>
-                        <p>{data.owner.firstname + ' ' + data.owner.lastname}</p>
+                        <Avatar src={import.meta.env.VITE_API_BASE_URL + trip?.owner.profile.media.url} alt={trip?.owner.profile.firstname + ' ' + trip?.owner.profile.lastname} size="sm" className="ms-2 me-2"></Avatar>
+                        <p>{trip?.owner.profile.firstname + ' ' + trip?.owner.profile.lastname}</p>
                     </div>
                     <div className="flex flex-row items-center -space-x-4 m-4">
                         <Typography variant="h3" className="text-lg me-6">Participants: </Typography>
                         {
-                            data.users.map((user: User, index: number) => (
-                                <Avatar key={index} src={user.profilePicture} alt={data.owner.firstname + ' ' + data.owner.lastname} size="sm" className="border-2 border-white hover:z-10 focus:z-10"></Avatar>
-                            ))
+                            trip ?
+                            trip?.participants.map((participant: Participant) => (
+                                <Avatar key={`avatar-${trip.id}-${participant.user.id}-${participant.status}`} src={import.meta.env.VITE_API_BASE_URL + participant.user.profile.media.url} alt={participant.user.profile.firstname + ' ' + participant.user.profile.lastname} size="sm" className="border-2 border-white hover:z-10 focus:z-10"></Avatar>
+                            )) : ""
                         }
                     </div>
                     <div className="m-4">
                         <Typography variant="h2" className="text-2xl mt-8">Description</Typography>
-                        <Typography variant="lead" className="text-md mt-2">{data.description}</Typography>
+                        <Typography variant="lead" className="text-md mt-2">{trip?.description ? trip.description : "Unknown"}</Typography>
                     </div>
                     <div className="m-4">
                         <Typography variant="h2" className="text-2xl mt-8">Critères</Typography>
@@ -152,8 +164,8 @@ export default function TripDetail() {
                                 <p className="font-bold">Je voyage avec</p>
                             </div>
                             <p className="border border-lg border-black rounded-lg p-2 font-bold text-right flex justify-center">
-                                {data.conditionGender}
-                                </p>
+                                {conditionGender}
+                            </p>
                         </div>
                         <div className="grid grid-cols-2 gap-2 items-center mt-4">
                             <div className="flex items-center">
@@ -161,7 +173,7 @@ export default function TripDetail() {
                                 <p className="font-bold">Âgés entre</p>
                             </div>
                             <p className="border border-lg border-black rounded-lg p-2 font-bold text-right flex justify-center">
-                                {`${data.conditionAgeMin} - ${data.conditionAgeMax} ans`}
+                                {`${trip?.condition_age_min} - ${trip?.condition_age_max} ans`}
                             </p>
                         </div>
                         <div className="grid grid-cols-2 gap-2 items-center mt-4">
@@ -170,7 +182,7 @@ export default function TripDetail() {
                                 <p className="font-bold">Condition physique recommandée</p>
                             </div>
                             <p className="border border-lg border-black rounded-lg p-2 font-bold text-right flex justify-center">
-                                {data.conditionPhysical}
+                                {conditionPhysical}
                             </p>
                         </div>
                     </div>
