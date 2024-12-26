@@ -49,6 +49,8 @@ export default function TripDetail() {
                         case "all":
                             setConditionGender("Tout le monde");
                             break;
+                        default:
+                            setConditionGender("Tout le monde");
                     }
 
                     switch (trip?.condition_physical) {
@@ -61,6 +63,8 @@ export default function TripDetail() {
                         case "excellent":
                             setConditionPhysical("Excellente");
                             break;
+                        default:
+                            setConditionPhysical("Aucune");
                     }
                 } catch (error) {
                     throw new Error(error as string)
@@ -70,6 +74,13 @@ export default function TripDetail() {
         fetchData();
     }, [id]);
 
+    const handleParticipantsUpdate = (updatedParticipants: Participant[]) => {
+        setTrip(prev => prev ? {
+            ...prev,
+            participants: updatedParticipants
+        } : prev);
+    };
+
     return (
         <>
             <div className="md:mt-32 md:grid md:place-content-center mb-32">
@@ -78,7 +89,12 @@ export default function TripDetail() {
                         <ThemeProvider value={carouselTheme}>
                             <div className="relative">
                                 <div className="absolute top-8 right-4 md:right-60 z-20">
-                                    <TripManagePopover tripId={+id!} removeTrip={removeTrip} participants={trip?.participants ?? []} />
+                                    <TripManagePopover 
+                                        tripId={+id!} 
+                                        removeTrip={removeTrip} 
+                                        participants={trip?.participants ?? []}
+                                        onParticipantsUpdate={handleParticipantsUpdate}
+                                    />
                                 </div>
                                 <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
                                     {
@@ -131,8 +147,8 @@ export default function TripDetail() {
                         <Typography variant="h3" className="text-lg me-6">Participants: </Typography>
                         {
                             trip ?
-                            trip?.participants.map((participant: Participant, index: number) => (
-                                <Avatar key={index} src={import.meta.env.VITE_API_BASE_URL + participant.user.profile.media.url} alt={participant.user.profile.firstname + ' ' + participant.user.profile.lastname} size="sm" className="border-2 border-white hover:z-10 focus:z-10"></Avatar>
+                            trip?.participants.map((participant: Participant) => (
+                                <Avatar key={`avatar-${trip.id}-${participant.user.id}-${participant.status}`} src={import.meta.env.VITE_API_BASE_URL + participant.user.profile.media.url} alt={participant.user.profile.firstname + ' ' + participant.user.profile.lastname} size="sm" className="border-2 border-white hover:z-10 focus:z-10"></Avatar>
                             )) : ""
                         }
                     </div>
@@ -149,7 +165,7 @@ export default function TripDetail() {
                             </div>
                             <p className="border border-lg border-black rounded-lg p-2 font-bold text-right flex justify-center">
                                 {conditionGender}
-                                </p>
+                            </p>
                         </div>
                         <div className="grid grid-cols-2 gap-2 items-center mt-4">
                             <div className="flex items-center">

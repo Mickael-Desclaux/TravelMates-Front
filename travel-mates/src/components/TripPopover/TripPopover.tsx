@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Popover,
     PopoverHandler,
@@ -14,26 +14,45 @@ import { Participant } from "../../interfaces/Trip";
 import kickIcon from '../../assets/icons/kick.svg';
 import addIcon from '../../assets/icons/add.svg';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
+import { banParticipant, validateParticipant } from "../../api/Trip";
 
 interface TripManagePopoverProps {
     tripId: number;
     removeTrip: (id: number) => void;
-    participants: Participant[]
+    participants: Participant[];
+    onParticipantsUpdate?: (updatedParticipants: Participant[]) => void;
 }
 
-export default function TripManagePopover({ removeTrip, tripId, participants }: TripManagePopoverProps) {
+export default function TripManagePopover({ removeTrip, tripId, participants, onParticipantsUpdate }: TripManagePopoverProps) {
 
     const [view, setView] = useState<'menu' | 'participants' | 'confirmKick' | 'confirmDelete'>('menu');
     const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
+    const [localParticipants, setLocalParticipants] = useState<Participant[]>(participants);
 
-    function addParticipant(participant: Participant) {
-        console.log(`Participant ajouté : ${participant.user.profile.firstname} ${participant.user.profile.lastname}`);
-        setView('participants');
+    useEffect(() => {
+        setLocalParticipants(participants);
+    }, [participants]);
+
+    async function addParticipant(tripId: number, participantId: number) {
+        try {
+            const updatedParticipants = await validateParticipant(tripId, participantId);
+            setLocalParticipants(updatedParticipants);
+            onParticipantsUpdate?.(updatedParticipants);
+            setView('participants');
+        } catch (error) {
+            throw error;
+        }
     }
 
-    function kickParticipant(participant: Participant) {
-        console.log(`Participant banni : ${participant.user.profile.firstname} ${participant.user.profile.lastname}`);
-        setView('participants');
+    async function kickParticipant(tripId: number, participantId: number) {
+        try {
+            const updatedParticipants = await banParticipant(tripId, participantId);
+            setLocalParticipants(updatedParticipants);
+            onParticipantsUpdate?.(updatedParticipants);
+            setView('participants');
+        } catch (error) {
+            throw error;
+        }
     }
 
     const MainMenu = () => (
@@ -69,33 +88,33 @@ export default function TripManagePopover({ removeTrip, tripId, participants }: 
                 <ChevronLeftIcon className="w-5 h-5" />
             </button>
             <Typography variant="h3" className="mb-4 text-black font-title font-bold text-lg">Participants</Typography>
-            {participants && participants.length > 0 ? (
-                    participants.map((participant: Participant) => (
-                        <div key={participant.user.id} className="flex items-center justify-between p-2 hover:bg-gray-50">
-                            <div className="flex items-center">
-                                <Avatar src={import.meta.env.VITE_API_BASE_URL + participant.user.profile.media.url} alt={`${participant.user.profile.firstname} ${participant.user.profile.lastname}`} size="sm" />
-                                <span className="ml-2 text-black">{participant.user.profile.firstname} {participant.user.profile.lastname}</span>
-                            </div>
-                            <Button
-                                variant="text"
-                                size="sm"
-                                color={participant.status === "validated" ? "red" : "green"}
-                                onClick={() => {
-                                    if (participant.status === "validated") {
-                                        setSelectedParticipant(participant);
-                                        setView('confirmKick');
-                                    } else {
-                                        addParticipant(participant);
-                                    }
-                                }}
-                            >
-                                <img
-                                    src={participant.status === "validated" ? kickIcon
-                                        : addIcon} alt={participant.status === "validated" ? "Bannir" : "Ajouter"} />
-
-                            </Button>
+            {localParticipants && localParticipants.length > 0 ? (
+                localParticipants.map((participant: Participant, index: number) => (
+                    <div key={index} className="flex items-center justify-between p-2 hover:bg-gray-50">
+                        <div className="flex items-center">
+                            <Avatar key={index} src={import.meta.env.VITE_API_BASE_URL + participant.user.profile.media.url} alt={`${participant.user.profile.firstname} ${participant.user.profile.lastname}`} size="sm" />
+                            <span className="ml-2 text-black">{participant.user.profile.firstname} {participant.user.profile.lastname}</span>
                         </div>
-                    ))
+                        <Button
+                            variant="text"
+                            size="sm"
+                            color={participant.status === "validated" ? "red" : "green"}
+                            onClick={() => {
+                                if (participant.status === "validated") {
+                                    setSelectedParticipant(participant);
+                                    setView('confirmKick');
+                                } else {
+                                    addParticipant(tripId, participant.user.id);
+                                }
+                            }}
+                        >
+                            <img
+                                src={participant.status === "validated" ? kickIcon : addIcon}
+                                alt={participant.status === "validated" ? "Bannir" : "Ajouter"}
+                            />
+                        </Button>
+                    </div>
+                ))
             ) : (
                 <p className="text-center text-gray-500">Aucun participant pour le moment</p>
             )}
@@ -124,8 +143,8 @@ export default function TripManagePopover({ removeTrip, tripId, participants }: 
                     Annuler
                 </Button>
                 <Button
-                    color="red"
-                    onClick={() => selectedParticipant && kickParticipant(selectedParticipant)}
+                    className="bg-red-800"
+                    onClick={() => selectedParticipant && kickParticipant(tripId, selectedParticipant.user.id)}
                 >
                     Confirmer
                 </Button>
@@ -148,7 +167,7 @@ export default function TripManagePopover({ removeTrip, tripId, participants }: 
                     Annuler
                 </Button>
                 <Button
-                    color="red"
+                    className="bg-red-800"
                     onClick={() => removeTrip(tripId)}
                 >
                     Confirmer
