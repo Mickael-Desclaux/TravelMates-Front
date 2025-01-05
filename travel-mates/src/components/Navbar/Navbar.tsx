@@ -1,13 +1,17 @@
-import homeIcon from "../../assets/icons/home.svg";
-import mapIcon from "../../assets/icons/map.svg";
-import newIcon from "../../assets/icons/new.svg";
-import messageIcon from "../../assets/icons/message.svg";
-import logInIcon from "../../assets/icons/login.svg";
-import logoTravelMates from "../../assets/Logo/travelmates.png";
-import { Button } from "@material-tailwind/react";
+import homeIcon from "/icons/home.svg";
+import mapIcon from "/icons/map.svg";
+import newIcon from "/icons/new.svg";
+import messageIcon from "/icons/message.svg";
+import logInIcon from "/icons/login.svg";
+import logoTravelMates from "/Logo/travelmates.png";
+import { Button, Typography } from "@material-tailwind/react";
 import { NavLink } from "react-router-dom";
+import LoginProfile from "../Auth/LoginProfile";
+import useAuthStore from "../../utils/AuthStore";
 
 export default function NavbarComponent() {
+  const userId = useAuthStore(state => state.user_id);
+
   return (
     <>
       <nav>
@@ -54,13 +58,14 @@ export default function NavbarComponent() {
                 </NavLink>
               </li>
               <li>
-                <NavLink
-                  to={"/sign-in"}
-                  className="flex flex-col items-center text-gray-900 dark:text-white"
-                >
+              {userId ? (
+                <LoginProfile />
+              ) : (
+                <NavLink to={"/sign-in"} className="flex flex-col items-center text-gray-900 dark:text-white">
                   <img src={logInIcon} alt="Connexion icône" className="w-10 h-10" />
                   Connexion
                 </NavLink>
+              )}
               </li>
             </ul>
           </div>
@@ -93,16 +98,21 @@ export default function NavbarComponent() {
 
           {/* Action buttons (sign-up and sign-in) */}
           <div className="flex gap-4 items-center">
-            <NavLink
+            {!userId && (
+              <NavLink
               to={"/sign-up"}
               className="text-md no-underline hover:text-green font-bold cursor-pointer whitespace-nowrap"
-            >
-              Créer un compte
-            </NavLink>
-
-            <Button size="sm" className="bg-green items-center justify-center h-10">
-              <NavLink to={"/sign-in"}>Connexion</NavLink>
-            </Button>
+              >
+                Créer un compte
+              </NavLink>
+            )}
+            {userId ? (
+              <LoginProfile />
+            ) : (
+              <Button size="sm" className="bg-green items-center justify-center h-10">
+                <NavLink to={"/sign-in"}>Connexion</NavLink>
+              </Button>
+            )}
           </div>
         </div>
       </nav>
