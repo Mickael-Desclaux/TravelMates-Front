@@ -1,12 +1,15 @@
 export interface ProfileData {
     id: number
     profilePicture: string
-    firstName: string
-    lastName: string
+    firstname: string
+    lastname: string
     age: number
     gender: string
     language: string[]
     address: string
     activities: number[]
-    description: string
+    bio: string
+    media: {
+        url: string
+    }
 }
