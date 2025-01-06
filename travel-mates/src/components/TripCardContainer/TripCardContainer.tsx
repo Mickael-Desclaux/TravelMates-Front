@@ -9,6 +9,7 @@ import { NavLink } from 'react-router-dom';
 import { Trip } from '../../interfaces/TripProps/TripProps';
 
 const TripCardContainer: React.FC<Trip> = ({
+	id,
 	title,
 	destination,
 	date_from,
@@ -41,10 +42,10 @@ const TripCardContainer: React.FC<Trip> = ({
 		<Card className="w-full bg-light-white mt-6 max-w-[30rem] shadow-lg rounded-lg flex flex-col justify-between">
 			{/* Card header containing the trip image */}
 			<CardHeader floated={false} className="relative h-60 -mt-8 mx-4">
-				<NavLink to={"/trip-detail"}>
+				<NavLink to={`/trip-detail/${id.toString()}`}>
 					<img
-						src={tripUnsplashImage[0].url}
-						alt="Trip Image"
+						src={tripUnsplashImage[0]?.url}
+						alt={title}
 						className="w-full h-full object-cover rounded-lg" // Ensures image is fully displayed with rounded corners
 					/>
 				</NavLink>

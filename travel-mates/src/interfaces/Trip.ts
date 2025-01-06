@@ -1,5 +1,6 @@
 export default interface TripWithParticipants {
     id: number;
+    owner_id: number;
     owner: {
         profile: {
             firstname: string;
