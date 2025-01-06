@@ -170,7 +170,7 @@ export default function TripList() {
                         description={trip.description}
                         budget_min={trip.budget_min}
                         budget_max={trip.budget_max}
-                        tripUnsplashImage={trip.tripUnsplashImage}
+                        tripUnsplashImage={trip?.tripUnsplashImage}
                         tripActivities={trip.tripActivities}
                         owner={trip.owner}
                       />

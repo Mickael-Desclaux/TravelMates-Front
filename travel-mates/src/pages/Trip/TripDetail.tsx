@@ -8,6 +8,8 @@ import TripManagePopover from "../../components/TripPopover/TripPopover";
 import { useEffect, useState } from "react";
 import { GetTripById } from "../../api/Trips";
 import TripWithParticipants, { Participant } from "../../interfaces/Trip";
+import useAuthStore from "../../utils/AuthStore";
+import { deleteTrip } from "../../api/Trip";
 
 const carouselTheme = {
     carousel: {
@@ -26,8 +28,11 @@ export default function TripDetail() {
     const [conditionGender, setConditionGender] = useState<string>();
     const [conditionPhysical, setConditionPhysical] = useState<string>();
 
-    function removeTrip(id: number) {
-        console.log(`Trip avec l'id ${id} supprimé`)
+    const userId = useAuthStore(state => state.user_id);
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+    async function removeTrip(id: number): Promise<void> {
+        await deleteTrip(id);
         navigate({ pathname: "/" });
     }
 
@@ -36,9 +41,8 @@ export default function TripDetail() {
             if (id) {
                 try {
                     const data = await GetTripById(parseInt(id));
-                    console.log("🚀 ~ fetchData ~ data:", data)
+                    setIsAdmin(data.owner_id === userId);
                     setTrip(data);
-
                     switch (trip?.condition_gender) {
                         case "male":
                             setConditionGender("Hommes");
@@ -88,20 +92,24 @@ export default function TripDetail() {
                     <div>
                         <ThemeProvider value={carouselTheme}>
                             <div className="relative">
-                                <div className="absolute top-8 right-4 md:right-60 z-20">
-                                    <TripManagePopover 
-                                        tripId={+id!} 
-                                        removeTrip={removeTrip} 
-                                        participants={trip?.participants ?? []}
-                                        onParticipantsUpdate={handleParticipantsUpdate}
-                                    />
-                                </div>
+                                {
+                                    isAdmin && (
+                                        <div className="absolute top-8 right-4 md:right-60 z-20">
+                                            <TripManagePopover
+                                                tripId={+id!}
+                                                removeTrip={removeTrip}
+                                                participants={trip?.participants ?? []}
+                                                onParticipantsUpdate={handleParticipantsUpdate}
+                                            />
+                                        </div>
+                                    )
+                                }
                                 <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
                                     {
-                                        trip ?
+                                        trip && (
                                             trip?.tripUnsplashImage.map((image, index: number) => (
                                                 <img key={index} src={image.url} alt="Image" className="max-h-[400px] mx-auto" />
-                                            )) : ""}
+                                            )))}
                                 </Carousel>
                             </div>
                         </ThemeProvider>
@@ -146,10 +154,10 @@ export default function TripDetail() {
                     <div className="flex flex-row items-center -space-x-4 m-4">
                         <Typography variant="h3" className="text-lg me-6">Participants: </Typography>
                         {
-                            trip ?
+                            trip && (
                             trip?.participants.map((participant: Participant) => (
-                                <Avatar key={`avatar-${trip.id}-${participant.user.id}-${participant.status}`} src={import.meta.env.VITE_API_BASE_URL + participant.user.profile.media.url} alt={participant.user.profile.firstname + ' ' + participant.user.profile.lastname} size="sm" className="border-2 border-white hover:z-10 focus:z-10"></Avatar>
-                            )) : ""
+                                <Avatar key={`avatar-${trip.id}-${participant.user.id}-${participant.status}`} src={import.meta.env.VITE_API_BASE_URL + participant.user.profile?.media?.url} alt={participant.user.profile.firstname + ' ' + participant.user.profile.lastname} size="sm" className="border-2 border-white hover:z-10 focus:z-10"></Avatar>
+                            )))
                         }
                     </div>
                     <div className="m-4">

@@ -13,9 +13,9 @@ export async function GetTrips(): Promise<Trip[]> {
 	}
 };
 
-export async function GetTripById(id: number): Promise<TripWithParticipants> {
+export async function GetTripById(tripId: number): Promise<TripWithParticipants> {
 	try {
-		const response = await api.get(`trip/${id}`);
+		const response = await api.get(`trip/${tripId}`);
 		return response.data;
 	} catch (error) {
 		throw error;

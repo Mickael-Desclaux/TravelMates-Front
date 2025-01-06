@@ -30,3 +30,11 @@ export async function banParticipant(tripId: number, participantId: number): Pro
         throw error;
     }
 }
+
+export async function deleteTrip(tripId: number): Promise<void> {
+    try {
+        await api.delete(`trip/${tripId}`)
+    } catch (error) {
+        throw error;
+    }
+}
