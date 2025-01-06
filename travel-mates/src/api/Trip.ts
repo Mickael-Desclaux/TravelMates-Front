@@ -38,3 +38,19 @@ export async function deleteTrip(tripId: number): Promise<void> {
         throw error;
     }
 }
+
+export async function join(tripId: number): Promise<void> {
+    try {
+        await api.post(`trip/${tripId}/join`);
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function leave(tripId: number): Promise<void> {
+    try {
+        await api.delete(`trip/${tripId}/leave`);
+    } catch (error) {
+        throw error;
+    }
+}
