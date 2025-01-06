@@ -60,15 +60,6 @@ export default function LoginProfile() {
   const firstname = profile?.firstname || 'Utilisateur';
   const lastname = profile?.lastname || '';
 
-  const getAvatarUrl = () => {
-    const url = profile?.media?.url;
-    if (!url) return "/default-avatar.png";
-
-    return url.startsWith('http')
-      ? url
-      : `${import.meta.env.VITE_API_BASE_URL}/${url.replace(/^\//, '')}`;
-  };
-
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
@@ -84,7 +75,7 @@ export default function LoginProfile() {
             size="md"
             alt={`${firstname} ${lastname}`.trim()}
             className="border border-gray-400 p-0.5"
-            src={getAvatarUrl()}
+            src={`${import.meta.env.VITE_API_BASE_URL + profile?.media.url}`}
           />
           <Typography variant="h6" color="black" className="font-normal font-bold hidden lg:block capitalize">
             {firstname}
