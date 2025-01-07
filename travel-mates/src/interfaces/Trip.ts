@@ -42,3 +42,19 @@ export interface Participant {
         };
     }
 }
+
+export interface UpdateTrip {
+    destination: string;
+    date_from: string;
+    date_to: string;
+    title: string;
+    description: string;
+    activities: string[];
+    condition_budget_min: number;
+    condition_budget_max: number;
+    condition_gender: string;
+    condition_age_min: string;
+    condition_age_max: string;
+    condition_physical: string;
+    condition_user_limit: number;
+}

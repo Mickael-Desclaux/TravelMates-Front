@@ -1,5 +1,5 @@
 import { useApi } from "../hooks/UseApi";
-import { Participant } from "../interfaces/Trip";
+import TripWithParticipants, { Participant, UpdateTrip } from "../interfaces/Trip";
 import type { TripConditions } from "../interfaces/TripConditions";
 
 const api = useApi();
@@ -50,6 +50,15 @@ export async function join(tripId: number): Promise<void> {
 export async function leave(tripId: number): Promise<void> {
     try {
         await api.delete(`trip/${tripId}/leave`);
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function updateTrip(data: UpdateTrip, tripId: number): Promise<TripWithParticipants> {
+    try {
+        const response = await api.put(`trip/${tripId}`, data);
+        return response.data;
     } catch (error) {
         throw error;
     }
