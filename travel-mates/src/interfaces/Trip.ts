@@ -50,8 +50,8 @@ export interface UpdateTrip {
     title: string;
     description: string;
     activities: string[];
-    condition_budget_min: number;
-    condition_budget_max: number;
+    budget_min: number;
+    budget_max: number;
     condition_gender: string;
     condition_age_min: string;
     condition_age_max: string;
