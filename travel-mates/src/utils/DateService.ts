@@ -35,3 +35,8 @@ export function formatApiDate(date: string | Date): string {
         return parsedDate.toLocaleDateString();
     }
 }
+
+export function convertDateToISO(date: string): string {
+    const [day, month, year] = date.split('/');
+    return new Date(`${year}-${month}-${day}`).toISOString();
+}

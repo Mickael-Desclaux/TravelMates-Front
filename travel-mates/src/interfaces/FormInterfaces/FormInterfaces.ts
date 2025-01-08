@@ -8,7 +8,7 @@ export interface FormValues {
 	description: string; // Ajout du champ description
 	activities: number[]; // Ajout du champ pour les activités sélectionnées
 	budgetRange: [number, number];
-	condition_gender: boolean;
+	condition_gender: string;
 	condition_age_min: number;
 	condition_age_max: number;
 	condition_physical: string;
