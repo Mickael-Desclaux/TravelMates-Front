@@ -25,8 +25,8 @@ export default function TripEdit() {
         destination: "",
         date_from: "",
         date_to: "",
-        budget_min: 0,
-        budget_max: 0,
+        budget_min: 50,
+        budget_max: 5000,
         condition_gender: "",
         condition_age_min: "",
         condition_age_max: "",
@@ -78,8 +78,8 @@ export default function TripEdit() {
 	};
 
     return (
-        <div className="m-4 md:mt-32">
-            <Typography variant="h1" color="black" className="text-center mt-8 mb-8 text-2xl font-title">
+        <div className="md:mt-32">
+            <Typography variant="h1" color="black" className="text-center mt-8 text-2xl font-title">
                 Modifier le trip
             </Typography>
             <Formik
@@ -87,14 +87,13 @@ export default function TripEdit() {
                 validationSchema={validationSchema}
                 onSubmit={onSubmit}
             >
-                {({ setFieldValue, handleChange, values }: FormikProps<UpdateTrip>) => (
+                {({ setFieldValue, values }: FormikProps<UpdateTrip>) => (
                     <Form>
-                        <div className="mb-1 flex flex-col gap-6">
-                            <section className="mt-8 max-w-lg mx-auto md:mt-32">
-                                <h2 className="font-title text-center text-2xl font-bold mb-12">Parlez-nous de votre trip</h2>
+                        <div className="flex flex-col gap-6">
+                            <section className="mt-4 max-w-lg mx-auto md:min-w-[25vw]">
 
                                 {/* Trip title */}
-                                <div className="m-4">
+                                <div className="mt-4">
                                     <Typography className="block text-black font-bold mb-1">
                                         Titre du voyage
                                     </Typography>
@@ -108,7 +107,7 @@ export default function TripEdit() {
                                 </div>
 
                                 {/* Trip description */}
-                                <div className="m-4">
+                                <div className="mt-4">
                                     <Typography className="block text-black font-bold mb-1">
                                         Décrivez votre voyage
                                     </Typography>
@@ -123,7 +122,7 @@ export default function TripEdit() {
                                 </div>
 
                                 {/* Activity selection with burger menu */}
-                                <div className="m-4">
+                                <div className="mt-4">
                                     <Typography className="block text-black font-bold mb-1">
                                         Choisir les activités
                                     </Typography>
@@ -137,11 +136,11 @@ export default function TripEdit() {
                                     <ErrorMessage name="activities" component="div" className="text-red-500" />
                                 </div>
                                 {/* Budget slider */}
-                                <div className="m-4">
+                                <div className="mt-4">
                                     <Typography className="block text-black font-bold mb-1">
                                         Budget hors transport
                                     </Typography>
-                                    <div className='m-4'>
+                                    <div className='mt-4'>
                                         <RangeSlider
                                             nameMin="budget_min"
                                             nameMax="budget_max"
@@ -149,9 +148,11 @@ export default function TripEdit() {
                                             max={5000}
                                             step={50}
                                             value={[values.budget_min, values.budget_max]}
-                                            onChange={() => {
-                                                setFieldValue('conditions_budget_min', values.budget_min);
-                                                setFieldValue('conditions_budget_max', values.budget_max);
+                                            onChange={(newValues: number[]) => {
+                                                if (newValues.length >= 2) {
+                                                    setFieldValue('budget_min', newValues[0]);
+                                                    setFieldValue('budget_max', newValues[1]);
+                                                }
                                             }}
                                         />
                                     </div>
@@ -168,7 +169,7 @@ export default function TripEdit() {
                                 </div>
 
                                 {/* Travel conditions selection */}
-                                <div className="m-4">
+                                <div className="mt-4">
                                     <Typography className="block text-black font-bold mb-1">
                                         Avec qui voulez-vous partir ?
                                     </Typography>
@@ -197,7 +198,7 @@ export default function TripEdit() {
                                     <div>
                                         {/* Title */}
                                         <Typography variant="h2" className="mb-6 text-center font-title text-2xl -mt-12">
-                                            Sélectionner les activités de votre trip
+                                            Sélectionnez les activités de votre trip
                                         </Typography>
 
                                         {/* Display ActivityPicker */}
@@ -229,7 +230,7 @@ export default function TripEdit() {
 
                                     {/* Title */}
                                     <Typography variant="h4" className="mb-6 text-center">
-                                        Sélectionner les conditions de votre trip
+                                        Sélectionnez les conditions de votre trip
                                     </Typography>
 
                                     {/* Display TripConditions */}
@@ -247,7 +248,7 @@ export default function TripEdit() {
                             )}
                         </div>
                         <div className="flex justify-center ">
-                            <button type="submit" className="bg-green text-white p-2 rounded-lg mb-32">
+                            <button type="submit" className="mt-4 md:mt-8 mb-4 bg-green text-white p-2 rounded-lg mb-32">
                                 Enregistrer
                             </button>
                         </div>
