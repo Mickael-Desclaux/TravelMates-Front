@@ -88,12 +88,14 @@ export default function TripConditions() {
 								<Input
 									name="condition_age_min"
 									type="number"
+									containerProps={{ className: "min-w-full" }}
 									onChange={e =>
 										setFieldValue('condition_age_min', Number(e.target.value))
 									}
 									className="border border-gray-300 rounded p-2 text-center max-w-[25vw] md:max-w-[5vw]"
 									crossOrigin={undefined}
 									placeholder="Age min"
+									value={values.condition_age_min}
 								/>
 							</div>
 							<Typography className="ms-4 me-4">et</Typography>
@@ -101,12 +103,14 @@ export default function TripConditions() {
 								<Input
 									name="condition_age_max"
 									type="number"
+									containerProps={{ className: "min-w-full" }}
 									onChange={e =>
 										setFieldValue('condition_age_max', Number(e.target.value))
 									}
 									className="border border-gray-300 rounded p-2 text-center max-w-[25vw] md:max-w-[5vw]"
 									crossOrigin={undefined}
 									placeholder="Age max"
+									value={values.condition_age_max}
 								/>
 							</div>
 							<Typography>ans</Typography>
@@ -181,7 +185,7 @@ export default function TripConditions() {
 							step={1}
 							name="condition_user_limit"
 							className="w-full h-2 bg-green rounded-lg appearance-none cursor-pointer"
-							defaultValue={10}
+							defaultValue={values.condition_user_limit}
 							onChange={e => {
 								handleSliderChange(e);
 								setFieldValue('condition_user_limit', Number(e.target.value));
