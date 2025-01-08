@@ -16,6 +16,7 @@ import ReviewCreate from './pages/Pin/ReviewCreate';
 import ChatList from './pages/Chat/ChatList';
 import Chat from './pages/Chat/Chat';
 import ProtectRoute from './components/ProtectRoute/ProtectRoute';
+import TripEdit from './pages/Trip/TripEdit';
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
 				<Route element={<ProtectRoute />}>
 					<Route path="/profile/:id" element={<Profile />} />
 					<Route path="/trip-create" element={<TripCreate />} />
+					<Route path="/trip-edit/:id" element={<TripEdit />} />
 					<Route path="/profile-edit" element={<ProfileEdit />} />
 					<Route path="/pin-create" element={<PinCreate />} />
 					<Route path="/pin-review/:id" element={<ReviewCreate />} />

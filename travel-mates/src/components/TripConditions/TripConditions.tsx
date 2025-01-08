@@ -84,27 +84,27 @@ export default function TripConditions() {
 							Âgés entre
 						</Typography>
 						<div className="flex items-center gap-4">
-							<div>
+							<div className='max-w-[25vw] md:max-w-[5vw]'>
 								<Input
 									name="condition_age_min"
 									type="number"
 									onChange={e =>
 										setFieldValue('condition_age_min', Number(e.target.value))
 									}
-									className="border border-gray-300 rounded p-2 text-center"
+									className="border border-gray-300 rounded p-2 text-center max-w-[25vw] md:max-w-[5vw]"
 									crossOrigin={undefined}
 									placeholder="Age min"
 								/>
 							</div>
 							<Typography className="ms-4 me-4">et</Typography>
-							<div>
+							<div className='max-w-[25vw] md:max-w-[5vw]'>
 								<Input
 									name="condition_age_max"
 									type="number"
 									onChange={e =>
 										setFieldValue('condition_age_max', Number(e.target.value))
 									}
-									className="border border-gray-300 rounded p-2 text-center"
+									className="border border-gray-300 rounded p-2 text-center max-w-[25vw] md:max-w-[5vw]"
 									crossOrigin={undefined}
 									placeholder="Age max"
 								/>
