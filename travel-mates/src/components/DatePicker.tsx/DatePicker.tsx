@@ -37,7 +37,7 @@ const DatePickerComponent = ({
 	};
 
 	return (
-		<div className="absolute z-40 bg-light-white border rounded-xl shadow-lg p-2 mt-1 lg:left-96">
+		<div className="absolute z-40 bg-light-white border rounded-xl shadow-lg p-2 mt-1">
 			<DayPicker
 				mode="range"
 				selected={selectedRange}
@@ -49,7 +49,7 @@ const DatePickerComponent = ({
 			<button
 				type="button"
 				onClick={handleClearDates}
-				className="mt-2 text-red-500 underline"
+				className="mt-2 text-red-500 underline decoration-red-500"
 			>
 				Effacer les dates
 			</button>

@@ -138,10 +138,10 @@ export default function TripDetail() {
                             }
                             <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
                                 {
-                                    trip && (
+                                    trip ? (
                                         trip?.tripUnsplashImage.map((image, index: number) => (
                                             <img key={index} src={image.url} alt="Image" className="max-h-[400px] mx-auto" />
-                                        )))}
+                                        ))): ""}
                             </Carousel>
                         </div>
                     </ThemeProvider>

@@ -6,13 +6,18 @@ import {
 	Checkbox,
 } from '@material-tailwind/react';
 import { useFormikContext } from 'formik';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './TripConditions.css';
 import { FormValues } from '../../interfaces/FormInterfaces/FormInterfaces';
+import useAuthStore from '../../utils/AuthStore';
+import { GetProfile } from '../../api/Profile';
+import { ProfileData } from '../../interfaces/ProfileInterface';
 
 export default function TripConditions() {
 	// Use Formik context to access and update values
 	const { values, setFieldValue } = useFormikContext<FormValues>();
+	const userId = useAuthStore(state => state.user_id);
+	const [profile, setProfile] = useState<ProfileData>();
 
 	// Update the background color of the slider based on its value
 	const updateSliderBackground = (
@@ -21,22 +26,48 @@ export default function TripConditions() {
 		max: number,
 		slider: HTMLInputElement,
 	) => {
+		if (!slider) return;
+
 		const percentage = ((value - min) / (max - min)) * 100;
 		slider.style.background = `linear-gradient(to right, #185C22 ${percentage}%, #ccc ${percentage}%)`;
 	};
 
-	// Apply the slider design after component mounts
+	useEffect(() => {
+		const fetchLoginProfile = async () => {
+			if (!userId) return;
+
+			try {
+				const data = await GetProfile(userId);
+				setProfile(data);
+
+				const isChecked = values.condition_gender !== "all";
+				if (isChecked) {
+					setFieldValue('condition_gender', data.gender);
+				} else {
+					setFieldValue('condition_gender', "all");
+				}
+			} catch (error) {
+				throw new Error;
+			}
+		};
+
+		fetchLoginProfile();
+	}, [userId]);
+
 	useEffect(() => {
 		const slider = document.querySelector(
 			'input[type="range"]',
 		) as HTMLInputElement;
+
 		if (slider) {
-			updateSliderBackground(
-				values.condition_user_limit,
-				+slider.min,
-				+slider.max,
-				slider,
-			);
+			requestAnimationFrame(() => {
+				updateSliderBackground(
+					values.condition_user_limit || 2,
+					+slider.min || 2,
+					+slider.max || 10,
+					slider
+				);
+			});
 		}
 	}, [values.condition_user_limit]);
 
@@ -49,6 +80,11 @@ export default function TripConditions() {
 		updateSliderBackground(value, +slider.min, +slider.max, slider);
 	};
 
+	const handleGenderCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const genderValue = !e.target.checked ? "all" : profile?.gender || "";
+		setFieldValue('condition_gender', genderValue);
+	};
+
 	return (
 		<Card color="transparent" shadow={false}>
 			<div className="flex justify-center">
@@ -58,27 +94,28 @@ export default function TripConditions() {
 						<div className="flex items-center">
 							<Typography
 								variant="paragraph"
-								color="blue-gray"
+								color="black"
 								className="font-bold"
 							>
-								Je veux voyager uniquement avec des user.genre
+								Je veux voyager uniquement avec des {profile?.gender === "male" ? "hommes" : "femmes"}
 							</Typography>
 							<Checkbox
 								name="condition_gender"
-								onChange={e =>
-									setFieldValue('condition_gender', e.target.checked)
-								}
-								color="green"
-								className="custom-checkbox bg-green border border-gray-300 rounded p-2 w-full"
-								checked={Boolean(values.condition_gender)}
+								className={`border border-gray-300 rounded p-2 w-full ${values.condition_gender !== "all" ? "bg-green" : "bg-slate-50"
+									}`}
+								onChange={handleGenderCheckboxChange}
+								value={values.condition_gender}
 								crossOrigin={undefined}
+								checked={values.condition_gender !== "all"}
+								color='green'
 							/>
+
 						</div>
 
-						{/* condition_age_min && condition_age_max */}
+						{ }
 						<Typography
 							variant="paragraph"
-							color="blue-gray"
+							color="black"
 							className="-mb-3 font-bold"
 						>
 							Âgés entre
@@ -88,12 +125,14 @@ export default function TripConditions() {
 								<Input
 									name="condition_age_min"
 									type="number"
+									containerProps={{ className: "min-w-full" }}
 									onChange={e =>
 										setFieldValue('condition_age_min', Number(e.target.value))
 									}
 									className="border border-gray-300 rounded p-2 text-center max-w-[25vw] md:max-w-[5vw]"
 									crossOrigin={undefined}
 									placeholder="Age min"
+									value={values.condition_age_min}
 								/>
 							</div>
 							<Typography className="ms-4 me-4">et</Typography>
@@ -101,12 +140,14 @@ export default function TripConditions() {
 								<Input
 									name="condition_age_max"
 									type="number"
+									containerProps={{ className: "min-w-full" }}
 									onChange={e =>
 										setFieldValue('condition_age_max', Number(e.target.value))
 									}
 									className="border border-gray-300 rounded p-2 text-center max-w-[25vw] md:max-w-[5vw]"
 									crossOrigin={undefined}
 									placeholder="Age max"
+									value={values.condition_age_max}
 								/>
 							</div>
 							<Typography>ans</Typography>
@@ -115,7 +156,7 @@ export default function TripConditions() {
 						{/* condition_physical */}
 						<Typography
 							variant="paragraph"
-							color="blue-gray"
+							color="black"
 							className="-mb-3 font-bold"
 						>
 							Condition physique recommandée
@@ -124,11 +165,10 @@ export default function TripConditions() {
 							<Button
 								variant="outlined"
 								type="button"
-								className={`${
-									values.condition_physical === 'none'
+								className={`${values.condition_physical === 'none'
 										? 'bg-green text-white'
 										: 'bg-white text-black'
-								}`}
+									}`}
 								onClick={() => setFieldValue('condition_physical', 'none')}
 							>
 								Aucune
@@ -136,11 +176,10 @@ export default function TripConditions() {
 							<Button
 								variant="outlined"
 								type="button"
-								className={`${
-									values.condition_physical === 'normal'
+								className={`${values.condition_physical === 'normal'
 										? 'bg-green text-white'
 										: 'bg-white text-black'
-								}`}
+									}`}
 								onClick={() => setFieldValue('condition_physical', 'normal')}
 							>
 								Normal
@@ -148,11 +187,10 @@ export default function TripConditions() {
 							<Button
 								variant="outlined"
 								type="button"
-								className={`${
-									values.condition_physical === 'excellent'
+								className={`${values.condition_physical === 'excellent'
 										? 'bg-green text-white'
 										: 'bg-white text-black'
-								}`}
+									}`}
 								onClick={() => setFieldValue('condition_physical', 'excellent')}
 							>
 								Excellent
@@ -162,7 +200,7 @@ export default function TripConditions() {
 						{/* condition_user_limit */}
 						<Typography
 							variant="paragraph"
-							color="blue-gray"
+							color="black"
 							className="-mb-3 font-bold"
 						>
 							Nombre limite de participants
@@ -180,8 +218,8 @@ export default function TripConditions() {
 							max={10}
 							step={1}
 							name="condition_user_limit"
-							className="w-full h-2 bg-green rounded-lg appearance-none cursor-pointer"
-							defaultValue={10}
+							className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-green"
+							value={values.condition_user_limit}
 							onChange={e => {
 								handleSliderChange(e);
 								setFieldValue('condition_user_limit', Number(e.target.value));
