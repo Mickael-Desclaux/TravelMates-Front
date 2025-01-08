@@ -47,6 +47,14 @@ export async function CreatePin(body: AddPin): Promise<Pin> {
         throw error;
     }
 }
+export async function getPinCount(id: number): Promise<number> {
+    try {
+        const response = await api.get(`pin/count/${id}`);
+        return response.data.count;
+    } catch (error) {
+        throw new Error;
+    }
+}
 
 export async function addReview(id: number, body: AddReview): Promise<ReviewWithId> {
     try {

@@ -30,3 +30,12 @@ export async function GetUserTrips(): Promise<Trip[]> {
 		throw error;
 	}
 }
+
+export async function getTripCount(id: number): Promise<number> {
+	try {
+		const response = await api.get(`trip/count/${id}`);
+		return response.data.count;
+	} catch (error) {
+		throw new Error;
+	}
+}
