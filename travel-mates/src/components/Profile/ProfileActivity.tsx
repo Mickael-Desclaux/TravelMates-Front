@@ -1,9 +1,11 @@
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel, Typography } from "@material-tailwind/react";
-//import pinMarkerIcon from '../../assets/icons/pin-marker.svg';
 import { useEffect, useState } from "react";
 import planeIcon from '../../assets/icons/plane.svg';
+import pinMarkerIcon from '../../assets/icons/pin-marker.svg';
 import Trip from "../../interfaces/Trip";
+import { Pin } from "../../interfaces/Pin";
 import { GetUserTrips } from "../../api/Trips";
+import { GetPins } from "../../api/Pin";
 import useAuthStore from "../../utils/AuthStore";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -11,7 +13,24 @@ import { fr } from "date-fns/locale";
 export default function ProfileTabs() {
   const [activeTab, setActiveTab] = useState("marqueurs");
   const [trips, setTrips] = useState<Trip[]>([]);
+  const [pins, setPins] = useState<Pin[]>([]);
   const userId = useAuthStore(state => state.user_id);
+
+  useEffect(() => {
+    const fetchPinsActivity = async () => {
+      if (userId) {
+        try {
+          const pinsData = await GetPins();
+          setPins(pinsData);
+        } catch (error) {
+          throw new Error(error as string)
+        }
+      } else {
+        setPins([]);
+      }
+    }
+    fetchPinsActivity();
+  }, [userId]);
 
   useEffect(() => {
     const fetchTripsActivity = async () => {
@@ -50,8 +69,7 @@ export default function ProfileTabs() {
         <TabsHeader>
           {tabs.map((tab) => (
             <Tab key={tab.value} value={tab.value} onClick={() => setActiveTab(tab.value)}
-              className={`text-green font-bold font-title pb-2 ${activeTab === tab.value ? "underline" : ""
-                }`}
+              className={`text-green font-bold font-title pb-2 ${activeTab === tab.value ? "underline" : ""}`}
             >
               {tab.label}
             </Tab>
@@ -59,26 +77,26 @@ export default function ProfileTabs() {
         </TabsHeader>
 
         <TabsBody>
-          {/*  <TabPanel value="marqueurs">
+          <TabPanel value="marqueurs">
             {userId ? (
               <div className="space-y-4 mt-4 h-60 overflow-y-auto pr-2">
                 {pins.map((pin) => (
                   <div key={pin.id} className="flex items-center space-x-2">
-                    <img src={pinMarkerIcon} alt="Icône marqueur" className="w-8 h-8" />
-                    <p className="flex text-lg font-medium text-black mx-auto">
+                    <img src={pinMarkerIcon} alt="Icône marqueur" className="w-8 h-8 mx-4 md:mx-4" />
+                    <p className="flex text-lg font-medium text-black mx-auto capitalize">
                       {pin.title}
                     </p>
                   </div>
                 ))}
               </div>
-              ) : (
-                <div className="space-y-4 mt-4 h-60 overflow-y-auto pr-2">
-                  <p className="text-sm font-medium text-black lg:text-lg">
+            ) : (
+              <div className="space-y-4 mt-4 h-60 overflow-y-auto pr-2">
+                <p className="text-sm font-medium text-black lg:text-lg">
                   Vous n'avez pas encore de marqueur
-                  </p>
-                </div>
-                )}
-            </TabPanel> */}
+                </p>
+              </div>
+            )}
+          </TabPanel>
 
           <TabPanel value="trips">
             {userId ? (
