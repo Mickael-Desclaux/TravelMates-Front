@@ -22,7 +22,7 @@ export async function GetTripById(id: number): Promise<TripWithParticipants> {
 	}
 }
 
-export async function GetUserTrips(): Promise<Trip[]> {
+export async function GetUserTrips(): Promise<TripWithParticipants[]> {
 	try {
 		const response = await api.get('trip/my-trips');
 		return response.data;

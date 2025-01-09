@@ -2,51 +2,37 @@ import { Tabs, TabsHeader, TabsBody, Tab, TabPanel, Typography } from "@material
 import { useEffect, useState } from "react";
 import planeIcon from '../../assets/icons/plane.svg';
 import pinMarkerIcon from '../../assets/icons/pin-marker.svg';
-import Trip from "../../interfaces/Trip";
+import TripWithParticipants from "../../interfaces/Trip";
 import { Pin } from "../../interfaces/Pin";
 import { GetUserTrips } from "../../api/Trips";
-import { GetPins } from "../../api/Pin";
+import { GetUserPins } from "../../api/Pin";
 import useAuthStore from "../../utils/AuthStore";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
 export default function ProfileTabs() {
   const [activeTab, setActiveTab] = useState("marqueurs");
-  const [trips, setTrips] = useState<Trip[]>([]);
+  const [trips, setTrips] = useState<TripWithParticipants[]>([]);
   const [pins, setPins] = useState<Pin[]>([]);
   const userId = useAuthStore(state => state.user_id);
 
   useEffect(() => {
-    const fetchPinsActivity = async () => {
+    const fetchDataActivity = async () => {
       if (userId) {
         try {
-          const pinsData = await GetPins();
+          const [pinsData, tripsData] = await Promise.all([GetUserPins(), GetUserTrips()]);
           setPins(pinsData);
-        } catch (error) {
-          throw new Error(error as string)
-        }
-      } else {
-        setPins([]);
-      }
-    }
-    fetchPinsActivity();
-  }, [userId]);
-
-  useEffect(() => {
-    const fetchTripsActivity = async () => {
-      if (userId) {
-        try {
-          const tripsData = await GetUserTrips();
           setTrips(tripsData);
         } catch (error) {
           throw new Error(error as string)
         }
       } else {
+        setPins([]);
         setTrips([]);
       }
     };
-
-    fetchTripsActivity();
+  
+    fetchDataActivity();
   }, [userId]);
 
   const tabs = [
