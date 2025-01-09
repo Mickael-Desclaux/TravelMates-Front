@@ -36,6 +36,7 @@ export interface Participant {
         profile: {
             firstname: string;
             lastname: string;
+            birth_date: string;
             media: {
                 url: string;
             };
@@ -57,4 +58,25 @@ export interface UpdateTrip {
     condition_age_max: string;
     condition_physical: string;
     condition_user_limit: number;
+}
+
+export interface ParticipantBasicInfos {
+    id: number;
+    firstname: string;
+    lastname: string;
+    age: number;
+    media: {
+        url: string;
+    };
+}
+
+export interface ParticipantBasicInfosWithStatus {
+    id: number;
+    firstname: string;
+    lastname: string;
+    birth_date: string;
+    media: {
+        url: string;
+    };
+    status: string;
 }

@@ -1,4 +1,4 @@
-import { Typography, Input, Button, Textarea } from "@material-tailwind/react";
+import { Typography, Input, Button, Textarea, Dialog, DialogBody, DialogFooter, DialogHeader, Avatar } from "@material-tailwind/react";
 import ActivityPicker from "../../components/ActivityPicker/ActivityPicker";
 import RangeSlider from "../../components/RangeSlider/RangeSlider";
 import TripConditions from "../../components/TripConditions/TripConditions";
@@ -9,10 +9,11 @@ import * as Yup from "yup";
 import { updateTrip } from "../../api/Trip";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { GetTripById } from "../../api/Trips";
-import { UpdateTrip } from "../../interfaces/Trip";
+import { ParticipantBasicInfos, ParticipantBasicInfosWithStatus, UpdateTrip } from "../../interfaces/Trip";
 import CalendarIcon from '../../assets/Icons/datepicker.svg';
 import DatePickerComponent from "../../components/DatePicker.tsx/DatePicker";
 import { convertDateToISO, formatApiDate } from "../../utils/DateService";
+import { calculateAge } from "../../utils/AgeService";
 
 export default function TripEdit() {
 
@@ -20,6 +21,11 @@ export default function TripEdit() {
     const [globalError, setGlobalError] = useState<string>();
     const [activityPicker, setActivityPicker] = useState<boolean>(false);
     const [tripConditions, setTripConditions] = useState<boolean>(false);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [formValues, setFormValues] = useState<UpdateTrip | null>(null);
+    const [affectedUsers, setAffectedUsers] = useState<ParticipantBasicInfos[]>([]);
+    const [participants, setParticipants] = useState<ParticipantBasicInfosWithStatus[]>([]);
+
     const [showCalendar, setShowCalendar] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
@@ -29,6 +35,18 @@ export default function TripEdit() {
             if (id) {
                 try {
                     const response = await GetTripById(parseInt(id));
+
+                    const tripParticipants: ParticipantBasicInfosWithStatus[] = response.participants.map(participant => ({
+                        id: participant.user.id,
+                        firstname: participant.user.profile.firstname,
+                        lastname: participant.user.profile.lastname,
+                        birth_date: participant.user.profile.birth_date,
+                        media: { url: participant.user.profile.media.url },
+                        status: participant.status
+                    }));
+
+                    setParticipants(tripParticipants);
+
                     const updateTripData: UpdateTrip = {
                         title: response.title,
                         description: response.description,
@@ -45,6 +63,7 @@ export default function TripEdit() {
                         condition_user_limit: response.condition_user_limit,
                     };
                     setData(updateTripData);
+
                     console.log("🚀 ~ fetchData ~ response:", response)
                 } catch (error) {
                     setGlobalError("Une erreur est survenue, veuillez réessayer");
@@ -84,18 +103,17 @@ export default function TripEdit() {
             Yup.ref('budget_min'),
             'Le budget maximum doit être supérieur au budget minimum',
         ),
-
     })
 
     async function onSubmit(values: UpdateTrip) {
         console.log(values);
         if (id) {
-            try {     
+            try {
                 const updatedValues = {
                     ...values,
                     date_from: new Date(values.date_from).toISOString(),
                     date_to: new Date(values.date_to).toISOString(),
-                };          
+                };
                 await updateTrip(updatedValues, parseInt(id));
                 navigate(`/trip-detail/${id}`);
             } catch (error: any) {
@@ -111,7 +129,7 @@ export default function TripEdit() {
             }
         }
     }
-    
+
     const handleValidation = (values: UpdateTrip) => {
         if ((values.activities ?? []).length > 0) {
             setActivityPicker(false);
@@ -119,6 +137,54 @@ export default function TripEdit() {
             throw Error('Please select at least one activity.');
         }
     };
+
+    async function handleSubmitWithConfirmation(values: UpdateTrip) {
+        const ageConditionsChanged = data && (
+            values.condition_age_min !== data.condition_age_min ||
+            values.condition_age_max !== data.condition_age_max
+        );
+
+        if (ageConditionsChanged && data) {
+            // Calcule les utilisateurs affectés à partir des participants actuels
+            const affected = await getAffectedUsers(
+                Number(values.condition_age_min),
+                Number(values.condition_age_max),
+                participants
+            );
+
+            if (affected.length > 0) {
+                setAffectedUsers(affected);
+                setFormValues(values);
+                setShowConfirmDialog(true);
+            } else {
+                await onSubmit(values);
+            }
+        } else {
+            await onSubmit(values);
+        }
+    }
+
+    async function handleConfirmSubmit() {
+        if (formValues) {
+            setShowConfirmDialog(false);
+            await onSubmit(formValues);
+        }
+    }
+
+    async function getAffectedUsers(newAgeMin: number, newAgeMax: number, participants: ParticipantBasicInfosWithStatus[]): Promise<ParticipantBasicInfos[]> {
+        return participants
+            .filter(participant => {
+                const age = calculateAge(new Date(participant.birth_date));
+                return age < newAgeMin || age > newAgeMax;
+            })
+            .map(participant => ({
+                id: participant.id,
+                firstname: participant.firstname,
+                lastname: participant.lastname,
+                media: { url: participant.media.url },
+                age: calculateAge(new Date(participant.birth_date))
+            }));
+    }
 
     return (
         <div className="md:mt-32">
@@ -129,7 +195,7 @@ export default function TripEdit() {
                 initialValues={defaultValues}
                 enableReinitialize={true}
                 validationSchema={validationSchema}
-                onSubmit={onSubmit}
+                onSubmit={handleSubmitWithConfirmation}
             >
                 {({ setFieldValue, values, handleChange }: FormikProps<UpdateTrip>) => (
                     <Form>
@@ -338,16 +404,66 @@ export default function TripEdit() {
                                     </Button>
                                 </div>
                             )}
-                        </div>
-                        <div className="flex justify-center mb-28 md:mb-4">
-                            <Button type="submit" className="mt-4 md:mt-8 mb-4 bg-green text-white p-3 rounded-lg mb-4">
-                                Enregistrer
-                            </Button>
-                        {globalError && (
-                            <div className="text-red-500 text-center">
-                                {globalError}
+
+                            <Dialog open={showConfirmDialog} handler={() => setShowConfirmDialog(false)} size="md">
+                                <DialogHeader>Attention</DialogHeader>
+                                <DialogBody>
+                                    <Typography color="black" className="font-normal mb-4">
+                                        Les participants suivants ne correspondent plus aux nouvelles conditions d'âge
+                                        ({formValues?.condition_age_min} - {formValues?.condition_age_max} ans)
+                                        et seront exclus du trip :
+                                    </Typography>
+                                    <div className="max-h-[300px] overflow-y-auto">
+                                        {affectedUsers.map((user) => (
+                                            <div key={user.id} className="flex items-center gap-4 mb-4 p-2 border rounded">
+                                                <Avatar
+                                                    src={import.meta.env.VITE_API_BASE_URL + user.media.url}
+                                                    alt={`${user.firstname} ${user.lastname}`}
+                                                    className="w-12 h-12"
+                                                />
+                                                <div>
+                                                    <Typography variant="h6" color="black">
+                                                        {user.firstname} {user.lastname}
+                                                    </Typography>
+                                                    <Typography variant="small" color="black">
+                                                        {user.age} ans
+                                                    </Typography>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <Typography color="red" className="font-normal mt-4">
+                                        Êtes-vous sûr de vouloir continuer ?
+                                    </Typography>
+                                </DialogBody>
+                                <DialogFooter className="flex justify-center">
+                                    <Button
+                                        variant="text"
+                                        onClick={() => setShowConfirmDialog(false)}
+                                        className="bg-red-700 text-white m-4"
+                                    >
+                                        Annuler
+                                    </Button>
+                                    <Button
+                                        className="bg-green"
+                                        onClick={handleConfirmSubmit}
+                                    >
+                                        Confirmer
+                                    </Button>
+                                </DialogFooter>
+                            </Dialog>
+
+                            {globalError && (
+                                <div className="text-red-500 text-center mt-4">
+                                    {globalError}
+                                </div>
+                            )}
+
+                            <div className="flex justify-center mb-28 md:mb-4">
+                                <Button type="submit" className="mt-4 mb-4 bg-green text-white p-3 rounded-lg mb-4">
+                                    Enregistrer
+                                </Button>
                             </div>
-                        )}
                         </div>
                     </Form>
                 )}
