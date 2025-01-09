@@ -1,91 +1,112 @@
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel, Typography } from "@material-tailwind/react";
-import pinMarkerIcon from '../../assets/icons/pin-marker.svg';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import planeIcon from '../../assets/icons/plane.svg';
-
-// Fake data for pins
-const pinsData = [
-    { id: 1, title: "Tour Eiffel", country: "France", dateAdded: "2023-12-01" },
-    { id: 2, title: "Montmartre, Paris", country: "France", dateAdded: "2023-11-20" },
-    { id: 3, title: "Dōtonbori", country: "Japon", dateAdded: "2023-10-15" },
-    { id: 4, title: "Lac de Côme", country: "Italie", dateAdded: "2023-09-10" },
-    { id: 5, title: "Tour de Pise", country: "Italie", dateAdded: "2023-08-05" },
-    { id: 6, title: "Piccola Cucina Estiatorio", country: "New York", dateAdded: "2023-07-22" }
-  ];
-
-  // Fake data for trips
-const tripsData = [
-    { id: 1, destination: "New York", startDate: `15/06/2024`, endDate: `25/06/2024` },
-    { id: 2, destination: "Milan", startDate: `05/01/2024`, endDate: `17/01/2024` },
-    { id: 3, destination: "Paris", startDate: `09/12/2023`, endDate: `20/12/2023` },
-    { id: 4, destination: "Japon", startDate: `05/10/2023`, endDate: `29/10/2023` }
-];
+import pinMarkerIcon from '../../assets/icons/pin-marker.svg';
+import TripWithParticipants from "../../interfaces/Trip";
+import { Pin } from "../../interfaces/Pin";
+import { GetUserTrips } from "../../api/Trips";
+import { GetUserPins } from "../../api/Pin";
+import useAuthStore from "../../utils/AuthStore";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 export default function ProfileTabs() {
-    const [activeTab, setActiveTab] = useState("marqueurs");
+  const [activeTab, setActiveTab] = useState("marqueurs");
+  const [trips, setTrips] = useState<TripWithParticipants[]>([]);
+  const [pins, setPins] = useState<Pin[]>([]);
+  const userId = useAuthStore(state => state.user_id);
 
-    const tabs = [
-      { label: "Marqueurs", value: "marqueurs" },
-      { label: "Trips", value: "trips" },
-    ];
+  useEffect(() => {
+    const fetchDataActivity = async () => {
+      if (userId) {
+        try {
+          const [pinsData, tripsData] = await Promise.all([GetUserPins(), GetUserTrips()]);
+          setPins(pinsData);
+          setTrips(tripsData);
+        } catch (error) {
+          throw new Error(error as string)
+        }
+      } else {
+        setPins([]);
+        setTrips([]);
+      }
+    };
+  
+    fetchDataActivity();
+  }, [userId]);
 
-    // Sort pinsData by dateAdded from newest to oldest
-    const sortedPinsData = [...pinsData].sort((a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime());
-    
-    // Sort tripsData by dateAdded from newest to oldest
-    const sortedTripsData = [...tripsData].sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+  const tabs = [
+    { label: "Marqueurs", value: "marqueurs" },
+    { label: "Trips", value: "trips" },
+  ];
+
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), 'dd/MM/yyyy', { locale: fr });
+  };
 
   return (
-    <>
-      <div>
-        <Typography className="font-title text-2xl font-bold text-center mt-2 mb-6">
-          Activité
-        </Typography>
+    <div>
+      <Typography className="font-title text-2xl font-bold text-center mt-2 mb-6">
+        Activité
+      </Typography>
 
-        {/* Component Tabs to displays pins and trips */}    
-        <Tabs value={activeTab} onChange={setActiveTab} className="w-full max-w-3xl mx-auto">
-          <TabsHeader>
-            {tabs.map((tab) => (
-                <Tab key={tab.value} value={tab.value} onClick={() => setActiveTab(tab.value)}
-                    className={`text-green font-bold font-title pb-2 ${
-                        activeTab === tab.value ? "underline" : ""
-                    }`}
-                >
-                    {tab.label}
-                </Tab>
-            ))}
-          </TabsHeader>
+      {/* Component Tabs to displays pins and trips */}
+      <Tabs value={activeTab} onChange={setActiveTab} className="w-full max-w-3xl mx-auto">
+        <TabsHeader>
+          {tabs.map((tab) => (
+            <Tab key={tab.value} value={tab.value} onClick={() => setActiveTab(tab.value)}
+              className={`text-green font-bold font-title pb-2 ${activeTab === tab.value ? "underline" : ""}`}
+            >
+              {tab.label}
+            </Tab>
+          ))}
+        </TabsHeader>
 
-          <TabsBody>
-            <TabPanel value="marqueurs">
+        <TabsBody>
+          <TabPanel value="marqueurs">
+            {userId ? (
               <div className="space-y-4 mt-4 h-60 overflow-y-auto pr-2">
-                {sortedPinsData.map((activity) => (
-                  <div key={activity.id} className="flex items-center space-x-2">
-                    <img src={pinMarkerIcon} alt="Icône marqueur" className="w-8 h-8" />
-                    <p className="flex text-lg font-medium text-black mx-auto">
-                      {activity.title}, {activity.country}
+                {pins.map((pin) => (
+                  <div key={pin.id} className="flex items-center space-x-2">
+                    <img src={pinMarkerIcon} alt="Icône marqueur" className="w-8 h-8 mx-4 md:mx-4" />
+                    <p className="flex text-lg font-medium text-black mx-auto capitalize">
+                      {pin.title}
                     </p>
                   </div>
                 ))}
               </div>
-            </TabPanel>
-
-            <TabPanel value="trips">
+            ) : (
               <div className="space-y-4 mt-4 h-60 overflow-y-auto pr-2">
-                {sortedTripsData.map((trip) => (
+                <p className="text-sm font-medium text-black lg:text-lg">
+                  Vous n'avez pas encore de marqueur
+                </p>
+              </div>
+            )}
+          </TabPanel>
+
+          <TabPanel value="trips">
+            {userId ? (
+              <div className="space-y-4 mt-4 h-60 overflow-y-auto pr-2">
+                {trips.map((trip) => (
                   <div key={trip.id} className="flex items-center space-x-2 md:space-x-4">
-                    <img src={planeIcon} alt="Icône avion de voyage" className="w-6 h-6 md:w-8 md:h-8" />
-                    <p className="text-sm font-medium text-black lg:text-lg">
-                      Voyage à {trip.destination} - du {trip.startDate} au{" "}
-                      {trip.endDate}
+                    <img src={planeIcon} alt="Icône avion de voyage" className="w-8 h-8 md:w-8 md:h-8 mx-4 md:mx-4" />
+                    <p className="text-md md:text-lg font-medium text-black lg:text-lg w-2/3 md:w-full">
+                      Voyage à {trip.destination} - du {formatDate(trip.date_from)} au{" "}
+                      {formatDate(trip.date_to)}
                     </p>
                   </div>
                 ))}
               </div>
-            </TabPanel>
-          </TabsBody>
-        </Tabs>
-      </div>
-    </>
+            ) : (
+              <div className="space-y-4 mt-4 h-60 overflow-y-auto pr-2">
+                <p className="text-sm font-medium text-black lg:text-lg">
+                  Vous n'avez pas encore de trip
+                </p>
+              </div>
+            )}
+          </TabPanel>
+        </TabsBody>
+      </Tabs>
+    </div>
   );
 }

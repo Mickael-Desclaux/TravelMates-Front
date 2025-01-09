@@ -22,11 +22,20 @@ export async function GetTripById(tripId: number): Promise<TripWithParticipants>
 	}
 }
 
-export async function GetUserTrips(): Promise<Trip[]> {
+export async function GetUserTrips(): Promise<TripWithParticipants[]> {
 	try {
 		const response = await api.get('trip/my-trips');
 		return response.data;
 	} catch (error) {
 		throw error;
+	}
+}
+
+export async function getTripCount(id: number): Promise<number> {
+	try {
+		const response = await api.get(`trip/count/${id}`);
+		return response.data.count;
+	} catch (error) {
+		throw new Error;
 	}
 }

@@ -22,6 +22,15 @@ export async function GetPinById(id: number): Promise<Pin> {
     }
 }
 
+export async function GetUserPins(): Promise<Pin[]> {
+    try {
+        const response = await api.get('pin/my-pins');
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export async function CreatePin(body: AddPin): Promise<Pin> {
     try {
         const formData = new FormData();
@@ -45,6 +54,14 @@ export async function CreatePin(body: AddPin): Promise<Pin> {
         return response.data;
     } catch (error) {
         throw error;
+    }
+}
+export async function getPinCount(id: number): Promise<number> {
+    try {
+        const response = await api.get(`pin/count/${id}`);
+        return response.data.count;
+    } catch (error) {
+        throw new Error;
     }
 }
 
