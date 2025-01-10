@@ -13,11 +13,12 @@ import useAuthStore from '../../utils/AuthStore';
 import { GetProfile } from '../../api/Profile';
 import { ProfileData } from '../../interfaces/ProfileInterface';
 
-export default function TripConditions() {
+export default function TripConditions({ currentParticipantsCount = 0 }) {
 	// Use Formik context to access and update values
 	const { values, setFieldValue } = useFormikContext<FormValues>();
 	const userId = useAuthStore(state => state.user_id);
 	const [profile, setProfile] = useState<ProfileData>();
+	const minParticipants = Math.max(2, currentParticipantsCount);
 
 	// Update the background color of the slider based on its value
 	const updateSliderBackground = (
@@ -55,30 +56,35 @@ export default function TripConditions() {
 	}, [userId]);
 
 	useEffect(() => {
-		const slider = document.querySelector(
-			'input[type="range"]',
-		) as HTMLInputElement;
+        // Ensure the user limit is never less than current participants
+        if (values.condition_user_limit < currentParticipantsCount) {
+            setFieldValue('condition_user_limit', currentParticipantsCount);
+        }
 
-		if (slider) {
-			requestAnimationFrame(() => {
-				updateSliderBackground(
-					values.condition_user_limit || 2,
-					+slider.min || 2,
-					+slider.max || 10,
-					slider
-				);
-			});
-		}
-	}, [values.condition_user_limit]);
+        const slider = document.querySelector(
+            'input[type="range"]',
+        ) as HTMLInputElement;
+
+        if (slider) {
+            requestAnimationFrame(() => {
+                updateSliderBackground(
+                    values.condition_user_limit || minParticipants,
+                    minParticipants,
+                    +slider.max || 10,
+                    slider
+                );
+            });
+        }
+    }, [values.condition_user_limit, currentParticipantsCount]);
 
 	// Handle slider value change
 	const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = parseInt(e.target.value, 10);
-		setFieldValue('condition_user_limit', value);
+        const value = Math.max(parseInt(e.target.value, 10), minParticipants);
+        setFieldValue('condition_user_limit', value);
 
-		const slider = e.target as HTMLInputElement;
-		updateSliderBackground(value, +slider.min, +slider.max, slider);
-	};
+        const slider = e.target as HTMLInputElement;
+        updateSliderBackground(value, minParticipants, +slider.max, slider);
+    };
 
 	const handleGenderCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const genderValue = !e.target.checked ? "all" : profile?.gender || "";
@@ -206,7 +212,7 @@ export default function TripConditions() {
 							Nombre limite de participants
 						</Typography>
 						<div className="flex justify-between -mb-3">
-							<span className="text-start">2</span>
+							<span className="text-start">{minParticipants}</span>
 							<span className="text-center">
 								{values.condition_user_limit + ' ' + "participants max"}
 							</span>
@@ -214,16 +220,13 @@ export default function TripConditions() {
 						</div>
 						<input
 							type="range"
-							min={2}
+							min={minParticipants}
 							max={10}
 							step={1}
 							name="condition_user_limit"
 							className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-green"
-							value={values.condition_user_limit}
-							onChange={e => {
-								handleSliderChange(e);
-								setFieldValue('condition_user_limit', Number(e.target.value));
-							}}
+							value={Math.max(values.condition_user_limit, minParticipants)}
+							onChange={handleSliderChange}
 						/>
 					</div>
 				</div>
