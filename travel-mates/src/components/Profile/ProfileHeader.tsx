@@ -8,6 +8,21 @@ import { getPinCount } from "../../api/Pin";
 import { getTripCount } from "../../api/Trips";
 import useAuthStore from "../../utils/AuthStore";
 
+const languageCodes: Record<string, string> = {
+  German: 'de',
+  English: 'gb',
+  Arabic: 'sa',
+  Spanish: 'es',
+  French: 'fr',
+  Greek: 'gr',
+  Italian: 'it',
+  Mandarin: 'cn',
+  Dutch: 'nl',
+  Polish: 'pl',
+  Portuguese: 'pt',
+  Russian: 'ru'
+};
+
 export default function ProfileHeader() {
   const userId = useAuthStore(state => state.user_id);
   const [userProfileData, setUserProfileData] = useState<ProfileData | null>(null);
@@ -63,13 +78,13 @@ export default function ProfileHeader() {
                   <div className="text-md font-normal">
                     {userProfileData?.birth_date ? `${calculateAge(userProfileData.birth_date)} ans` : 'Âge inconnu'}, {userProfileData?.gender}
                   </div>
-                 {/*  <div className="flex flex-wrap">
+                  <div className="flex flex-wrap">
                     {userProfileData?.profileLanguages.map((lang, index) => (
                       <div key={index} className="flex items-center mr-2">
                         <span className={`fi fi-${languageCodes[lang.language]} w-8 h-8 mr-1`} />
                       </div>
                     ))}
-                  </div> */}
+                  </div>
                   {/* <div className="flex">
                     {selectedActivities.map((activity, index) => (
                       <div key={index} className="flex items-center mr-2">

@@ -5,7 +5,9 @@ export interface ProfileData {
     lastname: string
     birth_date: string
     gender: string
-    language: string[]
+    profileLanguages: {
+      language: string
+    }[]
     address: string
     activities: number[]
     bio: string

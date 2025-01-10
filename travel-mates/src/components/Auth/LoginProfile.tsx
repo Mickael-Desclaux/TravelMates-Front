@@ -7,22 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { ProfileData } from '../../interfaces/ProfileInterface';
 import { GetProfile } from "../../api/Profile";
 
-// Profile menu component
-const profileMenuItems = [
-  {
-    label: "Voir mon profil",
-    route: "/profile/"
-  },
-  {
-    label: "Voir mes trips",
-    route: "/trip"
-  },
-  {
-    label: "Déconnexion",
-    route: "/sign-in"
-  },
-];
-
 export default function LoginProfile() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -30,6 +14,21 @@ export default function LoginProfile() {
 
   const navigate = useNavigate();
   const userId = useAuthStore((state) => state.user_id);
+  
+  const profileMenuItems = [
+    {
+      label: "Voir mon profil",
+      route: `/profile/${userId}`
+    },
+    {
+      label: "Voir mes trips",
+      route: "/trip"
+    },
+    {
+      label: "Déconnexion",
+      route: "/sign-in"
+    },
+  ];
 
   useEffect(() => {
     const fetchLoginProfile = async () => {
