@@ -6,7 +6,7 @@ import { ErrorMessage, Field, Form, Formik, FormikProps } from "formik";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
-import { updateTrip } from "../../api/Trip";
+import { banParticipant, updateTrip } from "../../api/Trip";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { GetTripById } from "../../api/Trips";
 import { ParticipantBasicInfos, ParticipantBasicInfosWithStatus, UpdateTrip } from "../../interfaces/Trip";
@@ -25,6 +25,7 @@ export default function TripEdit() {
     const [formValues, setFormValues] = useState<UpdateTrip | null>(null);
     const [affectedUsers, setAffectedUsers] = useState<ParticipantBasicInfos[]>([]);
     const [participants, setParticipants] = useState<ParticipantBasicInfosWithStatus[]>([]);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const [showCalendar, setShowCalendar] = useState(false);
     const { id } = useParams();
@@ -138,6 +139,38 @@ export default function TripEdit() {
         }
     };
 
+    async function submitTripAndExcludeUsers(values: UpdateTrip) {
+        setIsProcessing(true);
+        setGlobalError("");
+
+        if (id) {
+            try {
+                // 1. D'abord mettre à jour le trip
+                await updateTrip(values, parseInt(id));
+
+                // 2. Ensuite exclure les participants
+                const exclusionPromises = affectedUsers.map(user =>
+                    banParticipant(parseInt(id), user.id)
+                );
+                await Promise.all(exclusionPromises);
+
+                // 3. Rediriger vers la page de détail
+                navigate(`/trip-detail/${id}`);
+            } catch (error: any) {
+                if (error.response) {
+                    const errorMessage = error.response.data.message ||
+                        "Une erreur est survenue, veuillez réessayer.";
+                    setGlobalError(errorMessage);
+                } else if (error.message) {
+                    setGlobalError(error.message);
+                } else {
+                    setGlobalError("Une erreur est survenue, veuillez réessayer.");
+                }
+                setIsProcessing(false);
+            }
+        }
+    }
+
     async function handleSubmitWithConfirmation(values: UpdateTrip) {
         const ageConditionsChanged = data && (
             values.condition_age_min !== data.condition_age_min ||
@@ -145,7 +178,6 @@ export default function TripEdit() {
         );
 
         if (ageConditionsChanged && data) {
-            // Calcule les utilisateurs affectés à partir des participants actuels
             const affected = await getAffectedUsers(
                 Number(values.condition_age_min),
                 Number(values.condition_age_max),
@@ -167,7 +199,7 @@ export default function TripEdit() {
     async function handleConfirmSubmit() {
         if (formValues) {
             setShowConfirmDialog(false);
-            await onSubmit(formValues);
+            await submitTripAndExcludeUsers(formValues);
         }
     }
 
@@ -391,7 +423,10 @@ export default function TripEdit() {
                                     </Typography>
 
                                     {/* Display TripConditions */}
-                                    <TripConditions />
+                                    <TripConditions currentParticipantsCount={participants.length + 1} />
+                                    <Typography variant="small" className="mb-6 text-center" color="gray">
+                                        Il y a déjà {participants.length + 1} participants dans votre trip
+                                    </Typography>
 
                                     {/* Validation button */}
                                     <Button
@@ -436,19 +471,29 @@ export default function TripEdit() {
                                         Êtes-vous sûr de vouloir continuer ?
                                     </Typography>
                                 </DialogBody>
-                                <DialogFooter className="flex justify-center">
+                                <DialogFooter className="flex justify-center gap-4">
                                     <Button
                                         variant="text"
+                                        
                                         onClick={() => setShowConfirmDialog(false)}
-                                        className="bg-red-700 text-white m-4"
+                                        className="mr-1 bg-red-700 text-white"
+                                        disabled={isProcessing}
                                     >
                                         Annuler
                                     </Button>
                                     <Button
-                                        className="bg-green"
+                                        className="bg-green text-white"
                                         onClick={handleConfirmSubmit}
+                                        disabled={isProcessing}
                                     >
-                                        Confirmer
+                                        {isProcessing ? (
+                                            <div className="flex items-center gap-2">
+                                                <span className="animate-spin h-5 w-5 border-b-2 border-white rounded-full"></span>
+                                                Traitement en cours...
+                                            </div>
+                                        ) : (
+                                            'Confirmer'
+                                        )}
                                     </Button>
                                 </DialogFooter>
                             </Dialog>
