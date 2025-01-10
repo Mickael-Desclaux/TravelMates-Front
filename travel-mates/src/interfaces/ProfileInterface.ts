@@ -3,7 +3,7 @@ export interface ProfileData {
     profilePicture: string
     firstname: string
     lastname: string
-    age: number
+    birth_date: string
     gender: string
     language: string[]
     address: string
