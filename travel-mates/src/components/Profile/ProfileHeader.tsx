@@ -1,6 +1,6 @@
 import { ProfileData } from "../../interfaces/ProfileInterface";
 //import AddFriendButton from "../AddFriendButton/AddFriendButton";
-import { Typography } from "@material-tailwind/react";
+import { Avatar, Typography } from "@material-tailwind/react";
 import ProfilePopover from "../ProfilePopover/ProfilePopover";
 import { useEffect, useState } from "react";
 import { GetProfile } from "../../api/Profile";
@@ -25,6 +25,7 @@ const languageCodes: Record<string, string> = {
 
 export default function ProfileHeader() {
   const userId = useAuthStore(state => state.user_id);
+
   const [userProfileData, setUserProfileData] = useState<ProfileData | null>(null);
   const [pinsCount, setPinsCount] = useState<number | null>(null);
   const [tripsCount, setTripsCount] = useState<number | null>(null);
@@ -79,20 +80,18 @@ export default function ProfileHeader() {
                     {userProfileData?.birth_date ? `${calculateAge(userProfileData.birth_date)} ans` : 'Âge inconnu'}, {userProfileData?.gender}
                   </div>
                   <div className="flex flex-wrap">
-                    {userProfileData?.profileLanguages.map((lang, index) => (
-                      <div key={index} className="flex items-center mr-2">
-                        <span className={`fi fi-${languageCodes[lang.language]} w-8 h-8 mr-1`} />
+                    {userProfileData?.profileLanguages.map((lang: { language: string }, index: number) => (
+                      <div key={index} className="flex items-center">
+                        <span className={`fi fi-${languageCodes[lang.language]} w-8 h-8 mr-2`} />
                       </div>
                     ))}
                   </div>
-                  {/* <div className="flex">
-                    {selectedActivities.map((activity, index) => (
-                      <div key={index} className="flex items-center mr-2">
-                        <img src={activity.icon} alt={activity.name} className="w-8 h-8 mr-1" />
-                      </div>
-                    ))}
-                  </div> */}
-
+                  <div className="flex">
+                    {userProfileData?.profileActivities.map((activity: { activity: string }, index: number) => (
+                        <Avatar src={`/activity/${activity.activity.toLowerCase()}.svg`} key={index} alt={activity.activity} className="w-8 h-8 mr-2"></Avatar>
+                      ))
+                    }
+                  </div>
                   <div className="w-full">
                     {userProfileData?.address}
                   </div>
