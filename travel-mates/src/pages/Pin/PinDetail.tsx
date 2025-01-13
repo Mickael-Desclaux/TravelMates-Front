@@ -149,16 +149,16 @@ export default function PinDetail() {
                             <div className="absolute top-8 right-4 md:right-20 z-20">
                                 <Popover placement="bottom-end">
                                     <PopoverHandler>
-                                        <button className="flex flex-col items-center justify-center w-8 h-8 rounded-full bg-gray hover:bg-gray">
-                                            <span className="w-1 h-1 bg-gray-600 rounded-full mb-1"></span>
-                                            <span className="w-1 h-1 bg-gray-600 rounded-full mb-1"></span>
-                                            <span className="w-1 h-1 bg-gray-600 rounded-full"></span>
+                                        <button className="flex flex-col items-center justify-center w-8 h-8 rounded-full bg-gray-400 hover:bg-gray-500">
+                                            <span className="w-1 h-1 bg-white rounded-full mb-1"></span>
+                                            <span className="w-1 h-1 bg-white rounded-full mb-1"></span>
+                                            <span className="w-1 h-1 bg-white rounded-full"></span>
                                         </button>
                                     </PopoverHandler>
                                     <PopoverContent className="p-2">
                                         <NavLink 
                                             to={`/pin-edit/${id?.toString()}`} 
-                                            className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
+                                            className="block w-full px-4 py-2 text-black hover:bg-gray-100 rounded-lg font-title font-bold"
                                         >
                                             Modifier le marqueur
                                         </NavLink>

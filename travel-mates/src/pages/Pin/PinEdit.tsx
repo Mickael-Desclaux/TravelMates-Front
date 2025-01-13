@@ -63,11 +63,16 @@ export default function PinEdit() {
                         return (value as File).size <= mediaMaxSize;
                     })
             )
-            .min(minImages, "Veuillez ajouter au moins une image")
-            .max(maxImages, `Vous ne pouvez pas ajouter plus de ${maxImages} images`)
-            .required("Veuillez ajouter au moins une image"),
-        activities: Yup.array().min(1, "Veuillez sélectionner au moins une activité").max(6, "Veuillez sélectionner moins de 6 activités")
-    })
+            .test('totalImages', `Veuillez sélectionner entre ${minImages} et ${maxImages} images`, function (newMedias) {
+                const existingMedias = this.parent.existingMedias || [];
+                const totalImages = (newMedias?.length || 0) + existingMedias.length;
+                return totalImages >= minImages && totalImages <= maxImages;
+            }),
+        existingMedias: Yup.array(),
+        activities: Yup.array()
+            .min(1, "Veuillez sélectionner au moins une activité")
+            .max(6, "Veuillez sélectionner moins de 6 activités")
+    });
 
     async function onSubmit(values: EditPin) {
         if (id) {
@@ -104,7 +109,7 @@ export default function PinEdit() {
                         <div className="flex justify-center md:max-w-[40vw] mx-auto">
                             <div className="mt-8 mb-2 max-w-screen-lg">
                                 <div className="m-4 flex flex-col gap-6">
-                                    <Typography className="-mb-3 font-bold font-title">
+                                    <Typography className="-mb-3 font-bold font-title text-lg" variant="h2">
                                         Description
                                     </Typography>
                                     <Field
@@ -123,7 +128,7 @@ export default function PinEdit() {
                                     />
                                     <ErrorMessage name="description" component="div" className="text-red-500 -mt-4" />
 
-                                    <Typography className="-mb-3 font-bold font-title">
+                                    <Typography className="-mb-3 font-bold font-title text-lg" variant="h2">
                                         Ajouter des images
                                     </Typography>
                                     <Field
@@ -186,7 +191,7 @@ export default function PinEdit() {
                                         ))}
                                     </div>
 
-                                    <Typography className="-mb-3 font-bold font-title">
+                                    <Typography className="-mb-3 font-bold font-title text-lg" variant="h2">
                                         Activités
                                     </Typography>
                                     <ActivityPicker />
