@@ -18,18 +18,8 @@ export default function SignUpMultiStepForm() {
   const minimumDate = subYears(new Date(), 18);
   const mediaType = ['image/jpg', 'image/jpeg', 'image/png'];
   const mediaMaxSize = 10485760;
-
-  const activityMapping = {
-    1: "Culture",
-    2: "Nature",
-    3: "Adventure",
-    4: "Relaxation",
-    5: "Gastronomy",
-    6: "Sport",
-    7: "BarAndParty",
-    8: "Leisure",
-    9: "Family",
-  };
+ 
+  
   const genderMapping: { [key: string]: string } = {
     Femme: 'female',
     Homme: 'male',
@@ -115,26 +105,24 @@ export default function SignUpMultiStepForm() {
                   // Traduire les valeurs françaises en anglais pour le back-end
                   const translatedGender = genderMapping[values.gender];
                   const translatedLanguages = values.language.map((lang) => languageMapping[lang]);
-                  const translatedActivities = values.activities.map((activity) => {
-                    return activityMapping[activity];
-                  })
-                  // Construire le payload
+                  if (!(values.profilePicture instanceof File)) {
+                    throw new Error("La photo de profil doit être un fichier valide.");
+                }
+                
                   const payload: Register = {
                     email: values.email,
                     password: values.password,
                     firstname: values.firstName,
                     lastname: values.lastName,
-                    birth_date: values.birthDate.toString(),
+                    birth_date: new Date(values.birthDate).toISOString().split('T')[0],
                     gender: translatedGender,
                     address: values.address,
                     languages: translatedLanguages,
-                    activities: translatedActivities,
-                    profile_picture: values.profilePicture
+                    activities: values.activities,
+                    profile_picture: values.profilePicture,
                   };
             
-                  console.log("Payload envoyé :", payload);
-            
-                  // Appeler l'API avec les données traduites
+                
                   await HandleRegister(payload);
             
                   // Aller à l'étape de confirmation

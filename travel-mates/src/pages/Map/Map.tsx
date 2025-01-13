@@ -121,7 +121,7 @@ export default function Map() {
                         <PinSearch onSearch={(title) => handleSearch(title)} suggestions={pins} />
                     </div>
                     <button className='absolute bottom-12 right-4 z-10 bg-green w-12 h-12 flex justify-center items-center border rounded-lg'
-                        onClick={() => navigate('/pin')}>
+                        onClick={() => navigate('/pin-create')}>
                         <svg width="16" height="16" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M6 2V6M6 6V10M6 6H10M6 6H2" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>

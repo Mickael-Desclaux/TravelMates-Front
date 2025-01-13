@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import TripListe from './pages/Trip/TripList';
+import TripList from './pages/Trip/TripList';
 import SignIn from './pages/Auth/SignIn';
 import SignUpMultiStepForm from './pages/Auth/SignUp';
 import Map from './pages/Map/Map';
@@ -15,25 +15,30 @@ import ProfileEdit from './pages/Profile/ProfileEdit';
 import ReviewCreate from './pages/Pin/ReviewCreate';
 import ChatList from './pages/Chat/ChatList';
 import Chat from './pages/Chat/Chat';
+import ProtectRoute from './components/ProtectRoute/ProtectRoute';
 
 function App() {
+
 	return (
 		<>
 			<NavbarComponent />
 			<Routes>
-				<Route path="/" element={<TripListe />} />
+				<Route path="/" element={<TripList />} />
 				<Route path="/sign-in" element={<SignIn />} />
 				<Route path="/sign-up" element={<SignUpMultiStepForm />} />
-				<Route path="/trip-create" element={<TripCreate />} />
-				<Route path="/trip-detail" element={<TripDetail />} />
+				<Route path="/trip-detail/:id" element={<TripDetail />} />
 				<Route path="/map" element={<Map />} />
-				<Route path="/profile" element={<Profile />} />
-				<Route path="/profile-edit" element={<ProfileEdit  />} />
-				<Route path="/pin-create" element={<PinCreate />} />
 				<Route path="/pin/:id" element={<PinDetail />} />
-				<Route path="/pin-review" element={<ReviewCreate />} />
-				<Route path="/message" element={<ChatList />} />
-				<Route path="/message/:id" element={<Chat />} />
+
+				<Route element={<ProtectRoute />}>
+					<Route path="/profile/:id" element={<Profile />} />
+					<Route path="/trip-create" element={<TripCreate />} />
+					<Route path="/profile-edit" element={<ProfileEdit />} />
+					<Route path="/pin-create" element={<PinCreate />} />
+					<Route path="/pin-review/:id" element={<ReviewCreate />} />
+					<Route path="/message" element={<ChatList />} />
+					<Route path="/message/:id" element={<Chat />} />
+				</Route>
 			</Routes>
 
 			<ReactQueryDevtools />

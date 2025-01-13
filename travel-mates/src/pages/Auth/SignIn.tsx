@@ -1,17 +1,22 @@
 import { Card, Typography, Input, Button } from "@material-tailwind/react";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { object, string } from "yup";
-import travelmatesLogo from "../../assets/Logo/travelmates.png";
+import travelmatesLogo from "/Logo/travelmates.png";
 import HandleSignIn from "../../api/Auth";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import useAuthStore from "../../utils/AuthStore";
 
 export default function SignIn() {
 
     const [loginError, setLoginError] = useState("");
     const navigate = useNavigate();
+    const authStore = useAuthStore();
 
-    // TODO: Add a check if user is already logged in, then redirect to home page
+    useEffect(() => {
+        authStore.clearAccessToken();
+    }, []);
+
 
     // Validation du formulaire
     const formik = useFormik({
@@ -38,7 +43,9 @@ export default function SignIn() {
             <div className="md:mt-32">
                 {/* TravelMates logo */}
                 <div className="flex justify-center mt-10 mb-10">
-                    <img src={travelmatesLogo} alt="TravelMates" className="w-40" />
+                    <NavLink to="/">
+                        <img  src={travelmatesLogo} alt="TravelMates" className="w-40" />
+                    </NavLink>
                 </div>
 
                 {/* Sign in form */}

@@ -6,6 +6,8 @@ import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import { getPoiSuggestions, retrieveSuggestion } from "../../api/Mapbox";
 import getUserAddressCoordinates from "../../api/User";
+import { CreatePin } from "../../api/Pin";
+import { useNavigate } from "react-router-dom";
 
 interface PoiSuggestion {
     name: string;
@@ -28,6 +30,8 @@ export default function PinCreate() {
     const [suggestions, setSuggestions] = useState<PoiSuggestion[]>([]);
     const [bbox, setBbox] = useState<string>('');
     const proximity: string = `${longitude},${latitude}`;
+    const navigate = useNavigate();
+    const [globalError, setGlobalError] = useState<string>();
 
     // Coordinates box to display only suggestions that are 100km or less than current position
     const distanceKm = 100;
@@ -122,12 +126,21 @@ export default function PinCreate() {
 
         getSuggestions(value, proximity, bbox);
     }
+
+    function handleTitleSplit(fullTitle: string): { title: string, country: string } {
+        const [title, country] = fullTitle.split(' -- ');
+        return {
+            title: title.trim(),
+            country: country.trim(),
+        };
+    }
     // #endregion
 
     // #region form validation
     const defaultValues: AddPin = {
         title: "",
         description: "",
+        country: "",
         longitude: null,
         latitude: null,
         medias: [] as File[],
@@ -173,8 +186,24 @@ export default function PinCreate() {
         activities: Yup.array().min(1, "Veuillez sélectionner au moins une activité").max(6, "Veuillez sélectionner moins de 6 activités")
     })
 
-    function onSubmit(values: AddPin) {
-        console.log(values)
+    async function onSubmit(values: AddPin) {
+        try {
+            const { title, country } = handleTitleSplit(values.title);
+            values.title = title;
+            values.country = country;
+            const response = await CreatePin(values);
+            navigate(`/pin/${response.id}`); 
+        } catch (error: any) {
+            if (error.response) {
+                const errorMessage = error.response.data.message || 
+                    "Une erreur est survenue, veuillez réessayer.";
+                setGlobalError(errorMessage);
+            } else if (error.message) {
+                setGlobalError(error.message);
+            } else {
+                setGlobalError("Une erreur est survenue, veuillez réessayer.");
+            }
+        }
     }
     // #endregion
 
@@ -223,7 +252,7 @@ export default function PinCreate() {
                                                                     const mapboxId = suggestion.mapbox_id;
                                                                     retrieveSuggestion(mapboxId)
                                                                         .then((response) => {
-                                                                            setFieldValue('title', suggestion.name + ' ' + suggestion.context.country.name);
+                                                                            setFieldValue('title', suggestion.name + ' -- ' + suggestion.context.country.name);
                                                                             if (response) {
                                                                                 const coordinates = response.geometry.coordinates;
                                                                                 setFieldValue('longitude', coordinates[0]);
@@ -321,6 +350,11 @@ export default function PinCreate() {
                                     Valider
                                 </Button>
                             </div>
+                            {globalError && (
+                                <div className="text-red-500 text-center mb-4">
+                                    {globalError}
+                                </div>
+                            )}
                         </Form>
                     )}
                 </Formik>
