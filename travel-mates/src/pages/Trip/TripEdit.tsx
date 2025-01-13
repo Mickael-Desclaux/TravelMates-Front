@@ -65,7 +65,6 @@ export default function TripEdit() {
                     };
                     setData(updateTripData);
 
-                    console.log("🚀 ~ fetchData ~ response:", response)
                 } catch (error) {
                     setGlobalError("Une erreur est survenue, veuillez réessayer");
                 }

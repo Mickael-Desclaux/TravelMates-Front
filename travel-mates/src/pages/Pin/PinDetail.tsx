@@ -1,9 +1,10 @@
-import { Avatar, Button, Carousel, Rating, Tab, TabPanel, Tabs, TabsBody, TabsHeader, ThemeProvider, Typography } from "@material-tailwind/react";
+import { Avatar, Button, Carousel, Popover, PopoverContent, PopoverHandler, Rating, Tab, TabPanel, Tabs, TabsBody, TabsHeader, ThemeProvider, Typography } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import './PinDetail.css';
 import { NavLink, useParams } from "react-router-dom";
 import { GetPinById } from "../../api/Pin";
 import { Pin } from "../../interfaces/Pin";
+import useAuthStore from "../../utils/AuthStore";
 
 interface PinReview {
     user: {
@@ -35,8 +36,10 @@ export default function PinDetail() {
     const [pin, setPin] = useState<Pin>();
     const [images, setImages] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState<string>("detail");
-    const [averageRating, setAverageRating] = useState<number>(0)
-    const [averageExactRating, setAverageExactRating] = useState<number>(0.0)
+    const [averageRating, setAverageRating] = useState<number>(0);
+    const [averageExactRating, setAverageExactRating] = useState<number>(0.0);
+    const userId = useAuthStore(state => state.user_id);
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const {id} = useParams();
 
     useEffect(() => {
@@ -45,6 +48,9 @@ export default function PinDetail() {
                 try {
                     const data = await GetPinById(parseInt(id));
                     setPin(data);
+                    if (userId) {
+                        setIsAdmin(userId === data.user.profile.id)
+                    }
                 } catch (error) {
                     throw new Error(error as string)
                 }
@@ -137,14 +143,39 @@ export default function PinDetail() {
     return (
         <>
             <div className="md:mt-32 md:grid md:place-content-center mb-32">
-                <div className="md:w-[60vw]">
+                <div className="md:w-[40vw] relative">
                     <ThemeProvider value={carouselTheme}>
+                        {isAdmin && (
+                            <div className="absolute top-8 right-4 md:right-20 z-20">
+                                <Popover placement="bottom-end">
+                                    <PopoverHandler>
+                                        <button className="flex flex-col items-center justify-center w-8 h-8 rounded-full bg-gray-400 hover:bg-gray-500">
+                                            <span className="w-1 h-1 bg-white rounded-full mb-1"></span>
+                                            <span className="w-1 h-1 bg-white rounded-full mb-1"></span>
+                                            <span className="w-1 h-1 bg-white rounded-full"></span>
+                                        </button>
+                                    </PopoverHandler>
+                                    <PopoverContent className="p-2">
+                                        <NavLink 
+                                            to={`/pin-edit/${id?.toString()}`} 
+                                            className="block w-full px-4 py-2 text-black hover:bg-gray-100 rounded-lg font-title font-bold"
+                                        >
+                                            Modifier le marqueur
+                                        </NavLink>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                        )}
                         <Carousel className="flex items-center max-h-[400px] mb-4 custom-carousel">
                             {images.map((image: string, index: number) => (
-                                <img key={index} src={import.meta.env.VITE_API_BASE_URL + image} alt="Image" className="max-h-[400px] mx-auto" />
+                                <img 
+                                    key={index} 
+                                    src={import.meta.env.VITE_API_BASE_URL + image} 
+                                    alt="Image" 
+                                    className="max-h-[400px] mx-auto"
+                                />
                             ))}
                         </Carousel>
-
                     </ThemeProvider>
                     <Tabs value="detail">
                         <TabsHeader className="bg-gray-100">

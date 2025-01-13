@@ -1,5 +1,5 @@
 import {useApi} from "../hooks/UseApi";
-import { AddPin, MapPin, Pin } from "../interfaces/Pin";
+import { AddPin, EditPin, MapPin, Pin } from "../interfaces/Pin";
 import { AddReview, ReviewWithId } from "../interfaces/Review";
 
 const api = useApi();
@@ -56,6 +56,47 @@ export async function CreatePin(body: AddPin): Promise<Pin> {
         throw error;
     }
 }
+
+export async function UpdatePin(body: EditPin, id: number): Promise<Pin> {
+    try {
+        const formData = new FormData();
+        formData.append("description", body.description);
+
+        if (body.activities && body.activities.length > 0) {
+            body.activities.forEach((activity: string) => {
+                formData.append("activities", activity);
+            });
+        }
+
+        if (body.existingMedias && body.existingMedias.length > 0) {
+            const existingFilesPromises = body.existingMedias.map(async (url) => {
+                const response = await fetch(import.meta.env.VITE_API_BASE_URL + url);
+                const blob = await response.blob();
+                return new File([blob], url.split('/').pop() || 'image.jpg', { 
+                    type: response.headers.get('content-type') || 'image/jpeg' 
+                });
+            });
+            
+            const existingFiles = await Promise.all(existingFilesPromises);
+            existingFiles.forEach(file => {
+                formData.append("files", file);
+            });
+        }
+
+        if (body.newMedias && body.newMedias.length > 0) {
+            body.newMedias.forEach((file: File) => {
+                formData.append("files", file);
+            });
+        }
+        
+        const response = await api.put(`pin/${id}`, formData);
+
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export async function getPinCount(id: number): Promise<number> {
     try {
         const response = await api.get(`pin/count/${id}`);
