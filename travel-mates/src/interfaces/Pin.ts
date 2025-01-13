@@ -9,6 +9,13 @@ export interface AddPin {
     selectedSuggestion: boolean;
 }
 
+export interface EditPin {
+    description: string;
+    newMedias: File[];
+    existingMedias: string[];
+    activities: string[];
+}
+
 export interface MapPin {
     id: number;
     title: string;

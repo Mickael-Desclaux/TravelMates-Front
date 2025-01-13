@@ -17,6 +17,7 @@ import ChatList from './pages/Chat/ChatList';
 import Chat from './pages/Chat/Chat';
 import ProtectRoute from './components/ProtectRoute/ProtectRoute';
 import TripEdit from './pages/Trip/TripEdit';
+import PinEdit from './pages/Pin/PinEdit';
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
 					<Route path="/trip-edit/:id" element={<TripEdit />} />
 					<Route path="/profile-edit" element={<ProfileEdit />} />
 					<Route path="/pin-create" element={<PinCreate />} />
+					<Route path="/pin-edit/:id" element={<PinEdit />} />
 					<Route path="/pin-review/:id" element={<ReviewCreate />} />
 					<Route path="/message" element={<ChatList />} />
 					<Route path="/message/:id" element={<Chat />} />
