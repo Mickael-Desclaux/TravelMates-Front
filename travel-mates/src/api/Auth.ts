@@ -19,7 +19,7 @@ export async function HandleSignIn(body: Auth): Promise<void> {
     }
 }
 
-export default async function HandleRegister(body: Register): Promise<User> {
+export async function HandleRegister(body: Register): Promise<User> {
     try {
         const formData = new FormData();
         formData.append("email", body.email);

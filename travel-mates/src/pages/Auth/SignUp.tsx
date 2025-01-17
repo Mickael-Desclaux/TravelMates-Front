@@ -9,7 +9,7 @@ import StepTwo from "../../components/SignUpMultiStepForm/SignUpStepTwo";
 import StepThree from "../../components/SignUpMultiStepForm/SignUpStepThree";
 import SignUpStepFour from "../../components/SignUpMultiStepForm/SignUpStepFour";
 import { subYears } from "date-fns";
-import HandleRegister from "../../api/Auth";
+import {HandleRegister} from "../../api/Auth";
 import { Register } from "../../interfaces/Auth";
 
 export default function SignUpMultiStepForm() {
@@ -18,7 +18,6 @@ export default function SignUpMultiStepForm() {
   const minimumDate = subYears(new Date(), 18);
   const mediaType = ['image/jpg', 'image/jpeg', 'image/png'];
   const mediaMaxSize = 10485760;
- 
   
   const genderMapping: { [key: string]: string } = {
     Femme: 'female',
@@ -26,7 +25,7 @@ export default function SignUpMultiStepForm() {
     Autres: 'other',
   };
   
-  const languageMapping = {
+  const languageMapping: { [key: string]: string } = {
     Allemand: 'German',
     Anglais: 'English',
     Arabe: 'Arabic',
@@ -53,7 +52,7 @@ export default function SignUpMultiStepForm() {
       birthDate: Yup.date().max(minimumDate, "Vous devez avoir au moins 18 ans").required("La date de naissance est requise"),
       gender: Yup.string().required("Le genre est requis"),
       address: Yup.string().required("L'adresse est requise"),
-      language: Yup.array().of(Yup.string()).min(1, 'Sélectionnez au moins une langue').required("Sélectionnez au moins une langue"),
+      language: Yup.array().of(Yup.string()).required("Sélectionnez au moins une langue"),
       profilePicture: Yup.mixed()
         .test("fileType", "Seuls les formats jpg, jpeg et png sont autorisés", (value) => {
           if (!value) return false;
@@ -121,7 +120,6 @@ export default function SignUpMultiStepForm() {
                     activities: values.activities,
                     profile_picture: values.profilePicture,
                   };
-            
                 
                   await HandleRegister(payload);
             
