@@ -66,8 +66,8 @@ export default function ProfileHeader() {
             <div className="flex flex-col bg-light-white shadow-md p-4 w-full max-w-3xl mt-2 md:mt-16 lg:mt-32">
               <div className="flex items-start">
                 <div className="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden bg-gray-300 mr-6 flex-shrink-0">
-                  {userProfileData?.media.url ? (
-                    <img src={`${import.meta.env.VITE_API_BASE_URL + userProfileData?.media.url}`} alt={`Photo de profil de ${userProfileData?.firstname} ${userProfileData?.lastname}`} className="object-cover w-full h-full" />
+                  {userProfileData?.media?.url ? (
+                    <img src={`${import.meta.env.VITE_API_BASE_URL}/${userProfileData?.media?.url}`} alt={`Photo de profil de ${userProfileData?.firstname} ${userProfileData?.lastname}`} className="object-cover w-full h-full" />
                   ) : (
                     <span className="text-gray-500">Photo</span>
                   )}

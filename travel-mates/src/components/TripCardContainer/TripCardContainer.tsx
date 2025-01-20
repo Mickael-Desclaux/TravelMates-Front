@@ -51,7 +51,7 @@ const TripCardContainer: React.FC<Trip> = ({
 				</NavLink>
 				{/* Avatar image in the bottom right */}
 				<img
-					src={import.meta.env.VITE_API_BASE_URL + owner.profile.media.url}
+					src={`${import.meta.env.VITE_API_BASE_URL}/${owner.profile.media.url}`}
 					alt="Photo de profile"
 					className="w-12 h-12 rounded-full absolute bottom-2 right-2 border-2 border-white object-cover"
 				/>

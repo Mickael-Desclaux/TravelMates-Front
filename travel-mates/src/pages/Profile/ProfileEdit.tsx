@@ -1,44 +1,108 @@
-import ProfilePicture from "../../assets/profile/profil1.jpg";
-import { NavLink } from "react-router-dom";
-import Arrow from "../../assets/icons/arrow.svg";
-import EditIcon from "../../assets/icons/edit-icon.svg";
+import { useEffect, useRef, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import Arrow from "/icons/arrow.svg";
+import EditIcon from "/icons/edit-icon.svg";
 import { Typography } from "@material-tailwind/react";
 import { Field, Formik, Form, ErrorMessage } from "formik";
 import CustomSelect from "../../components/CustomSelect/CustomSelect";
 import ActivityPicker from "../../components/ActivityPicker/ActivityPicker";
-import { useRef, useState } from "react";
-import { Suggestion } from "../../interfaces/FormInterfaces/FormInterfaces";
-import { fetchSuggestions } from "../../api/Mapbox";
-import * as Yup from "yup";
 import ProfileDeleteAccount from "../../components/Profile/ProfileDeleteAccount";
 import ChangePasswordModal from "../../components/ProfilePassword/ProfilePasswordModal";
+import { ProfileData, UpdateProfileData } from "../../interfaces/ProfileInterface";
+import { Suggestion } from "../../interfaces/FormInterfaces/FormInterfaces";
+import { GetProfile, UpdateProfile } from "../../api/Profile";
+import { fetchSuggestions } from "../../api/Mapbox";
+import * as Yup from "yup";
+import useAuthStore from "../../utils/AuthStore";
 
 export default function ProfileEdit() {
-  // Reference to the hidden file input so it can be clicked through the profile picture
+  const navigate = useNavigate();
+  const userId = useAuthStore(state => state.user_id);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Function to handle file input change
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    setFieldValue: (field: string, value: any) => void
-  ) => {
-    if (e.target.files) {
-      const file = URL.createObjectURL(e.target.files[0]);
+  const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [userProfileData, setUserProfileData] = useState<ProfileData | null>(null);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  const mediaType = ['image/jpg', 'image/jpeg', 'image/png'];
+  const mediaMaxSize = 10485760; // 10MB en bytes
+
+  interface FormValues {
+    address: string;
+    description: string;
+    activities: string[];
+    language: string[];
+  }
+
+  useEffect(() => {
+    const fetchEditProfileData = async () => {
+      if (userId) {
+        try {
+          const profileData = await GetProfile(userId);
+          setUserProfileData(profileData);
+        } catch (error) {
+          throw new Error(error as string)
+        }
+      }
+    };
+
+    fetchEditProfileData();
+  }, [userId]);
+
+  useEffect(() => {
+    return () => {
+      if (previewImage) {
+        URL.revokeObjectURL(previewImage);
+      }
+    };
+  }, [previewImage]);
+
+  const renderProfileImage = (values: Partial<ProfileData>) => {
+    if (previewImage) {
+      return <img
+        src={previewImage}
+        alt={`Photo de profil de ${values.firstname} ${values.lastname}`}
+        className="w-full h-full cursor-pointer object-cover capitalize"
+      />;
+    }
+
+    if (userProfileData?.media?.url) {
+      return <img
+        src={`${import.meta.env.VITE_API_BASE_URL}/${userProfileData.media.url}`}
+        alt={`Photo de profil de ${values.firstname} ${values.lastname}`}
+        className="w-full h-full cursor-pointer object-cover capitalize"
+      />;
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setFieldValue: (field: string, value: File | null) => void) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const fileUrl = URL.createObjectURL(file);
+      setPreviewImage(fileUrl);
       setFieldValue("profilePicture", file);
     }
   };
 
-  // Trigger file input on profile picture click
   const handleProfileClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
-  // Function to fetch suggestions from Mapbox
-  const fetchSuggestionsFromAPI = async (query: string) => {
+  const handleAddressChange = async (value: string, setFieldValue: (field: string, value: string) => void) => {
+    setFieldValue('address', value.trim());
+
+    if (value.trim() === '') {
+      setSuggestions([]);
+      return;
+    }
+
     try {
-      const suggestions = await fetchSuggestions(query.toUpperCase());
+      const suggestions = await fetchSuggestions(value.toUpperCase());
       const formattedSuggestions = suggestions.map(
         (suggestion: Suggestion) => ({
           name: suggestion.name,
@@ -53,25 +117,10 @@ export default function ProfileEdit() {
     }
   };
 
-  const handleAddressChange = (value: string, setFieldValue: (field: string, value: string) => void) => {
-    setFieldValue('address', value);
-
-    if (value.trim() === '') {
-      setSuggestions([]);
-      return;
-    }
-    fetchSuggestionsFromAPI(value);
-  }
-  // Function to handle the change for password
-  const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
-
-  // Function to handle the modal delete account
-  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-
   const handleDeleteAccount = () => {
     setDeleteModalOpen(true);
   };
-  
+
   const handleCloseModal = () => {
     setDeleteModalOpen(false);
   };
@@ -81,13 +130,8 @@ export default function ProfileEdit() {
     setDeleteModalOpen(false);
   };
 
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [currentStep, setCurrentStep] = useState(0);
-  const mediaType = ['image/jpg', 'image/jpeg', 'image/png'];
-  const mediaMaxSize: number = 10485760; // media max size = 10Mb
-
   // Validation of the form : Step 1 Validate personal information fields
-  const profileValidationSchema = [
+  const profileValidationSchema =
     Yup.object().shape({
       profilePicture: Yup.mixed()
         .test("fileType", "Seuls les formats jpg, jpeg et png sont autorisés", (value) => {
@@ -102,13 +146,32 @@ export default function ProfileEdit() {
       description: Yup.string().required("La biographie est requise"),
       activities: Yup.array().min(3, "Veuillez choisir au moins trois activités ").required("Veuillez choisir au moins trois activités"),
       language: Yup.array().of(Yup.string()).min(1, 'Sélectionnez au moins une langue').required("Sélectionnez au moins une langue"),
-    })
-  ];
-    
-  // Validation of the form : Step 2 Validate email
-  const accountValidationSchema = Yup.object().shape({
-    email: Yup.string().email("Email invalide").required("L'email est requis"),
-  });
+    });
+
+  const handleSubmit = async (values: FormValues) => {
+    if (!userId) return;
+    setIsSubmitting(true);
+
+    try {
+      const updateData: UpdateProfileData = {
+        address: values.address,
+        bio: values.description,
+        activities: values.activities,
+        languages: values.language
+      };
+
+      if (fileInputRef.current?.files?.[0]) {
+        updateData.file = fileInputRef.current.files[0];
+      }
+
+      await UpdateProfile(userId, updateData);
+      navigate(`/profile/${userId}`);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du profil:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // List of language options for the custom select dropdown of profile
   const listOptionsLanguageProfile = [
@@ -126,53 +189,44 @@ export default function ProfileEdit() {
     "Russe",
   ];
 
+  if (!userProfileData) {
+    return <div className="text-center py-8">Chargement...</div>;
+  }
+
+  const initialValues = {
+    profilePicture: userProfileData.media?.url || "",
+    firstname: userProfileData.firstname,
+    lastname: userProfileData.lastname,
+    language: userProfileData.profileLanguages.map(lang => lang.language),
+    address: userProfileData.address,
+    activities: userProfileData.profileActivities.map(act => act.activity),
+    description: userProfileData.bio || "",
+  };
+
   return (
     <div className="mx-auto w-full max-w-3xl mb-36 md:mt-32">
       {/* Section profile header info */}
       <div className="px-4">
         <div className="flex">
-          <NavLink to={"/profile"} aria-current="page">
+          <NavLink to={"/profile/" + userId} className={"mr-4"} aria-current="page">
             <img
               src={Arrow}
-              alt="Croix de fermeture de la page"
+              alt="Retour"
               className="lg:w-12 lg:h-12 sm:w-10 sm:h-10"
             />
           </NavLink>
-          <Typography
-            variant="h1"
-            className="mb-4 flex-1 text-center text-2xl font-title"
-          >
+          <Typography variant="h1" className="mb-4 flex-1 text-center text-2xl font-title">
             Modifier le profil
           </Typography>
         </div>
 
         {/* Updated profile info fields */}
         <Formik
-          initialValues={{
-            profilePicture: ProfilePicture,
-            firstName: "Éloïse",
-            lastName: "DeBordeaux",
-            age: 25,
-            gender: "Femme",
-            language: ["Français", "Anglais"],
-            address: "11 Avenue d'Eysines, Bordeaux",
-            activities: [3, 5, 6, 4],
-            description: `Lorem ipsum dolor sit amet consectetur. Massa ut ac amet tempor mi.
-                  Porttitor neque cras lacus morbi cras tortor velit aliquam libero. 
-                  Sapien arcu elit in consectetur arcu quam augue. Amet id elit arcu volutpat
-                  adipiscing lorem erat in id. Suscipit imperdiet feugiat suspendisse sodales.
-                  Magna orci proin laoreet vitae egestas leo varius. Egestas amet suspendisse
-                  platea ante vitae sed vitae magna aenean. Pellentesque porttitor aliquam sit sit.`,
-          }}
-          onSubmit={(values) => {
-            console.log(values);
-            if (currentStep < profileValidationSchema.length - 1) {
-              setCurrentStep((prev) => prev + 1);
-            }
-          }}
-          validationSchema={profileValidationSchema[currentStep]}
+          initialValues={initialValues}
+          validationSchema={profileValidationSchema}
+          onSubmit={handleSubmit}
         >
-          {({ values, handleChange, setFieldValue }) => (
+          {({ values, setFieldValue }) => (
             <Form>
               {/* Profile picture section with overlay for edit */}
               <div
@@ -185,17 +239,16 @@ export default function ProfileEdit() {
                   className="hidden"
                   ref={fileInputRef}
                   onChange={(e) => handleFileChange(e, setFieldValue)}
+                  accept={mediaType.join(',')}
                 />
-                <img
-                  src={values.profilePicture}
-                  alt="Photo de profil"
-                  className="w-full h-full rounded-full cursor-pointer"
-                />
+                <div className="w-32 h-32 md:w-32 md:h-32 rounded-full overflow-hidden bg-gray-300 mr-6 flex-shrink-0">
+                  {renderProfileImage(values)}
+                </div>
                 <div className="absolute inset-0 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full flex items-center justify-center">
                   <img
                     src={EditIcon}
                     alt="Modifier"
-                    className="w-8 h-8 text-white"
+                    className="w-8 h-8"
                   />
                 </div>
                 <ErrorMessage name="profilePicture" component="div" className="text-red-500 text-sm mt-1" />
@@ -215,15 +268,14 @@ export default function ProfileEdit() {
                   type="text"
                   name="firstNameAndLastName"
                   id="firstNameAndLastName"
-                  value={`${values.firstName} ${values.lastName}`}
+                  value={`${values.firstname} ${values.lastname}`}
                   disabled
-                  className="w-full p-2 border rounded-md border-gray-300 text-gray-500"
+                  className="w-full p-2 border rounded-md border-gray-300 text-gray-500 capitalize"
                 />
-                <ErrorMessage name="firstNameAndLastName" component="div" className="text-red-500 text-sm mt-1" />
               </div>
 
               {/* Address field */}
-              <div className="relative">
+              <div className="relative mb-6">
                 <label htmlFor="address">
                   <Typography
                     variant="h6"
@@ -237,7 +289,7 @@ export default function ProfileEdit() {
                   name="address"
                   type="text"
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAddressChange(e.target.value, setFieldValue)}
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                  className="w-full p-2 border rounded-md border-gray-300"
                 />
                 <ErrorMessage name="address" component="div" className="text-red-500 text-sm mt-1" />
 
@@ -250,17 +302,12 @@ export default function ProfileEdit() {
                         onClick={() => {
                           setFieldValue(
                             'address',
-                            suggestion.name +
-                            ', ' +
-                            suggestion.context.country.name,
+                            `${suggestion.name}, ${suggestion.context.country.name}`,
                           );
                           setSuggestions([]);
                         }}
                       >
-                        {suggestion.name ? suggestion.name : 'Unknown'},{' '}
-                        {suggestion.context && suggestion.context.country
-                          ? suggestion.context.country.name
-                          : 'Unknown'}
+                        {suggestion.name}, {suggestion.context.country.name}
                       </li>
                     ))}
                   </ul>
@@ -268,7 +315,7 @@ export default function ProfileEdit() {
               </div>
 
               {/* Biography field */}
-              <div className="relative mt-6 mb-6">
+              <div className="mb-6">
                 <label htmlFor="description">
                   <Typography
                     variant="h6"
@@ -277,11 +324,10 @@ export default function ProfileEdit() {
                     Bio
                   </Typography>
                 </label>
-                <textarea
+                <Field
                   name="description"
                   id="description"
-                  value={values.description}
-                  onChange={handleChange}
+                  as="textarea"
                   className="w-full p-2 border rounded-md border-gray-300"
                   rows={10}
                   placeholder="Votre biographie"
@@ -300,131 +346,79 @@ export default function ProfileEdit() {
                     Activités
                   </Typography>
                 </label>
-                <ActivityPicker />
+                <Field name="activities" component={ActivityPicker} />
                 <ErrorMessage name="activities" component="div" className="text-red-500 text-sm mt-1" />
               </div>
 
               {/* Language field */}
-              <div className="mb-8 relative">
-                <label htmlFor="language" className="relative z-10">
+              <div className="mb-8">
+                <label htmlFor="language">
                   <Typography
                     variant="h6"
                     className="mb-2 block text-black font-bold"
                   >
-                    Langue
+                    Langues
                   </Typography>
                 </label>
-                <div className="relative z-10">
-                  <Field
-                    name="language"
-                    id="language"
-                    component={CustomSelect}
-                    options={listOptionsLanguageProfile}
-                    multiple={true}
-                  />
-                  <ErrorMessage name="language" component="div" className="text-red-500 text-sm mt-1" />
-                </div>
-
-                {/* Submit button */}
-                <div className="mt-8">
-                  <button
-                    type="submit"
-                    className="p-2 lg:w-2/4 w-3/4 bg-green text-white rounded hover:bg-opacity-85 mx-auto block"
-                  >
-                    Valider les modifications
-                  </button>
-                </div>
+                <Field
+                  name="language"
+                  id="language"
+                  component={CustomSelect}
+                  options={listOptionsLanguageProfile}
+                  multiple={true}
+                />
+                <ErrorMessage name="language" component="div" className="text-red-500 text-sm mt-1" />
               </div>
-            </Form>
-          )}
-        </Formik>
-      </div>
 
-      {/* Grey dividing line */}
-      <div className="relative left-0 right-0 bottom-0 w-full h-1.5 bg-light-white shadow-md" />
-
-      {/* Updated account info (email & password & delete account) */}
-      <div className="px-4">
-        <Formik
-          initialValues={{ email: "eloisedebordeaux@gmail.com" }}
-          onSubmit={(values) => console.log(values)}
-          validationSchema={accountValidationSchema}
-        >
-          {({ values, handleChange }) => (
-            <Form>
-              <div>
-                <Typography
-                  variant="h4"
-                  className="lg:mt-14 mt-8 mb-4 text-center text-xl font-title"
-                >
-                  Modifier mon compte
-                </Typography>
-
-                {/* Email field */}
-                <div className="mt-4 mb-6">
-                  <label htmlFor="email">
-                    <Typography
-                      variant="h6"
-                      className="mb-2 block text-black font-bold"
-                    >
-                      Email
-                    </Typography>
-                  </label>
-                  <Field
-                    type="email"
-                    name="email"
-                    id="email"
-                    value={values.email}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded-md border-gray-300"
-                  />
-                  <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
-                </div>
-
-                {/* Submit button */}
-                <div className="mt-8">
-                  <button
-                    type="submit"
-                    className="p-2 lg:w-2/4 w-3/4 bg-green text-white rounded hover:bg-opacity-85 mx-auto block"
-                  >
-                    Valider les modifications
-                  </button>
-                </div>
-              </div>
+              {/* Submit button */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full lg:w-2/4 mx-auto p-3 bg-green text-white rounded-md hover:bg-opacity-85 disabled:bg-opacity-50 block"
+              >
+                Valider les modifications
+              </button>
             </Form>
           )}
         </Formik>
 
-        <div>
+        {/* Grey dividing line */}
+        <div className="relative left-0 right-0 bottom-0 w-full mx-auto my-8 h-1.5 bg-light-white shadow-md" />
+
+        {/* Updated account info (email & password & delete account) */}
+        <div className="space-y-6">
+          <Typography variant="h4" className="lg:mt-14 mt-8 mb-2 text-center text-xl font-title">
+            Modifier mon compte
+          </Typography>
+
           {/* Password field */}
-          <div className="mt-8">
-            <button
-              type="submit"
-              className="p-2 lg:w-2/4 w-3/4 border border-gray-400 text-black rounded hover:bg-opacity-85 mx-auto block"
-              onClick={() => setPasswordModalOpen(true)}
-            >
-              Mot de passe
-            </button>
-            <ChangePasswordModal
-              isOpen={isPasswordModalOpen}
-              onClose={() => setPasswordModalOpen(false)}
-              onConfirm={(newPassword) => console.log("Mot de passe changé :", newPassword)}
-            />
-          </div>
+          <button
+            onClick={() => setPasswordModalOpen(true)}
+            className="w-full lg:w-2/4 mx-auto p-3 border border-gray-400 rounded-md hover:bg-gray-50 block"
+          >
+            Changer le mot de passe
+          </button>
 
           {/* Delete account field */}
-          <div>
-            <button
-              type="submit"
-              className="mt-8 text-red-500 font-bold mx-auto block"
-              onClick={handleDeleteAccount}
-            >
-              Supprimer mon compte
-            </button>
-            <ProfileDeleteAccount isOpen={isDeleteModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmDelete} />
-          </div>
+          <button
+            onClick={handleDeleteAccount}
+            className="w-full p-3 text-red-500 font-bold hover:text-red-600"
+          >
+            Supprimer mon compte
+          </button>
         </div>
       </div>
+
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setPasswordModalOpen(false)}
+        onConfirm={(newPassword) => {
+          console.log("Mot de passe changé :", newPassword);
+          setPasswordModalOpen(false);
+        }}
+      />
+
+      <ProfileDeleteAccount isOpen={isDeleteModalOpen} onClose={handleCloseModal} onConfirm={handleConfirmDelete} />
     </div>
   );
 }

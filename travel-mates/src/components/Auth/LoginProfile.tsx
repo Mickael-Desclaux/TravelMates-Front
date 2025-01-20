@@ -74,7 +74,7 @@ export default function LoginProfile() {
             size="md"
             alt={`${firstname} ${lastname}`.trim()}
             className="border border-gray-400 p-0.5"
-            src={`${import.meta.env.VITE_API_BASE_URL + profile?.media.url}`}
+            src={`${import.meta.env.VITE_API_BASE_URL}/${profile?.media?.url}`}
           />
           <Typography variant="h6" color="black" className="font-normal font-bold hidden lg:block capitalize">
             {firstname}
