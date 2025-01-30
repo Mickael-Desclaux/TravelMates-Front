@@ -18,6 +18,7 @@ export async function UpdateProfile(userId: number, data: UpdateProfileData): Pr
 
     if (data.address) formData.append('address', data.address);
     if (data.bio) formData.append('bio', data.bio);
+    if (data.email) formData.append('email', data.email);
 
     if (data.activities && data.activities.length > 0) {
       data.activities.forEach((activity: string) => {

@@ -5,6 +5,9 @@ export interface ProfileData {
   lastname: string;
   birth_date: string;
   gender: string;
+  user: {
+    email: string;
+  }
   profileLanguages: {
     language: string;
   }[];

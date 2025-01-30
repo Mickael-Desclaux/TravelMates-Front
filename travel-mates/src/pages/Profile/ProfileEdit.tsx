@@ -82,6 +82,11 @@ export default function ProfileEdit() {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const fileUrl = URL.createObjectURL(file);
+
+      if (previewImage) {
+        URL.revokeObjectURL(previewImage);
+      }
+
       setPreviewImage(fileUrl);
       setFieldValue("profilePicture", file);
     }
@@ -105,10 +110,10 @@ export default function ProfileEdit() {
       const suggestions = await fetchSuggestions(value.toUpperCase());
       const formattedSuggestions = suggestions.map(
         (suggestion: Suggestion) => ({
-          name: suggestion.name,
-          context: suggestion.context,
-          country: suggestion.context.country,
-          country_name: suggestion.context.country.name,
+          name: suggestion.name || '',
+          context: suggestion.context || {},
+          country: suggestion.context.country || '',
+          country_name: suggestion.context.country.name || '',
         }),
       );
       setSuggestions(formattedSuggestions);
@@ -238,7 +243,7 @@ export default function ProfileEdit() {
                   name="profilePicture"
                   className="hidden"
                   ref={fileInputRef}
-                  onChange={(e) => handleFileChange(e, setFieldValue)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFileChange(e, setFieldValue)}
                   accept={mediaType.join(',')}
                 />
                 <div className="w-32 h-32 md:w-32 md:h-32 rounded-full overflow-hidden bg-gray-300 mr-6 flex-shrink-0">
@@ -390,6 +395,61 @@ export default function ProfileEdit() {
           <Typography variant="h4" className="lg:mt-14 mt-8 mb-2 text-center text-xl font-title">
             Modifier mon compte
           </Typography>
+
+          <Formik
+            initialValues={{ email: userProfileData.user.email || "" }}
+            validationSchema={Yup.object().shape({
+              email: Yup.string()
+                .email('Adresse email invalide')
+                .notOneOf([userProfileData.user.email], "Le nouvel email doit être différent de l'email actuel")
+                .required('L\'email est requis')
+            })}
+            onSubmit={async (values) => {
+              if (!userId) return;
+
+              try {
+                const updateData: UpdateProfileData = {
+                  email: values.email
+              }
+                await UpdateProfile(userId, updateData);
+
+                const updatedProfile = await GetProfile(userId);
+                setUserProfileData(updatedProfile);
+              } catch (error) {
+                console.error("Erreur lors de la mise à jour de l'email:", error);
+              }
+            }}
+          >
+            {({ values, isSubmitting }) => (
+              <Form>
+                <div className="mb-6">
+                  <label htmlFor="email">
+                    <Typography
+                      variant="h6"
+                      className="mb-2 block text-black font-bold"
+                    >
+                      Email
+                    </Typography>
+                  </label>
+                  <Field
+                    type="email"
+                    name="email"
+                    id="email"
+                    value={values.email}
+                    className="w-full p-2 border rounded-md border-gray-300"
+                  />
+                  <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full lg:w-2/4 mx-auto p-3 bg-green text-white rounded-md hover:bg-opacity-85 block"
+                >
+                  Mettre à jour l'email
+                </button>
+              </Form>
+            )}
+          </Formik>
 
           {/* Password field */}
           <button
