@@ -22,7 +22,7 @@ export default function LoginProfile() {
     },
     {
       label: "Voir mes trips",
-      route: "/trip"
+      route: "/my-trips"
     },
     {
       label: "Déconnexion",
