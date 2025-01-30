@@ -120,7 +120,7 @@ export default function Map() {
                     <div className='absolute top-4 md:left-1/2 left-1/3 ms-4 z-10 transform -translate-x-1/2'>
                         <PinSearch onSearch={(title) => handleSearch(title)} suggestions={pins} />
                     </div>
-                    <button className='absolute bottom-12 right-4 z-10 bg-green w-12 h-12 flex justify-center items-center border rounded-lg'
+                    <button id='add-pin' className='absolute bottom-12 right-4 z-10 bg-green w-12 h-12 flex justify-center items-center border rounded-lg'
                         onClick={() => navigate('/pin-create')}>
                         <svg width="16" height="16" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M6 2V6M6 6V10M6 6H10M6 6H2" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

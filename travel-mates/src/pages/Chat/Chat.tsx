@@ -28,7 +28,6 @@ export default function Chat() {
         const fetchData = async () => {
             try {
                 const response = await getTripMessages(+id);
-                console.log("🚀 ~ fetchData ~ response:", response)
                 const messagesWithUserInfos = response.data.messages.map((message) => ({
                     ...message,
                     user: {
