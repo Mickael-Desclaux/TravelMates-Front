@@ -4,7 +4,7 @@ import newIcon from "/icons/new.svg";
 import messageIcon from "/icons/message.svg";
 import logInIcon from "/icons/login.svg";
 import logoTravelMates from "/Logo/travelmates.png";
-import { Button, Typography } from "@material-tailwind/react";
+import { Button } from "@material-tailwind/react";
 import { NavLink } from "react-router-dom";
 import LoginProfile from "../Auth/LoginProfile";
 import useAuthStore from "../../utils/AuthStore";
@@ -109,9 +109,11 @@ export default function NavbarComponent() {
             {userId ? (
               <LoginProfile />
             ) : (
-              <Button size="sm" className="bg-green items-center justify-center h-10">
-                <NavLink to={"/sign-in"}>Connexion</NavLink>
-              </Button>
+              <NavLink to={"/sign-in"}>
+                <Button size="sm" className="bg-green items-center justify-center h-10">
+                  Connexion
+                </Button>
+              </NavLink>
             )}
           </div>
         </div>

@@ -56,7 +56,7 @@ export function useApi() {
                     return Promise.reject(refreshError);
                 }
             }
-            
+
             return Promise.reject(error);
         }
     );
