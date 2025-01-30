@@ -17,6 +17,7 @@ import ChatList from './pages/Chat/ChatList';
 import Chat from './pages/Chat/Chat';
 import ProtectRoute from './components/ProtectRoute/ProtectRoute';
 import TripEdit from './pages/Trip/TripEdit';
+import MyTripsList from './pages/Trip/MyTrips';
 import PinEdit from './pages/Pin/PinEdit';
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
 				<Route path="/sign-in" element={<SignIn />} />
 				<Route path="/sign-up" element={<SignUpMultiStepForm />} />
 				<Route path="/trip-detail/:id" element={<TripDetail />} />
+				<Route path="/my-trips" element={<MyTripsList />} />
 				<Route path="/map" element={<Map />} />
 				<Route path="/pin/:id" element={<PinDetail />} />
 

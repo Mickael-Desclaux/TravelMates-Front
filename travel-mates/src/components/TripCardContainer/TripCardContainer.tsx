@@ -24,15 +24,15 @@ const TripCardContainer: React.FC<Trip> = ({
 
 	// Description is limited to 150 characters for display
 	const maxDescriptionLength = 150;
-  const truncatedDescription =
-    description && description.length > maxDescriptionLength
-      ? description
-        .substring(0, maxDescriptionLength)
-        .trim()
-        .split(' ')
-        .slice(0, -1)
-        .join(' ') + '...'
-      : description;
+	const truncatedDescription =
+		description && description.length > maxDescriptionLength
+			? description
+				.substring(0, maxDescriptionLength)
+				.trim()
+				.split(' ')
+				.slice(0, -1)
+				.join(' ') + '...'
+			: description;
 
 	// Divide tripActivities into two rows for display
 	const firstRowActivities = tripActivities.slice(0, 3); // First 3 tripActivities in the top row
@@ -51,7 +51,7 @@ const TripCardContainer: React.FC<Trip> = ({
 				</NavLink>
 				{/* Avatar image in the bottom right */}
 				<img
-					src={import.meta.env.VITE_API_BASE_URL + owner.profile.media.url}
+					src={`${import.meta.env.VITE_API_BASE_URL}/${owner.profile.media.url}`}
 					alt="Photo de profile"
 					className="w-12 h-12 rounded-full absolute bottom-2 right-2 border-2 border-white object-cover"
 				/>
@@ -68,13 +68,13 @@ const TripCardContainer: React.FC<Trip> = ({
 								{/* Title is limited to 45 characters */}
 							</Typography>
 						</NavLink>
-            <Typography variant="h6" className="font-normal text-gray-800 font-bold">
-              {destination}{' '}
-            </Typography>
-            <Typography variant="h6" color="gray" className="text-gray-800 whitespace-nowrap font-bold">
-              Du {new Date(date_from).toLocaleDateString()} au{' '}
-              {new Date(date_to).toLocaleDateString()}
-            </Typography>
+						<Typography variant="h6" className="font-normal text-gray-800 font-bold">
+							{destination}{' '}
+						</Typography>
+						<Typography variant="h6" color="gray" className="text-gray-800 whitespace-nowrap font-bold">
+							Du {new Date(date_from).toLocaleDateString()} au{' '}
+							{new Date(date_to).toLocaleDateString()}
+						</Typography>
 					</div>
 
 					{/* Activity icons section with two rows if necessary */}
