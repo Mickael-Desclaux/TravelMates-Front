@@ -6,6 +6,7 @@ import { Typography, Tabs, Tab, TabsHeader, TabsBody, TabPanel, Button } from '@
 import { GetUserTrips, GetTrips } from '../../api/Trips';
 import TripSearch from '../../components/TripSearch/TripSearch';
 import useAuthStore from '../../utils/AuthStore';
+import TripWithParticipants from '../../interfaces/Trip';
 
 /**
  * TripListe Component
@@ -16,7 +17,7 @@ import useAuthStore from '../../utils/AuthStore';
 export default function TripList() {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [filteredTrips, setFilteredTrips] = useState<Trip[]>([]);
-  const [myTrips, setMyTrips] = useState<Trip[]>([]);
+  const [myTrips, setMyTrips] = useState<TripWithParticipants[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<string>('all-trips');
   const [message, setMessage] = useState<string>('');
@@ -165,12 +166,17 @@ export default function TripList() {
                         id={trip.id}
                         title={trip.title}
                         destination={trip.destination}
-                        date_from={trip.date_from}
-                        date_to={trip.date_to}
+                        date_from={new Date (trip.date_from)}
+                        date_to={new Date (trip.date_to)}
                         description={trip.description}
                         budget_min={trip.budget_min}
                         budget_max={trip.budget_max}
-                        tripUnsplashImage={trip?.tripUnsplashImage}
+                        tripUnsplashImage={trip?.tripUnsplashImage.map((image) => ({
+                          url: image.url,
+                          author_firstname: '',
+                          author_lastname: '',
+                          author_profile_picture: '',
+                        }))}
                         tripActivities={trip.tripActivities}
                         owner={trip.owner}
                       />

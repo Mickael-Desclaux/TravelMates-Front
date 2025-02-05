@@ -3,6 +3,8 @@ import * as Yup from "yup";
 import { Typography } from "@material-tailwind/react";
 import Arrow from "../../assets/icons/arrow.svg";
 import { PasswordField } from "./PasswordField";
+import { GetPasswordUser } from "../../api/User";
+import { UpdatePasswordRequest } from "../../interfaces/Auth";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -10,8 +12,18 @@ interface ChangePasswordModalProps {
   onConfirm: (newPassword: string) => void;
 }
 
-export default function ChangePasswordModal({ isOpen, onClose, onConfirm }: ChangePasswordModalProps) {
+export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProps) {
   if (!isOpen) return null;
+
+  const fetchPasswordProfile = async (values: UpdatePasswordRequest) => {
+    try {
+      const PasswordChangeData = await GetPasswordUser(values);
+      onClose();
+      return PasswordChangeData;
+    } catch (error) {
+      throw new Error(error as string)
+    }
+  };
 
   const passwordValidationSchema = Yup.object().shape({
     currentPassword: Yup.string().required("Mot de passe actuel requis"),
@@ -21,7 +33,8 @@ export default function ChangePasswordModal({ isOpen, onClose, onConfirm }: Chan
       .matches(/[a-z]/, "Au moins une minuscule")
       .matches(/[A-Z]/, "Au moins une majuscule")
       .matches(/\d/, "Au moins un chiffre")
-      .matches(/[!?&#$*@]/, "Au moins un symbole (!?&#$*@)"),
+      .matches(/[!?&#$*@]/, "Au moins un symbole (!?&#$*@)")
+      .notOneOf([Yup.ref("currentPassword")], "Il doit être différent du mot de passe actuel"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("newPassword")], "Les mots de passe doivent correspondre")
       .required("Confirmation du mot de passe requise"),
@@ -44,10 +57,12 @@ export default function ChangePasswordModal({ isOpen, onClose, onConfirm }: Chan
             confirmPassword: "",
           }}
           validationSchema={passwordValidationSchema}
-          onSubmit={(values, { resetForm }) => {
-            onConfirm(values.newPassword);
+          onSubmit={async (values, { resetForm }) => {
+            await fetchPasswordProfile({
+              currentPassword: values.currentPassword,
+              newPassword: values.newPassword,
+            });
             resetForm();
-            onClose();
           }}
         >
           {({ values }) => {
@@ -121,10 +136,10 @@ export default function ChangePasswordModal({ isOpen, onClose, onConfirm }: Chan
                 </ul>
 
                 <button
-                    onClick={onClose}
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                  onClick={onClose}
+                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
                 >
-                    <img src={Arrow} alt="Fermer la fenêtre" className="w-8 h-8" />
+                  <img src={Arrow} alt="Fermer la fenêtre" className="w-8 h-8" />
                 </button>
               </Form>
             );
