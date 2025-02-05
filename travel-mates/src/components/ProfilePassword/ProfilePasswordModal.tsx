@@ -5,6 +5,9 @@ import Arrow from "../../assets/icons/arrow.svg";
 import { PasswordField } from "./PasswordField";
 import { GetPasswordUser } from "../../api/User";
 import { UpdatePasswordRequest } from "../../interfaces/Auth";
+import { logoutApi } from "../../api/Auth";
+import useAuthStore from "../../utils/AuthStore";
+import { useNavigate } from "react-router-dom";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -15,11 +18,24 @@ interface ChangePasswordModalProps {
 export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProps) {
   if (!isOpen) return null;
 
+  const navigate = useNavigate();
+
   const fetchPasswordProfile = async (values: UpdatePasswordRequest) => {
     try {
       const PasswordChangeData = await GetPasswordUser(values);
       onClose();
       return PasswordChangeData;
+    } catch (error) {
+      throw new Error(error as string)
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logoutApi();
+      localStorage.removeItem('authToken');
+      useAuthStore.getState().clearAccessToken();
+      navigate('/sign-in');
     } catch (error) {
       throw new Error(error as string)
     }
@@ -106,6 +122,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
                   <button
                     type="submit"
                     className="px-2 py-2 bg-green text-white rounded-md hover:bg-opacity-80"
+                    onClick={handleLogout}
                   >
                     Modifier mon mot de passe
                   </button>
