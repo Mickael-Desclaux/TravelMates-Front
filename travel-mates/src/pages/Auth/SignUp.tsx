@@ -11,6 +11,7 @@ import SignUpStepFour from "../../components/SignUpMultiStepForm/SignUpStepFour"
 import { subYears } from "date-fns";
 import {HandleRegister} from "../../api/Auth";
 import { Register } from "../../interfaces/Auth";
+import { NavLink } from "react-router-dom";
 
 export default function SignUpMultiStepForm() {
   const [step, setStep] = useState(1);
@@ -154,9 +155,9 @@ export default function SignUpMultiStepForm() {
                 {step === 1 && (
                   <Typography color="black" className="text-sm !mt-4 mb-8 text-center font-normal">
                     Vous avez déjà un compte ?{" "}
-                    <a href="/sign-in" className="font-medium text-black-900 text-sm underline">
+                    <NavLink to={"/sign-in"} className="font-medium text-black-900 text-sm underline">
                       Me connecter
-                    </a>
+                    </NavLink>
                   </Typography>
                 )}
               </Form>
