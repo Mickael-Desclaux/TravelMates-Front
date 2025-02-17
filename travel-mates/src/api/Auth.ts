@@ -58,6 +58,15 @@ export async function HandleForgotPassword(body: {email: string}) {
     }
 }
 
+export async function HandleResetPassword(body: {password: string}, id: number, token: string) {
+    try {
+        const response = await api.patch(`auth/reset-password/${id}?token=${token}`, body);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export async function logoutApi(): Promise<void> {
     try {
         const response = await api.post('auth/logout');

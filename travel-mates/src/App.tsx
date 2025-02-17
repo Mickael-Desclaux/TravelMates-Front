@@ -20,6 +20,7 @@ import TripEdit from './pages/Trip/TripEdit';
 import MyTripsList from './pages/Trip/MyTrips';
 import PinEdit from './pages/Pin/PinEdit';
 import ForgotPassword from './pages/Auth/ForgotPassword';
+import ResetPassword from './pages/Auth/ResetPassword';
 
 function App() {
 
@@ -35,6 +36,7 @@ function App() {
 				<Route path="/map" element={<Map />} />
 				<Route path="/pin/:id" element={<PinDetail />} />
 				<Route path="/forgot-password" element={<ForgotPassword />} />
+				<Route path="/forgot-password/reset/:id" element={<ResetPassword />} />
 
 				<Route element={<ProtectRoute />}>
 					<Route path="/profile/:id" element={<Profile />} />
