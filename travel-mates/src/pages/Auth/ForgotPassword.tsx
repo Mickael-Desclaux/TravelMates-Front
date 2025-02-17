@@ -21,9 +21,14 @@ export default function ForgotPassword() {
         onSubmit: async values => {
             try {
                 await HandleForgotPassword(values);
-                setValidationMessage(`Nous avons envoyé un mail de réinitialisation à ${values.email}`)
+                setValidationMessage(`Nous avons envoyé un mail de réinitialisation à ${values.email}`);
+                setError("");
             } catch (error: any) {
-                setError(error)
+                if (error.response && error.response.data) {
+                    setError(error.response.data.message);
+                } else {
+                    setError("Une erreur est survenue lors de la réinitialisation");
+                }
             }
         }
     })
@@ -69,7 +74,7 @@ export default function ForgotPassword() {
                             </Button>
 
                             {error && (
-                                <div className="text-red-900 text-center">
+                                <div className="text-red-900 mt-4 text-center">
                                     {error}
                                 </div>
                             )}
