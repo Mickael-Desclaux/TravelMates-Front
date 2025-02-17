@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import getDestinationImages from '../../api/Unsplash';
 import { useFormikContext } from 'formik';
 
-// Define the ImageType interface here
 interface ImageType {
 	id: string;
 	alt_description: string;
@@ -19,31 +18,48 @@ interface ImageType {
 	};
 }
 
+interface Media {
+	url: string;
+	authorFirstName: string;
+	authorLastName: string;
+	authorProfilePicture: string;
+}
+
 export default function StepThree() {
 	const { values, setFieldValue, errors, touched } =
 		useFormikContext<{
-			urls: string[];
+			medias: Media[];
+			destination: string;
 		}>();
 
-	const query: string = 'Paris';
+	const query: string = values.destination;
 
 	// Fetch images from Unsplash API
-	const { data, isLoading, isError } = useQuery({
+	const { data, isLoading } = useQuery({
 		queryKey: ['images', query],
 		queryFn: () => getDestinationImages(query),
 		enabled: true,
 	});
 
-	// Handle selection/deselection of images
-	function handleSelect(url: string) {
-		const currentUrls = values.urls;
-		if (currentUrls.includes(url)) {
+	function handleSelect(image: ImageType) {
+		const currentMedias = values.medias || [];
+		const mediaExists = currentMedias.some(media => media.url === image.urls.small);
+
+		if (mediaExists) {
+			// Remove the media if it already exists
 			setFieldValue(
-				'urls',
-				currentUrls.filter(u => u !== url),
+				'medias',
+				currentMedias.filter(media => media.url !== image.urls.small)
 			);
 		} else {
-			setFieldValue('urls', [...currentUrls, url]);
+			// Add the new media
+			const newMedia = {
+				url: image.urls.small,
+				authorFirstName: image.user.first_name || 'John',
+				authorLastName: image.user.last_name || 'Doe',
+				authorProfilePicture: image.user.links.html,
+			};
+			setFieldValue('medias', [...currentMedias, newMedia]);
 		}
 	}
 
@@ -59,15 +75,7 @@ export default function StepThree() {
 				Sélectionnez jusqu'à 3 images pour illustrer votre trip :
 			</Typography>
 			<div className="flex justify-center">
-				{/* Supprimé <form>, remplacé par un simple conteneur */}
 				{isLoading && <span>Loading...</span>}
-				{isError && <span>Erreur</span>}
-
-				{touched.urls && errors.urls ? (
-					<div className="text-red-900 text-center -mt-4 mb-6">
-						{errors.urls}
-					</div>
-				) : null}
 
 				<div className="grid gap-4 md:grid-cols-3 grid-rows-3">
 					{data &&
@@ -75,35 +83,44 @@ export default function StepThree() {
 							<button
 								type="button"
 								key={image.id}
-								className="relative ms-6 me-6"
-								onClick={() => handleSelect(image.urls.small)}
+								className="relative ms-6 me-6 aspect-[4/3] overflow-hidden"
+								onClick={() => handleSelect(image)}
 							>
-								<img
-									src={image.urls.small}
-									alt={image.alt_description}
-									className={`rounded-lg h-full ${
-										values.urls.includes(image.urls.small)
-											? 'border-solid border-4 border-green'
-											: ''
-									}`}
-								/>
-								<span
-									className="absolute bottom-2 right-2 bg-black text-white text-xs px-3 py-1 rounded-md"
-									style={{ zIndex: 1 }}
-								>
-									Photo prise par{' '}
-									<a href={image.user.links.html} className="underline">
-										{image.user.first_name} {image.user.last_name}
-									</a>{' '}
-									sur{' '}
-									<a href="https://unsplash.com" className="underline">
-										Unsplash
-									</a>
-								</span>
+								<div className="relative w-full h-full">
+									<img
+										src={image.urls.small}
+										alt={image.alt_description}
+										className={`rounded-lg object-cover w-full h-full ${values.medias.some(media => media.url === image.urls.small)
+												? 'border-solid border-4 border-green'
+												: ''
+											}`}
+									/>
+									<div
+										className="absolute bottom-0 right-0 left-0 p-2 bg-black bg-opacity-50 text-white text-xs rounded-b-lg break-words"
+									>
+										Photo prise par{' '}
+										<a href={image.user.links.html} className="underline decoration-white">
+											{image.user.first_name} {image.user.last_name}
+										</a>{' '}
+										sur{' '}
+										<a href="https://unsplash.com" className="underline decoration-white">
+											Unsplash
+										</a>
+									</div>
+								</div>
 							</button>
 						))}
 				</div>
 			</div>
+			{touched.medias && errors.medias && (
+				<div className="text-red-500 text-center mb-4">
+					{typeof errors.medias === 'string' ? (
+						errors.medias
+					) : (
+						Object.values(errors.medias).join(', ')
+					)}
+				</div>
+			)}
 		</>
 	);
 }
