@@ -44,7 +44,7 @@ export default function StepThree() {
 	function handleSelect(image: ImageType) {
 		const currentMedias = values.medias || [];
 		const mediaExists = currentMedias.some(media => media.url === image.urls.small);
-		
+
 		if (mediaExists) {
 			// Remove the media if it already exists
 			setFieldValue(
@@ -83,44 +83,44 @@ export default function StepThree() {
 							<button
 								type="button"
 								key={image.id}
-								className="relative ms-6 me-6"
+								className="relative ms-6 me-6 aspect-[4/3] overflow-hidden"
 								onClick={() => handleSelect(image)}
 							>
-								<img
-									src={image.urls.small}
-									alt={image.alt_description}
-									className={`rounded-lg h-full ${
-										values.medias.some(media => media.url === image.urls.small)
-											? 'border-solid border-4 border-green'
-											: ''
-									}`}
-								/>
-								<span
-									className="absolute bottom-2 right-2 bg-black text-white text-xs px-3 py-1 rounded-md"
-									style={{ zIndex: 1 }}
-								>
-									Photo prise par{' '}
-									<a href={image.user.links.html} className="underline">
-										{image.user.first_name} {image.user.last_name}
-									</a>{' '}
-									sur{' '}
-									<a href="https://unsplash.com" className="underline">
-										Unsplash
-									</a>
-								</span>
+								<div className="relative w-full h-full">
+									<img
+										src={image.urls.small}
+										alt={image.alt_description}
+										className={`rounded-lg object-cover w-full h-full ${values.medias.some(media => media.url === image.urls.small)
+												? 'border-solid border-4 border-green'
+												: ''
+											}`}
+									/>
+									<div
+										className="absolute bottom-0 right-0 left-0 p-2 bg-black bg-opacity-50 text-white text-xs rounded-b-lg break-words"
+									>
+										Photo prise par{' '}
+										<a href={image.user.links.html} className="underline decoration-white">
+											{image.user.first_name} {image.user.last_name}
+										</a>{' '}
+										sur{' '}
+										<a href="https://unsplash.com" className="underline decoration-white">
+											Unsplash
+										</a>
+									</div>
+								</div>
 							</button>
 						))}
 				</div>
 			</div>
 			{touched.medias && errors.medias && (
-					<div className="text-red-500 text-center mb-4">
-						{typeof errors.medias === 'string' ? (
-							errors.medias
-						) : (
-							Object.values(errors.medias).join(', ')
-						)}
-					</div>
-				)}
+				<div className="text-red-500 text-center mb-4">
+					{typeof errors.medias === 'string' ? (
+						errors.medias
+					) : (
+						Object.values(errors.medias).join(', ')
+					)}
+				</div>
+			)}
 		</>
 	);
 }
