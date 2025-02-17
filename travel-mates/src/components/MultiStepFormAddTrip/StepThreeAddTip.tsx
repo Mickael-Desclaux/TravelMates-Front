@@ -29,9 +29,10 @@ export default function StepThree() {
 	const { values, setFieldValue, errors, touched } =
 		useFormikContext<{
 			medias: Media[];
+			destination: string
 		}>();
 
-	const query: string = 'Paris';
+	const query: string = values.destination;
 
 	// Fetch images from Unsplash API
 	const { data, isLoading, isError } = useQuery({
