@@ -80,3 +80,25 @@ export interface ParticipantBasicInfosWithStatus {
     };
     status: string;
 }
+
+export interface CreateTrip {
+    destination: string;
+    date_from: Date;
+    date_to: Date;
+    title: string;
+    description: string;
+    budget_min: number;
+    budget_max: number;
+    condition_age_min: number;
+    condition_age_max: number;
+    condition_physical: string;
+    condition_user_limit: number;
+    condition_gender: string;
+    activities: string[];
+    medias: {
+        url: string;
+        authorFirstName: string;
+        authorLastName: string;
+        authorProfilePicture: string;
+    }[];
+}

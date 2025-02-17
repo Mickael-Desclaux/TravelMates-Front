@@ -27,7 +27,7 @@ describe('Add pin Test', () => {
     cy.visit('/')
     cy.get('button.bg-green').contains('Connexion').click({force: true})
     cy.get('input[name="email"]').type('mickaeldesclaux@gmail.com')
-    cy.get('input[name="password"]').type('bidulddAe12345!')
+    cy.get('input[name="password"]').type('12345Azer!!!')
     cy.get('button[type="submit"]').click()
     cy.wait(500)
     

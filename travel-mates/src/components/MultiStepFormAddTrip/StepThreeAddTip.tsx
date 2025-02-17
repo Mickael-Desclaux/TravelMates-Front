@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import getDestinationImages from '../../api/Unsplash';
 import { useFormikContext } from 'formik';
 
-// Define the ImageType interface here
 interface ImageType {
 	id: string;
 	alt_description: string;
@@ -19,10 +18,17 @@ interface ImageType {
 	};
 }
 
+interface Media {
+	url: string;
+	authorFirstName: string;
+	authorLastName: string;
+	authorProfilePicture: string;
+}
+
 export default function StepThree() {
 	const { values, setFieldValue, errors, touched } =
 		useFormikContext<{
-			urls: string[];
+			medias: Media[];
 		}>();
 
 	const query: string = 'Paris';
@@ -34,16 +40,25 @@ export default function StepThree() {
 		enabled: true,
 	});
 
-	// Handle selection/deselection of images
-	function handleSelect(url: string) {
-		const currentUrls = values.urls;
-		if (currentUrls.includes(url)) {
+	function handleSelect(image: ImageType) {
+		const currentMedias = values.medias || [];
+		const mediaExists = currentMedias.some(media => media.url === image.urls.small);
+
+		if (mediaExists) {
+			// Remove the media if it already exists
 			setFieldValue(
-				'urls',
-				currentUrls.filter(u => u !== url),
+				'medias',
+				currentMedias.filter(media => media.url !== image.urls.small)
 			);
 		} else {
-			setFieldValue('urls', [...currentUrls, url]);
+			// Add the new media
+			const newMedia = {
+				url: image.urls.small,
+				authorFirstName: image.user.first_name,
+				authorLastName: image.user.last_name,
+				authorProfilePicture: image.user.links.html, // Assuming this is the profile picture link
+			};
+			setFieldValue('medias', [...currentMedias, newMedia]);
 		}
 	}
 
@@ -59,15 +74,14 @@ export default function StepThree() {
 				Sélectionnez jusqu'à 3 images pour illustrer votre trip :
 			</Typography>
 			<div className="flex justify-center">
-				{/* Supprimé <form>, remplacé par un simple conteneur */}
 				{isLoading && <span>Loading...</span>}
 				{isError && <span>Erreur</span>}
 
-				{touched.urls && errors.urls ? (
+				{/* {touched.medias && errors.medias ? (
 					<div className="text-red-900 text-center -mt-4 mb-6">
-						{errors.urls}
+						{errors.medias}
 					</div>
-				) : null}
+				) : null} */}
 
 				<div className="grid gap-4 md:grid-cols-3 grid-rows-3">
 					{data &&
@@ -76,13 +90,13 @@ export default function StepThree() {
 								type="button"
 								key={image.id}
 								className="relative ms-6 me-6"
-								onClick={() => handleSelect(image.urls.small)}
+								onClick={() => handleSelect(image)}
 							>
 								<img
 									src={image.urls.small}
 									alt={image.alt_description}
 									className={`rounded-lg h-full ${
-										values.urls.includes(image.urls.small)
+										values.medias.some(media => media.url === image.urls.small)
 											? 'border-solid border-4 border-green'
 											: ''
 									}`}

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Field, ErrorMessage, useFormikContext } from 'formik';
 import SearchIcon from '../../assets/Icons/search.svg';
 import CalendarIcon from '../../assets/Icons/datepicker.svg';
-// import PlaneIcon from '../../assets/Icons/plane.svg'; // Commentaire sur l'importation de PlaneIcon
 import { Typography } from '@material-tailwind/react';
 import DatePickerComponent from '../DatePicker.tsx/DatePicker';
 import { FormValues, Suggestion } from '../../interfaces/FormInterfaces/FormInterfaces';
@@ -96,35 +95,6 @@ const StepOne = () => {
 							)}
 				</div>
 			</div>
-			{/* <div className="mb-4">
-						<Typography
-							htmlFor="departureCity"
-							className="block text-black font-bold mb-1"
-						>
-							Ville de départ
-						</Typography>
-						<div className="relative">
-							<img
-								src={PlaneIcon}
-								alt="plane"
-								className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5"
-							/>
-							<Field
-								id="departureCity"
-								name="departureCity"
-								placeholder="D'où partez-vous ?"
-								className={`w-full pl-10 p-2 border border-gray-300 rounded ${
-									touched.departureCity && errors.departureCity
-										? 'border-red-500'
-										: ''
-								}`}
-							/>
-						</div>
-						{touched.departureCity && errors.departureCity && (
-							<div className="text-red-500 text-sm">{errors.departureCity}</div>
-						)}
-					</div> */}{' '}
-			{/* Commentaire sur la section Ville de départ */}
 			<div className="m-4 relative">
 				<Typography className="block text-black font-bold mb-1">
 					Dates
