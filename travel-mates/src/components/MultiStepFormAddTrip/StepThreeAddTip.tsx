@@ -29,13 +29,13 @@ export default function StepThree() {
 	const { values, setFieldValue, errors, touched } =
 		useFormikContext<{
 			medias: Media[];
-			destination: string
+			destination: string;
 		}>();
 
 	const query: string = values.destination;
 
 	// Fetch images from Unsplash API
-	const { data, isLoading, isError } = useQuery({
+	const { data, isLoading } = useQuery({
 		queryKey: ['images', query],
 		queryFn: () => getDestinationImages(query),
 		enabled: true,
@@ -44,7 +44,7 @@ export default function StepThree() {
 	function handleSelect(image: ImageType) {
 		const currentMedias = values.medias || [];
 		const mediaExists = currentMedias.some(media => media.url === image.urls.small);
-
+		
 		if (mediaExists) {
 			// Remove the media if it already exists
 			setFieldValue(
@@ -55,9 +55,9 @@ export default function StepThree() {
 			// Add the new media
 			const newMedia = {
 				url: image.urls.small,
-				authorFirstName: image.user.first_name,
-				authorLastName: image.user.last_name,
-				authorProfilePicture: image.user.links.html, // Assuming this is the profile picture link
+				authorFirstName: image.user.first_name || 'John',
+				authorLastName: image.user.last_name || 'Doe',
+				authorProfilePicture: image.user.links.html,
 			};
 			setFieldValue('medias', [...currentMedias, newMedia]);
 		}
@@ -76,13 +76,6 @@ export default function StepThree() {
 			</Typography>
 			<div className="flex justify-center">
 				{isLoading && <span>Loading...</span>}
-				{isError && <span>Erreur</span>}
-
-				{/* {touched.medias && errors.medias ? (
-					<div className="text-red-900 text-center -mt-4 mb-6">
-						{errors.medias}
-					</div>
-				) : null} */}
 
 				<div className="grid gap-4 md:grid-cols-3 grid-rows-3">
 					{data &&
@@ -119,6 +112,15 @@ export default function StepThree() {
 						))}
 				</div>
 			</div>
+			{touched.medias && errors.medias && (
+					<div className="text-red-500 text-center mb-4">
+						{typeof errors.medias === 'string' ? (
+							errors.medias
+						) : (
+							Object.values(errors.medias).join(', ')
+						)}
+					</div>
+				)}
 		</>
 	);
 }
