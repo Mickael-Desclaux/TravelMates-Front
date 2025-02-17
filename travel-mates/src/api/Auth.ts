@@ -49,6 +49,14 @@ export async function HandleRegister(body: Register): Promise<User> {
     }
 };
 
+export async function HandleForgotPassword(body: {email: string}) {
+    try {
+        const response = await api.post('auth/reset-password', body);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
 
 export async function logoutApi(): Promise<void> {
     try {
