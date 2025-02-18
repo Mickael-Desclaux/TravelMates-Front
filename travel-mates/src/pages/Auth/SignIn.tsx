@@ -32,8 +32,12 @@ export default function SignIn() {
             try {
                 await HandleSignIn(values);
                 navigate('/');
-            } catch (error) {
-                setLoginError(error as string)
+            } catch (error: any) {
+                if (error.response && error.response.data) {
+                    setLoginError(error.response.data.message);
+                } else {
+                    setLoginError("Une erreur est survenue lors de la connexion");
+                }
             }
         }
     })
