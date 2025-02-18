@@ -93,9 +93,9 @@ export default function SignIn() {
                                 />
 
                                 <div className="flex flex-col items-end">
-                                    <a href="/forgot-password" className="text-sm text-black underline -mt-3">
+                                    <NavLink to={"/forgot-password"} className="text-sm text-black underline decoration-black -mt-3">
                                         Mot de passe oublié ?
-                                    </a>
+                                    </NavLink>
                                 </div>
 
 
@@ -118,9 +118,9 @@ export default function SignIn() {
 
                             <Typography color="black" className="mt-4 text-center font-normal text-sm">
                                 Vous n'avez pas de compte?{" "}
-                                <a href="/sign-up" className="font-medium text-black-900 underline text-sm">
+                                <NavLink to={"/sign-up"} className="font-medium text-black-900 underline decoration-black text-sm">
                                     Créer un compte
-                                </a>
+                                </NavLink>
                             </Typography>
                         </form>
                     </Card>
