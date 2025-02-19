@@ -1,7 +1,7 @@
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel, Typography } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
-import planeIcon from '../../assets/icons/plane.svg';
-import pinMarkerIcon from '../../assets/icons/pin-marker.svg';
+import planeIcon from '/icons/plane.svg';
+import pinMarkerIcon from '/icons/pin-marker.svg';
 import TripWithParticipants from "../../interfaces/Trip";
 import { Pin } from "../../interfaces/Pin";
 import { GetUserTrips } from "../../api/Trips";

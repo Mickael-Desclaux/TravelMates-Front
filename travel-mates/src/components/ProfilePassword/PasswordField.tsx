@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Field, ErrorMessage } from "formik";
-import EyeClose from "../../assets/icons/eyes-close.svg";
-import EyeOpen from "../../assets/icons/eyes-open.svg";
+import EyeClose from "/icons/eyes-close.svg";
+import EyeOpen from "/icons/eyes-open.svg";
 
 interface PasswordFieldProps {
   name: string;

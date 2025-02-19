@@ -1,7 +1,7 @@
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Typography } from "@material-tailwind/react";
-import Arrow from "../../assets/icons/arrow.svg";
+import Arrow from "/icons/arrow.svg";
 import { PasswordField } from "./PasswordField";
 import { GetPasswordUser } from "../../api/User";
 import { UpdatePasswordRequest } from "../../interfaces/Auth";

@@ -11,8 +11,8 @@ import {
 } from "@material-tailwind/react";
 import { NavLink } from "react-router-dom";
 import { Participant } from "../../interfaces/Trip";
-import kickIcon from '../../assets/icons/kick.svg';
-import addIcon from '../../assets/icons/add.svg';
+import kickIcon from '/icons/kick.svg';
+import addIcon from '/icons/add.svg';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 import { banParticipant, validateParticipant } from "../../api/Trip";
 

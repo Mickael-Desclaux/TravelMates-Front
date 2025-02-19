@@ -2,7 +2,7 @@ import { Typography, Button } from "@material-tailwind/react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import ProgressBar from "../../components/ProgressBar/ProgressBar";
-import travelMatesLogo from "../../assets/Logo/travelmates.png";
+import travelMatesLogo from "/Logo/travelmates.png";
 import { useState } from "react";
 import StepOne from "../../components/SignUpMultiStepForm/SignUpStepOne";
 import StepTwo from "../../components/SignUpMultiStepForm/SignUpStepTwo";

@@ -1,4 +1,4 @@
-import followButton from "../../assets/icons/follow.svg";
+import followButton from "/icons/follow.svg";
 
 export default function AddFriendButton() {
     return (

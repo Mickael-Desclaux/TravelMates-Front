@@ -1,5 +1,5 @@
 import { Typography } from "@material-tailwind/react";
-import Arrow from "../../assets/icons/arrow.svg";
+import Arrow from "/icons/arrow.svg";
 
 interface ProfileDeleteAccountProps {
   isOpen: boolean;

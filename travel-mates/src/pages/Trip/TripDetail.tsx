@@ -1,7 +1,7 @@
 import { ThemeProvider, Carousel, Typography, Avatar, Button } from "@material-tailwind/react";
-import genderIcon from '../../assets/icons/gender.svg';
-import peoplesIcon from '../../assets/icons/peoples.svg';
-import runIcon from '../../assets/icons/run.svg';
+import genderIcon from '/icons/gender.svg';
+import peoplesIcon from '/icons/peoples.svg';
+import runIcon from '/icons/run.svg';
 import './TripDetail.css';
 import { useNavigate, useParams } from "react-router-dom";
 import TripManagePopover from "../../components/TripPopover/TripPopover";

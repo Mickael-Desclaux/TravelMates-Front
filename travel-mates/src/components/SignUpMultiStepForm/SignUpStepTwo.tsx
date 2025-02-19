@@ -1,6 +1,6 @@
 import { Typography } from '@material-tailwind/react';
 import { Field, ErrorMessage, useFormikContext } from 'formik';
-import uploadIcon from '../../assets/icons/up-loading.png';
+import uploadIcon from '/icons/up-loading.png';
 import CustomSelect from '../CustomSelect/CustomSelect';
 import { useState } from 'react';
 import { fetchSuggestions } from '../../api/Mapbox';

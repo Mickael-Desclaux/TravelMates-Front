@@ -1,7 +1,7 @@
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl'
 import { useEffect, useRef, useState } from 'react';
 import './Map.css';
-import pinMarker from '../../assets/icons/pin-marker.svg';
+import pinMarker from '/icons/pin-marker.svg';
 import { renderToString } from 'react-dom/server';
 import { Button, Typography } from '@material-tailwind/react';
 import { useNavigate } from 'react-router-dom';

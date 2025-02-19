@@ -1,5 +1,5 @@
 import { Typography } from "@material-tailwind/react";
-import checkedIcon from '../../assets/activity/checked.svg';
+import checkedIcon from '/activity/checked.svg';
 
 interface ActivityProps {
     id: number;
