@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Field, ErrorMessage, useFormikContext } from 'formik';
-import SearchIcon from '../../assets/Icons/search.svg';
-import CalendarIcon from '../../assets/Icons/datepicker.svg';
+import SearchIcon from '/icons/search.svg';
+import CalendarIcon from '/icons/datepicker.svg';
 import { Typography } from '@material-tailwind/react';
 import DatePickerComponent from '../DatePicker.tsx/DatePicker';
 import { FormValues } from '../../interfaces/FormInterfaces/FormInterfaces';

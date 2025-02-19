@@ -10,7 +10,7 @@ import { banParticipant, updateTrip } from "../../api/Trip";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { GetTripById } from "../../api/Trips";
 import { ParticipantBasicInfos, ParticipantBasicInfosWithStatus, UpdateTrip } from "../../interfaces/Trip";
-import CalendarIcon from '../../assets/Icons/datepicker.svg';
+import CalendarIcon from '/icons/datepicker.svg';
 import DatePickerComponent from "../../components/DatePicker.tsx/DatePicker";
 import { convertDateToISO, formatApiDate } from "../../utils/DateService";
 import { calculateAge } from "../../utils/AgeService";
