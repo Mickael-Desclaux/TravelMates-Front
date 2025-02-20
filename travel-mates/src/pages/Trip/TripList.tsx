@@ -23,28 +23,69 @@ export default function TripList() {
   const [message, setMessage] = useState<string>('');
   const userId = useAuthStore(state => state.user_id);
 
+  // useEffect(() => {
+  //   const fetchTrips = async () => {
+  //     try {
+  //       const tripsData = await GetTrips();
+  //       setTrips(tripsData);
+  //       setFilteredTrips(tripsData);
+  //     } catch (error) {
+  //       console.error('Error fetching trips:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchTrips();
+  // }, []);
+
+  // useEffect(() => {
+  //   const fetchUserTrips = async () => {
+  //     if (userId) {
+  //       try {
+  //         const userTripsData = await GetUserTrips();
+  //         setMyTrips(userTripsData);
+  //       } catch (error) {
+  //         console.error('Error fetching user trips:', error);
+  //       }
+  //     } else {
+  //       setMyTrips([]);
+  //     }
+  //   };
+
+  //   fetchUserTrips();
+  // }, [userId]);
+
   useEffect(() => {
     const fetchTrips = async () => {
       try {
         const tripsData = await GetTrips();
-        setTrips(tripsData);
-        setFilteredTrips(tripsData);
+        if (Array.isArray(tripsData)) {
+          setTrips(tripsData);
+          setFilteredTrips(tripsData);
+        } else {
+          console.error('Invalid data format:', tripsData);
+        }
       } catch (error) {
         console.error('Error fetching trips:', error);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchTrips();
   }, []);
-
+  
   useEffect(() => {
     const fetchUserTrips = async () => {
       if (userId) {
         try {
           const userTripsData = await GetUserTrips();
-          setMyTrips(userTripsData);
+          if (Array.isArray(userTripsData)) {
+            setMyTrips(userTripsData);
+          } else {
+            console.error('Invalid data format:', userTripsData);
+          }
         } catch (error) {
           console.error('Error fetching user trips:', error);
         }
@@ -52,7 +93,7 @@ export default function TripList() {
         setMyTrips([]);
       }
     };
-
+  
     fetchUserTrips();
   }, [userId]);
 
